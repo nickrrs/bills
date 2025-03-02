@@ -5,15 +5,18 @@
         :class="buttonClass"
         @click="handleClick"
     >
+        <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />
         {{ label }}
     </UiButton>
 </template>
 
 <script lang="ts">
 import { Button as UiButton } from '@/components/ui/button';
+import { LoaderCircle } from 'lucide-vue-next';
 export default {
     components: {
-        UiButton
+        UiButton,
+        LoaderCircle
     },
     props: {
         label: {
@@ -35,6 +38,10 @@ export default {
         onClick: {
             type: Function,
             default: function() {}
+        },
+        loading: {
+            type: Boolean,
+            default: false
         }
     },
     methods: {
