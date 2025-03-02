@@ -1,69 +1,91 @@
-<script setup lang="ts">
+<script lang="ts">
 import PrimaryButton from '@/components/buttons/PrimaryButton.vue';
 import InputError from '@/components/InputError.vue';
+import EmailInput from '@/components/inputs/EmailInput.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input as UIInput } from '@/components/ui/input';
+import { Label as UILabel } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { useForm } from '@inertiajs/vue3';
+import { Head as InertiaHead, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { Transition } from 'vue';
 
-const formEnabled = ref(false);
-
-defineProps<{
-    status?: string;
-    canResetPassword: boolean;
-}>();
-
-const form = useForm({
-    email: '',
-    password: '',
-    remember: false,
-});
-
-const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
-    });
-};
-
-const showForm = () => {
-    formEnabled.value = !formEnabled.value;
+export default {
+    components: {
+        PrimaryButton,
+        InputError,
+        EmailInput,
+        TextLink,
+        Checkbox,
+        AuthBase,
+        InertiaHead,
+        LoaderCircle,
+        UILabel,
+        UIInput,
+        Transition,
+    },
+    props: {
+        status: {
+            type: String,
+            default: '',
+        },
+        canResetPassword: {
+            type: Boolean,
+            default: false,
+        },
+        loginState: {
+            type: Boolean,
+            default: false,
+        }
+    },
+    data() {
+        return {
+            formEnabled: false,
+            form: useForm({
+                email: '',
+                password: '',
+                remember: false,
+            }),
+        };
+    },
+    mounted() {
+        console.log(this.loginState);
+    },
+    methods: {
+        submit() {
+            this.form.post(route('login'), {
+                onFinish: () => this.form.reset('password'),
+            });
+        },
+        showForm() {
+            this.formEnabled = !this.formEnabled;
+        },
+    },
 };
 </script>
 
 <template>
     <div>
         <Transition name="slide-up-enter-active">
-            <AuthBase title="Log in to your account" description="Enter your email and password below to log in">
+            <AuthBase description="Enter your email and password below to log in">
+                <InertiaHead title="login" />
                 <Transition name="slide-up">
-                    <form v-if="formEnabled" @submit.prevent="submit" class="flex flex-col gap-6">
-                        <div class="grid gap-6">
+                    <form v-if="formEnabled || loginState" @submit.prevent="submit" class="flex flex-col gap-6">
+                        <div class="grid gap-5">
                             <div class="grid gap-2">
-                                <Label for="email">e-mail</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    required
-                                    autofocus
-                                    :tabindex="1"
-                                    autocomplete="email"
-                                    v-model="form.email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError :message="form.errors.email" />
+                                <UILabel for="email">e-mail</UILabel>
+                                <EmailInput :model-value="form.email" @update:model-value="form.email = $event" :error="form.errors.email" />
                             </div>
 
                             <div class="grid gap-2">
                                 <div class="flex items-center justify-between">
-                                    <Label for="password">password</Label>
-                                    <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm" :tabindex="5">
+                                    <UILabel for="password">password</UILabel>
+                                    <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm hover:text-[#6366f1]" :tabindex="5">
                                         forgot password?
                                     </TextLink>
                                 </div>
-                                <Input
+                                <UIInput
                                     id="password"
                                     type="password"
                                     required
@@ -76,10 +98,10 @@ const showForm = () => {
                             </div>
 
                             <div class="flex items-center justify-between" :tabindex="3">
-                                <Label for="remember" class="flex items-center space-x-3">
+                                <UILabel for="remember" class="flex items-center space-x-3">
                                     <Checkbox id="remember" v-model:checked="form.remember" :tabindex="4" />
                                     <span>remember me</span>
-                                </Label>
+                                </UILabel>
                             </div>
 
                             <PrimaryButton type="submit" label="sign in" class="mt-4 w-full h-[42px] border-2 font-semibold border-zinc-800 text-white backdrop-blur-xl bg-[#0B0B0E] hover:bg-[#0F0F15]" :tabindex="4" :disabled="form.processing">
@@ -89,11 +111,11 @@ const showForm = () => {
 
                         <div class="text-center text-sm text-muted-foreground">
                             don't have an account?
-                            <TextLink :href="route('register')" :tabindex="5">sign up</TextLink>
+                            <TextLink :href="route('register')" class="hover:text-[#6366f1]" :tabindex="5">sign up</TextLink>
                         </div>
                     </form>
                 </Transition>
-                <div v-if="!formEnabled" class="flex justify-center items-center">
+                <div v-if="!formEnabled && !loginState" class="flex justify-center items-center">
                     <div class="relative overflow-hidden rounded-md bg-[#0B0B0E] shadow border-2 border-zinc-800 group p-0.5 w-full">
                         <span class="absolute inset-[-1000%] opacity-0 group-hover:opacity-100 animate-[spin_5s_linear_infinite_reverse] dark:bg-[conic-gradient(from_90deg_at_50%_50%,#6366f1_0%,#0B0B0E_7%)] bg-[conic-gradient(from_90deg_at_50%_50%,#000_0%,#6366f1_5%)] transition-opacity"></span>
                         <PrimaryButton
