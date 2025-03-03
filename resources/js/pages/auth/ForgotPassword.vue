@@ -1,8 +1,7 @@
 <script lang="ts">
 import PrimaryButton from '@/components/buttons/PrimaryButton.vue';
-import InputError from '@/components/InputError.vue';
+import EmailInput from '@/components/inputs/EmailInput.vue';
 import TextLink from '@/components/TextLink.vue';
-import { Input as UIInput } from '@/components/ui/input';
 import { Label as UILabel } from '@/components/ui/label';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { Head as InertiaHead, useForm } from '@inertiajs/vue3';
@@ -10,11 +9,10 @@ export default {
     components: {
         AuthLayout,
         InertiaHead,
-        InputError,
         TextLink,
-        UIInput,
         UILabel,
-        PrimaryButton
+        PrimaryButton,
+        EmailInput
     },
     props: {
         status: {
@@ -25,7 +23,7 @@ export default {
     data() {
         return {
             form: useForm({
-                email: '' as string | number,
+                email: '' as string,
             }),
         };
     },
@@ -38,8 +36,8 @@ export default {
 </script>
 
 <template>
-    <AuthLayout title="Forgot password" description="Enter your email to receive a password reset link">
-        <InertiaHead title="Forgot password" />
+    <AuthLayout>
+        <InertiaHead title="forgot password" />
 
         <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
             {{ status }}
@@ -49,12 +47,11 @@ export default {
             <form @submit.prevent="submit">
                 <div class="grid gap-2">
                     <UILabel for="email">email address</UILabel>
-                    <UIInput id="email" type="email" name="email" autocomplete="off" v-model="form.email" autofocus placeholder="email@example.com" />
-                    <InputError :message="form.errors.email" />
+                    <EmailInput :name="'email'" :tabindex="2" :model-value="form.email" @update:model-value="form.email = $event" :error="form.errors.email" />
                 </div>
 
                 <div class="my-6 flex items-center justify-start">
-                    <PrimaryButton :disabled="form.processing" :loading="form.processing" label="email password reset link" :class="'w-full'"/>
+                    <PrimaryButton :disabled="form.processing" :loading="form.processing" label="email password reset link" :class="'h-[42px]'"/>
                 </div>
             </form>
 

@@ -2,7 +2,7 @@
     <UiButton
         :disabled="disabled"
         :tabindex="tabindex"
-        :class="buttonClass"
+        :class="`${buttonClass} w-full backdrop-blur-xl rounded-md border-2 bg-[#0B0B0E] hover:bg-[#0F0F15] font-semibold text-white ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`"
         @click="handleClick"
     >
         <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />

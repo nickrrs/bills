@@ -55,7 +55,7 @@ export default {
 
                 <div class="grid gap-2">
                     <UILabel for="email">email address</UILabel>
-                    <EmailInput :id="'email'" :error="form.errors.email" :required="true" :tabindex="2" :autocomplete="'email'" v-model="form.email" :placeholder="'email@example.com'" />
+                    <EmailInput :id="'email'" :name="'email'" :error="form.errors.email" :required="true" :tabindex="2" :autocomplete="'email'" v-model="form.email" :placeholder="'email@example.com'" />
                 </div>
 
                 <div class="grid gap-2">
@@ -68,7 +68,7 @@ export default {
                     <PasswordInput :id="'password_confirmation'" :error="form.errors.password_confirmation" :required="true" :tabindex="3" :autocomplete="'new-password'" v-model="form.password_confirmation" placeholder="confirm password"/>
                 </div>
 
-                <PrimaryButton type="submit" label="create account" class="mt-2 w-full h-[42px] border-2 font-semibold border-zinc-800 text-white backdrop-blur-xl bg-[#0B0B0E] hover:bg-[#0F0F15]" :tabindex="5" :disabled="form.processing">
+                <PrimaryButton type="submit" label="create account" class="mt-2 h-[42px]" :tabindex="5" :disabled="form.processing">
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                 </PrimaryButton>
             </div>

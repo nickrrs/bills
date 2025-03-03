@@ -2,9 +2,9 @@
 <div class="flex flex-col gap-2">
     <UIInput
         id="email"
+        :name="name"
         type="email"
-        autofocus
-        :tabindex="1"
+        :tabindex="tabindex"
         autocomplete="email"
         :model-value="email"
         @update:model-value="updateEmail"
@@ -28,6 +28,10 @@ export default {
     },
     props: {
         modelValue: {
+            type: String,
+            required: true
+        },
+        name: {
             type: String,
             required: true
         },
