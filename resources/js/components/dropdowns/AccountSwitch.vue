@@ -11,17 +11,17 @@
                 <ChevronsDownUp v-else class="ml-2 !h-4 !w-4 text-[#767676]" />
             </UiButton>
         </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-56">
+        <DropdownMenuContent class="w-56 bg-[#1E1E1E] border-[#2F2F2F]">
             <DropdownMenuLabel>my accounts</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator class="bg-[#2F2F2F]"/>
             <DropdownMenuGroup>
-                <DropdownMenuItem v-for="account in accounts" :key="account.id" class="cursor-pointer pl-2">
+                <DropdownMenuItem v-for="account in accounts" :key="account.id" class="cursor-pointer pl-2 hover:!bg-[#38353C]">
                    <span>{{ account.name }}</span>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator class="bg-[#2F2F2F]"/>
             <DropdownMenuGroup>
-                <DropdownMenuItem class="cursor-pointer">
+                <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C]">
                     <Plus class="!mr-2 !h-4 !w-4" />
                     add account
                 </DropdownMenuItem>
