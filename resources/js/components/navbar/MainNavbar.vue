@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full flex items-center bg-[#131316] h-[72px] px-8 py-4">
+    <div class="sticky top-0 w-full flex items-center bg-[#131316] h-[72px] px-8 py-4">
         <NavigationMenu class="w-full flex flex-row items-center justify-between max-w-[100%]">
             <NavigationMenuList class="w-full flex items-center gap-4">
                 <NavigationMenuItem class="flex items-center gap-6">
@@ -23,18 +23,31 @@
                 </NavigationMenuItem>
             </NavigationMenuList>
 
-            <NavigationMenuList class="w-full flex self-end gap-4">
-                <NavigationMenuItem>
+            <NavigationMenuList class="w-full flex self-end gap-4 text-[#B6B6B6] ">
+                <NavigationMenuItem class="hover:text-white cursor-pointer">
+                    <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
                         accounts
+                    </InertiaLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
+                <NavigationMenuItem class="hover:text-white cursor-pointer">
+                    <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
                         expense categories
+                    </InertiaLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
+                <NavigationMenuItem class="hover:text-white cursor-pointer">
+                    <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
+                        expense subcategories
+                    </InertiaLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem class="hover:text-white cursor-pointer">
+                    <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
                         mensal plans
+                    </InertiaLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
+                <NavigationMenuItem class="hover:text-white cursor-pointer">
+                    <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
                         tracks
+                    </InertiaLink>
                 </NavigationMenuItem>
                 <div class="relative shrink-0 bg-border h-full w-px ">
                     <div class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-[#444444] w-[1px] px-0 py-3"></div>
@@ -45,6 +58,9 @@
                 <div class="relative shrink-0 bg-border h-full w-px ">
                     <div class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-[#444444] w-[1px] px-0 py-3"></div>
                 </div>
+                <NavigationMenuItem>
+                    <UserDropdown />
+                </NavigationMenuItem>
             </NavigationMenuList>
         </NavigationMenu>
     </div>
@@ -60,6 +76,7 @@ import { OctagonAlert } from "lucide-vue-next";
 import { Button as UiButton } from "@/components/ui/button";
 import { Link as InertiaLink } from '@inertiajs/vue3';
 import AccountSwitch from "../dropdowns/AccountSwitch.vue";
+import UserDropdown from "../dropdowns/UserDropdown.vue";
 export default {
     name: 'MainNavbar',
     components: {
@@ -70,7 +87,8 @@ export default {
         InertiaLink,
         AccountSwitch,
         OctagonAlert,
-        UiButton
+        UiButton,
+        UserDropdown,
     },
     computed: {
         emailIsVerified() {
