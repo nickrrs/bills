@@ -15,14 +15,14 @@
             <DropdownMenuLabel>my accounts</DropdownMenuLabel>
             <DropdownMenuSeparator class="bg-[#2F2F2F]"/>
             <DropdownMenuGroup>
-                <DropdownMenuItem v-for="account in accounts" :key="account.id" class="cursor-pointer pl-2 hover:!bg-[#38353C]">
+                <DropdownMenuItem v-for="account in accounts" :key="account.id" class="cursor-pointer pl-2 hover:!bg-[#38353C] text-[#b8b8b8]">
                    <span>{{ account.name }}</span>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator class="bg-[#2F2F2F]"/>
             <DropdownMenuGroup>
-                <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C]">
-                    <Plus class="!mr-2 !h-4 !w-4" />
+                <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
+                    <Plus class="!h-4 !w-4" />
                     add account
                 </DropdownMenuItem>
             </DropdownMenuGroup>
