@@ -15,10 +15,10 @@
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                     <div v-if="!emailIsVerified"
-                        class="flex items-center justify-center text-center gap-2 h-[32px] px-[8px]  bg-[#1E1E1E] border border-[#2F2F2F] rounded-md"
+                        class="flex items-center justify-center text-center gap-2 h-[32px] px-[8px]  bg-[#1E1E1E] border border-[#2F2F2F] rounded-none"
                     >
-                        <OctagonAlert class="!h-4 !w-4 text-[#FFD600]" />
-                        <span class="text-sm text-[#FFD600] cursor-default">please check your e-mail to verify your account</span>
+                        <OctagonAlert class="!h-4 !w-4 text-[#FFD600] animate-pulse" />
+                        <span class="text-sm text-[#FFD600] cursor-default animate-pulse">please check your e-mail to verify your account</span>
                     </div>
                 </NavigationMenuItem>
             </NavigationMenuList>
@@ -30,19 +30,30 @@
                     </InertiaLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem class="hover:text-white cursor-pointer">
-                    <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                        expense categories
-                    </InertiaLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem class="hover:text-white cursor-pointer">
-                    <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                        expense subcategories
-                    </InertiaLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem class="hover:text-white cursor-pointer">
-                    <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                        mensal plans
-                    </InertiaLink>
+                    <!-- <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
+                        finance categories
+                    </InertiaLink> -->
+                    <DropdownMenu v-model:open="isOpen">
+                        <DropdownMenuTrigger>
+                            <DropdownMenuLabel class="flex flex-row items-center gap-1">
+                                <span>finance categories</span>
+                                <ChevronDown v-if="!isOpen" class="!h-4 !w-4 text-[#767676]" />
+                                <ChevronUp v-else class="!h-4 !w-4 text-[#767676]" />
+                            </DropdownMenuLabel>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="w-40 bg-[#1E1E1E] border-[#2F2F2F] !rounded-none">
+                            <DropdownMenuItem class="!rounded-none cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
+                                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
+                                    categories
+                                </InertiaLink>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem class="!rounded-none cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
+                                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
+                                    subcategories
+                                </InertiaLink>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </NavigationMenuItem>
                 <NavigationMenuItem class="hover:text-white cursor-pointer">
                     <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
@@ -52,7 +63,7 @@
                 <div class="relative shrink-0 bg-border h-full w-px ">
                     <div class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-[#444444] w-[1px] px-0 py-3"></div>
                 </div>
-                <UiButton class="text-white !h-[32px] border border-[#7B90FF] bg-gradient-to-br from-[#818CF8] via-[#6161E0] to-[#4338CA] hover:bg-gradient-to-br hover:from-[#4338CA] hover:via-[#4338CA] hover:to-[#4338CA]">
+                <UiButton class="text-white !h-[32px] !border border-[#2F2F2F] bg-[#1E1E1E] hover:bg-[#313131] !rounded-none">
                     add record
                 </UiButton>
                 <div class="relative shrink-0 bg-border h-full w-px ">
@@ -71,8 +82,14 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import AppLogoIcon from "../assets/AppLogoIcon.vue";
-import { OctagonAlert } from "lucide-vue-next";
+import { OctagonAlert, ChevronDown, ChevronUp } from "lucide-vue-next";
 import { Button as UiButton } from "@/components/ui/button";
 import { Link as InertiaLink } from '@inertiajs/vue3';
 import AccountSwitch from "../dropdowns/AccountSwitch.vue";
@@ -89,12 +106,23 @@ export default {
         OctagonAlert,
         UiButton,
         UserDropdown,
+        DropdownMenu,
+        DropdownMenuContent,
+        DropdownMenuItem,
+        DropdownMenuTrigger,
+        ChevronDown,
+        ChevronUp,
     },
     props: {
         noSubNav: {
             type: Boolean,
             default: false,
         },
+    },
+    data() {
+        return {
+            isOpen: false,
+        }
     },
     computed: {
         emailIsVerified() {

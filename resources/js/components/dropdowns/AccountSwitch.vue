@@ -4,24 +4,24 @@
             <UiButton
                 id="account-switch"
                 size="sm"
-                class="text-white border border-[#2F2F2F] bg-gradient-to-br from-[#1E1F22] via-black to-[#0D0D0D] hover:bg-gradient-to-br hover:from-[#1E1F22] hover:via-[#1E1F22] hover:to-[#1E1F22]"
+                class="text-white border border-[#2F2F2F] bg-[#1E1E1E] hover:bg-[#313131] !rounded-none"
             >
                 <span>select account</span>
                 <ChevronsUpDown v-if="!isOpen" class="ml-2 !h-4 !w-4 text-[#767676]" />
                 <ChevronsDownUp v-else class="ml-2 !h-4 !w-4 text-[#767676]" />
             </UiButton>
         </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-56 bg-[#1E1E1E] border-[#2F2F2F]">
+        <DropdownMenuContent class="w-56 bg-[#1E1E1E] border-[#2F2F2F] !rounded-none">
             <DropdownMenuLabel>my accounts</DropdownMenuLabel>
             <DropdownMenuSeparator class="bg-[#2F2F2F]"/>
-            <DropdownMenuGroup>
-                <DropdownMenuItem v-for="account in accounts" :key="account.id" class="cursor-pointer pl-2 hover:!bg-[#38353C] text-[#b8b8b8]">
+            <DropdownMenuGroup class="max-h-[100px] overflow-y-auto">
+                <DropdownMenuItem v-for="account in accounts" :key="account.id" class="!rounded-none cursor-pointer pl-2 hover:!bg-[#38353C] text-[#b8b8b8]">
                    <span>{{ account.name }}</span>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator class="bg-[#2F2F2F]"/>
             <DropdownMenuGroup>
-                <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
+                <DropdownMenuItem class="!rounded-none cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
                     <Plus class="!h-4 !w-4" />
                     add account
                 </DropdownMenuItem>
@@ -74,6 +74,22 @@ export default {
                     name: '@account 3',
                     icon: 'https://github.com/shadcn.png'
                 },
+                {
+                    id: 3,
+                    name: '@account 3',
+                    icon: 'https://github.com/shadcn.png'
+                },
+                {
+                    id: 3,
+                    name: '@account 3',
+                    icon: 'https://github.com/shadcn.png'
+                },
+                {
+                    id: 3,
+                    name: '@account 3',
+                    icon: 'https://github.com/shadcn.png'
+                },
+
             ],
             isOpen: false
         }

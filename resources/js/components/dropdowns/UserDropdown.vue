@@ -5,62 +5,33 @@
                 <img src="https://github.com/shadcn.png" alt="profile" class="!w-[32px] !h-[32px] rounded-full cursor-pointer">
             </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent :align="'end'" class="w-56 bg-[#1E1E1E] border-[#2F2F2F]">
+        <DropdownMenuContent :align="'end'" class="w-56 bg-[#1E1E1E] border-[#2F2F2F] !rounded-none">
             <DropdownMenuLabel class="flex flex-col gap-1">
                 <span class="text-white text-sm font-medium">Nickolas Ribeiro</span>
                 <span class="text-[#B6B6B6] text-xs">nick@bills.com.br</span>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator class="bg-[#2F2F2F]"/>
-            <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]" >
-                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                    <User class="!h-4 !w-4" />
-                    edit profile
-                </InertiaLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]" >
-                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                    <Settings class="!h-4 !w-4" />
-                    settings
-                </InertiaLink>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator class="bg-[#2F2F2F]"/>
-            <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]" >
-                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                    <Wallet class="!h-4 !w-4" />
-                    my accounts
-                </InertiaLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]" >
-                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                    <CreditCard class="!h-4 !w-4" />
-                    my cards
-                </InertiaLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]" >
-                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                    <Layers class="!h-4 !w-4" />
-                    expense categories
-                </InertiaLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]" >
-                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                    <Layers2 class="!h-4 !w-4" />
-                    expense subcategories
-                </InertiaLink>
-            </DropdownMenuItem>
-            <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]" >
-                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                    <TrendingUp class="!h-4 !w-4" />
-                    my tracks
-                </InertiaLink>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator class="bg-[#2F2F2F]"/>
-            <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
-                <InertiaLink method="post" :href="route('logout')" class="flex items-center gap-x-2 ">
-                    <LogOut class="!h-4 !w-4" />
-                    logout
-                </InertiaLink>
-            </DropdownMenuItem>
+            <template v-for="(item, index) in menuItems" :key="index">
+                <DropdownMenuSeparator v-if="item.separatorBefore" class="bg-[#2F2F2F]"/>
+                <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
+                    <InertiaLink
+                        v-if="item.method"
+                        :method="item.method as any"
+                        :href="route(item.route)"
+                        class="flex items-center gap-x-2"
+                    >
+                        <component :is="item.icon" class="!h-4 !w-4" />
+                        {{ item.label }}
+                    </InertiaLink>
+                    <InertiaLink
+                        v-else
+                        :href="route(item.route)"
+                        class="flex items-center gap-x-2"
+                    >
+                        <component :is="item.icon" class="!h-4 !w-4" />
+                        {{ item.label }}
+                    </InertiaLink>
+                </DropdownMenuItem>
+            </template>
         </DropdownMenuContent>
     </DropdownMenu>
 </template>
@@ -102,6 +73,61 @@ export default {
         TrendingUp,
         Settings,
         InertiaLink,
+    },
+    data() {
+        return {
+            menuItems: [
+                {
+                    route: 'dashboard',
+                    icon: User,
+                    label: 'edit profile',
+                    separatorBefore: true,
+                },
+                {
+                    route: 'dashboard',
+                    icon: Settings,
+                    label: 'settings',
+                    separatorBefore: false,
+                },
+                {
+                    route: 'dashboard',
+                    icon: Wallet,
+                    label: 'my accounts',
+                    separatorBefore: false,
+                },
+                {
+                    route: 'dashboard',
+                    icon: CreditCard,
+                    label: 'my cards',
+                    separatorBefore: false,
+                },
+                {
+                    route: 'dashboard',
+                    icon: Layers,
+                    label: 'finance categories',
+                    separatorBefore: false,
+                },
+                {
+                    route: 'dashboard',
+                    icon: Layers2,
+                    label: 'finance subcategories',
+                    separatorBefore: false,
+                },
+                {
+                    route: 'dashboard',
+                    icon: TrendingUp,
+                    label: 'my tracks',
+                    separatorBefore: false,
+                },
+                {
+                    route: 'logout',
+                    icon: LogOut,
+                    label: 'logout',
+                    method: 'post',
+                    separatorBefore: true,
+                },
+            ],
+        };
     },
 };
 </script>
