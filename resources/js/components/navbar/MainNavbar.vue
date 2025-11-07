@@ -1,5 +1,5 @@
 <template>
-    <div class="sticky top-0 w-full flex items-center bg-[#131316] h-[72px] px-8 py-4">
+    <div class="sticky top-0 w-full flex items-center bg-[#131316] h-[72px] px-8 py-4" :class="{ 'border-b-2 border-[#212124]': noSubNav }">
         <NavigationMenu class="w-full flex flex-row items-center justify-between max-w-[100%]">
             <NavigationMenuList class="w-full flex items-center gap-4">
                 <NavigationMenuItem class="flex items-center gap-6">
@@ -25,7 +25,7 @@
 
             <NavigationMenuList class="w-full flex self-end gap-4 text-[#B6B6B6] ">
                 <NavigationMenuItem class="hover:text-white cursor-pointer">
-                    <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
+                    <InertiaLink :href="route('accounts')" class="flex items-center gap-x-2">
                         accounts
                     </InertiaLink>
                 </NavigationMenuItem>
@@ -89,6 +89,12 @@ export default {
         OctagonAlert,
         UiButton,
         UserDropdown,
+    },
+    props: {
+        noSubNav: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         emailIsVerified() {
