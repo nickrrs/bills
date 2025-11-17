@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
+import { ref } from 'vue';
+import BillsLogo from '@/components/assets/BillsLogo.vue';
+import BillsLogoAnimated from '@/components/assets/BillsLogoAnimated.vue';
 
 defineOptions({
     inheritAttrs: false,
@@ -10,11 +13,67 @@ interface Props {
 }
 
 defineProps<Props>();
+const isHovered = ref(false);
 </script>
 
 <template>
-    <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg" :class="className" v-bind="$attrs">
-        <path d="M1.72159 19V1.54545H8.40341C9.66477 1.54545 10.7131 1.74432 11.5483 2.14204C12.3892 2.53409 13.017 3.07102 13.4318 3.75284C13.8523 4.43466 14.0625 5.20739 14.0625 6.07102C14.0625 6.78125 13.9261 7.3892 13.6534 7.89489C13.3807 8.39489 13.0142 8.80114 12.554 9.11364C12.0938 9.42614 11.5795 9.65057 11.0114 9.78693V9.95739C11.6307 9.99148 12.2244 10.1818 12.7926 10.5284C13.3665 10.8693 13.8352 11.3523 14.1989 11.9773C14.5625 12.6023 14.7443 13.358 14.7443 14.2443C14.7443 15.1477 14.5256 15.9602 14.0881 16.6818C13.6506 17.3977 12.9915 17.9631 12.1108 18.3778C11.2301 18.7926 10.1222 19 8.78693 19H1.72159ZM4.88352 16.358H8.28409C9.43182 16.358 10.2585 16.1392 10.7642 15.7017C11.2756 15.2585 11.5312 14.6903 11.5312 13.9972C11.5312 13.4801 11.4034 13.0142 11.1477 12.5994C10.892 12.179 10.5284 11.8494 10.0568 11.6108C9.58523 11.3665 9.02273 11.2443 8.36932 11.2443H4.88352V16.358ZM4.88352 8.96875H8.01136C8.55682 8.96875 9.0483 8.86932 9.4858 8.67045C9.9233 8.46591 10.267 8.17898 10.517 7.80966C10.7727 7.43466 10.9006 6.99148 10.9006 6.48011C10.9006 5.80398 10.6619 5.24716 10.1847 4.80966C9.71307 4.37216 9.01136 4.15341 8.07955 4.15341H4.88352V8.96875Z" fill="#4338CA"/>
-        <path d="M19.2592 19.1875C18.7422 19.1875 18.299 19.0057 17.9297 18.642C17.5604 18.2784 17.3786 17.8352 17.3842 17.3125C17.3786 16.8011 17.5604 16.3636 17.9297 16C18.299 15.6364 18.7422 15.4545 19.2592 15.4545C19.7592 15.4545 20.1939 15.6364 20.5632 16C20.9382 16.3636 21.1286 16.8011 21.1342 17.3125C21.1286 17.6591 21.0376 17.9744 20.8615 18.2585C20.6911 18.5426 20.4638 18.7699 20.1797 18.9403C19.9013 19.1051 19.5945 19.1875 19.2592 19.1875Z" fill="white"/>
-    </svg>
+   <div
+      class="app-logo-icon-wrapper"
+      @mouseenter="isHovered = true"
+      @mouseleave="isHovered = false"
+   >
+      <BillsLogo
+         v-if="!isHovered"
+         :width="30"
+         :height="30"
+         :class="['app-logo-icon', className]"
+         v-bind="$attrs"
+      />
+      <BillsLogoAnimated
+         v-else
+         :width="30"
+         :height="30"
+         :class="['app-logo-icon', className]"
+         v-bind="$attrs"
+      />
+   </div>
 </template>
+
+<style scoped>
+.app-logo-icon-wrapper {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.app-logo-icon {
+  display: inline-block;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.app-logo-icon :deep(svg) {
+  display: block;
+  overflow: visible;
+  /* Garante que o stroke não seja cortado nas bordas */
+  shape-rendering: geometricPrecision;
+  transform-origin: center;
+}
+
+@keyframes rotate-clockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate-counter-clockwise {
+  from {
+    transform: rotate(15deg);
+  }
+  to {
+    transform: rotate(-345deg);
+  }
+}
+</style>
