@@ -1,0 +1,889 @@
+<template>
+    <InertiaHead title="wallets" />
+    <MainLayout :no-sub-nav="true">
+        <div class="w-full h-full px-8 py-8">
+            <div class="w-full flex items-center justify-between mb-4">
+                <div class="flex flex-col gap-1">
+                    <h1 class="text-white text-3xl font-bold">minhas carteiras</h1>
+                    <span class="text-sm text-[#B6B6B6]">crie e personalize suas carteiras para suas necessidades</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span v-if="!isRefreshing" class="text-sm text-[#B6B6B6]">informações atualizadas a cada 30 segundos</span>
+                        <div v-if="isRefreshing" class="flex items-center gap-2 text-[#6965f2]">
+                            <LoaderCircle class="!h-4 !w-4 animate-spin" />
+                            <span class="text-xs">atualizando...</span>
+                        </div>
+                    </div>
+                    <button
+                        @click="openModal"
+                        class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
+                    >
+                        <Plus class="!h-4 !w-4" />
+                        nova carteira
+                    </button>
+                </div>
+            </div>
+            <div class="bg-gradient-to-r from-[#1e1b4b] to-[#0f172a] rounded-[20px] border-2 border-[#252c3e] p-8 mb-10 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-indigo-300 uppercase font-semibold tracking-wider mb-2">Patrimônio Total</p>
+                    <div class="flex items-baseline gap-1">
+                        <span
+                            :class="[
+                                'text-5xl font-bold transition-all duration-500',
+                                balanceAnimationClass
+                            ]"
+                        >
+                            R$
+                        </span>
+                        <div
+                            class="overflow-hidden relative balance-container"
+                            :class="{
+                                'balance-container--scrollable': needsTotalBalanceScrollAnimation,
+                                'balance-container--large': needsTotalBalanceScrollAnimation
+                            }"
+                        >
+                            <h2
+                                :class="[
+                                    'text-5xl font-bold transition-all duration-500 whitespace-nowrap',
+                                    balanceAnimationClass,
+                                    needsTotalBalanceScrollAnimation ? 'balance-scroll-animation' : ''
+                                ]"
+                                :key="`balance-${totalBalance}`"
+                            >
+                                {{ formatCurrencyValue(totalBalance) }}
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-3 space-x-4">
+                        <span v-if="calculatePercentageChange() > 0" class="flex items-center text-emerald-400 text-sm font-medium bg-emerald-400/10 px-2 py-1 rounded">
+                            <TrendingUp class="!h-4 !w-4 mr-1" /> {{ calculatePercentageChange() }}% este mês
+                        </span>
+                        <span v-else class="flex items-center text-red-400 text-sm font-medium bg-red-400/10 px-2 py-1 rounded">
+                            <TrendingDown class="!h-4 !w-4 mr-1" /> {{ calculatePercentageChange() }}% este mês
+                        </span>
+                        <span class="text-gray-400 text-sm">disponível em {{ pagination?.total ?? wallets.length }} carteiras</span>
+                    </div>
+                </div>
+                <div class="hidden md:block opacity-50">
+                    <svg width="200" height="60" viewBox="0 0 200 60">
+                        <path d="M0 50 Q 30 40, 50 45 T 100 20 T 150 30 T 200 5" fill="none" stroke="#6366f1" stroke-width="3" />
+                        <path d="M0 50 Q 30 40, 50 45 T 100 20 T 150 30 T 200 5 V 60 H 0 Z" fill="url(#grad1)" opacity="0.3" />
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-4">
+                <template v-if="wallets.length">
+                    <WalletFlipCard
+                        v-for="(wallet, index) in wallets"
+                        :key="wallet.id"
+                        :flipped="flippedCards[wallet.id]"
+                        :front-style="{ background: getWalletTheme(wallet, index).gradient }"
+                        @toggle="toggleCard(wallet.id)"
+                    >
+                        <template #front>
+                            <div class="flex h-full flex-col justify-between" :style="{ background: getWalletTheme(wallet, index).gradient }">
+                                <div class="flex items-start justify-between z-10">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="rounded-lg bg-white/10 p-2 backdrop-blur-md">
+                                            <component :is="getWalletTheme(wallet, index).icon" class="h-6 w-6" :class="getWalletTheme(wallet, index).iconColor" />
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-white">{{ wallet.name }}</h3>
+                                            <p class="text-xs font-medium uppercase tracking-wide" :class="getWalletTheme(wallet, index).tagColor">
+                                                {{ wallet.description || 'Sem descrição' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button class="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm transition-colors hover:bg-white/30" @click.stop="toggleCard(wallet.id)">
+                                        <MoreHorizontal class="h-4 w-4 text-white" />
+                                    </button>
+                                </div>
+
+                                <div class="z-10 flex flex-1 flex-col justify-center">
+                                    <p class="mb-1 text-xs uppercase tracking-wider" :class="getWalletTheme(wallet, index).mutedText">Saldo Atual</p>
+                                    <div class="flex items-baseline gap-1">
+                                        <span class="text-3xl font-bold text-white tracking-tight">R$</span>
+                                        <div
+                                            class="overflow-hidden relative balance-container"
+                                            :class="{ 'balance-container--scrollable': needsWalletBalanceScrollAnimation(wallet) }"
+                                        >
+                                            <p
+                                                :class="[
+                                                    'text-3xl font-bold text-white tracking-tight whitespace-nowrap',
+                                                    needsWalletBalanceScrollAnimation(wallet) ? 'balance-scroll-animation' : ''
+                                                ]"
+                                            >
+                                                {{ formatCurrencyValue(wallet.balance ?? 0) }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <svg class="card-sparkline" viewBox="0 0 100 25" preserveAspectRatio="none">
+                                    <path :d="walletSparkline(wallet)" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+                                </svg>
+
+                                <div class="z-10 mt-2 flex items-center justify-between border-t border-white/10 pt-4">
+                                    <div class="flex items-center space-x-2" :class="getWalletTheme(wallet, index).footerText">
+                                        <CreditCard class="h-4 w-4" />
+                                        <span class="text-xs font-medium">
+                                            {{ wallet.active ? 'Carteira ativa' : 'Carteira inativa' }}
+                                        </span>
+                                    </div>
+
+                                    <div
+                                        class="group relative flex cursor-help items-center space-x-2 text-white/70 transition-colors hover:text-white"
+                                    >
+                                        <Target class="h-4 w-4" />
+                                        <span class="text-xs font-medium">Detalhes</span>
+                                        <div class="track-tooltip absolute bottom-[calc(100%+8px)] right-0 w-[180px] max-w-[calc(100vw-2rem)] rounded-lg border border-white/10 bg-black/90 p-2 opacity-0 invisible pointer-events-none z-20 transition-all duration-200 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+                                            <div class="mb-1 flex items-center justify-between border-b border-white/10 pb-2">
+                                                <span class="text-[10px] font-bold text-white">Criada em</span>
+                                                <span class="text-[10px] text-indigo-400">{{ formatDate(wallet.created_at) }}</span>
+                                            </div>
+                                            <div class="tooltip-scroll-container max-h-12 overflow-hidden relative mt-2">
+                                                <div class="tooltip-scroll-content flex flex-col">
+                                                    <div class="min-h-4 flex items-center">
+                                                        <div class="flex items-center justify-between w-full">
+                                                            <span class="text-[10px] text-gray-400">Atualizada</span>
+                                                            <span class="text-[10px] text-gray-200">{{ formatDate(wallet.updated_at) }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="min-h-4 flex items-center">
+                                                        <div class="flex items-center justify-between w-full">
+                                                            <span class="text-[10px] text-gray-400">Transações</span>
+                                                            <span class="text-[10px] text-indigo-400">0</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="min-h-4 flex items-center">
+                                                        <div class="flex items-center justify-between w-full">
+                                                            <span class="text-[10px] text-gray-400">Transferências</span>
+                                                            <span class="text-[10px] text-indigo-400">0</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="min-h-4 flex items-center">
+                                                        <div class="flex items-center justify-between w-full">
+                                                            <span class="text-[10px] text-gray-400">Cartões</span>
+                                                            <span class="text-[10px] text-indigo-400">0</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="min-h-4 flex items-center">
+                                                        <div class="flex items-center justify-between w-full">
+                                                            <span class="text-[10px] text-gray-400">Status</span>
+                                                            <span class="text-[10px]" :class="wallet.active ? 'text-emerald-400' : 'text-red-400'">
+                                                                {{ wallet.active ? 'Ativa' : 'Inativa' }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template #back>
+                            <WalletActionsBack
+                                :title="getWalletTheme(wallet, index).backTitle"
+                                :actions="getWalletTheme(wallet, index).actions"
+                                @close="flipToFront(wallet.id)"
+                            >
+                            </WalletActionsBack>
+                        </template>
+                    </WalletFlipCard>
+                </template>
+                <div
+                    v-else
+                    class="col-span-full flex flex-col items-center justify-center rounded-3xl border border-dashed border-white/10 p-10 text-center text-gray-400"
+                >
+                    <p class="text-base font-medium">nenhuma carteira encontrada !</p>
+                    <p class="text-sm text-gray-500">clique abaixo para criar sua primeira carteira.</p>
+                </div>
+
+                <button
+                    class="flex h-[260px] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/10 text-gray-400 transition-all hover:border-indigo-500/50 hover:bg-white/5 hover:text-white"
+                    type="button"
+                    @click="openModal"
+                >
+                    <div
+                        class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 bg-white/5 transition-colors group-hover:bg-indigo-500/20"
+                    >
+                        <Plus class="h-8 w-8" />
+                    </div>
+                    <span class="text-sm font-medium">Adicionar Carteira</span>
+                </button>
+            </div>
+
+            <div v-if="pagination && pagination.last_page > 1" class="mt-8 flex items-center justify-between">
+                <div class="text-sm text-gray-400">
+                    <span>Mostrando</span>
+                    <span class="mx-1 font-medium text-white">{{ pagination.from ?? 0 }}</span>
+                    <span>até</span>
+                    <span class="mx-1 font-medium text-white">{{ pagination.to ?? 0 }}</span>
+                    <span>de</span>
+                    <span class="mx-1 font-medium text-white">{{ pagination.total }}</span>
+                    <span>carteiras</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button
+                        @click="goToPage(pagination.current_page - 1)"
+                        :disabled="pagination.current_page === 1"
+                        class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
+                    >
+                        <ChevronLeft class="h-4 w-4" />
+                    </button>
+
+                    <div class="flex items-center gap-1">
+                        <button
+                            v-for="page in getPageNumbers()"
+                            :key="page"
+                            @click="goToPage(page)"
+                            :class="[
+                                'flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm font-medium transition-colors',
+                                page === pagination.current_page
+                                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-400'
+                                    : 'border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131]'
+                            ]"
+                        >
+                            {{ page }}
+                        </button>
+                    </div>
+
+                    <button
+                        @click="goToPage(pagination.current_page + 1)"
+                        :disabled="pagination.current_page === pagination.last_page"
+                        class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
+                    >
+                        <ChevronRight class="h-4 w-4" />
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <UiDialog v-model:open="isModalOpen">
+            <DraggableDialogContent class="w-full max-w-6xl max-h-[80vh] overflow-y-auto">
+                <template #header>
+                    <DialogTitle class="text-white text-lg font-semibold">criar nova carteira</DialogTitle>
+                </template>
+                <CreateWalletForm :reset-trigger="formResetTrigger" @success="handleWalletCreated" @cancel="closeModal" />
+            </DraggableDialogContent>
+        </UiDialog>
+    </MainLayout>
+</template>
+<script lang="ts">
+import type { Component } from 'vue';
+import MainLayout from '@/layouts/MainLayout.vue';
+import { Head as InertiaHead } from '@inertiajs/vue3';
+import {
+    Plus,
+    LoaderCircle,
+    TrendingUp,
+    TrendingDown,
+    Wallet2,
+    ShieldCheck,
+    Smartphone,
+    Banknote,
+    MoreHorizontal,
+    CreditCard,
+    Target,
+    Send,
+    Settings2,
+    DollarSign,
+    Trash2,
+    PiggyBank,
+    ChevronLeft,
+    ChevronRight,
+} from 'lucide-vue-next';
+import type { Wallet } from '@/types';
+import { Dialog as UiDialog, DialogTitle } from '@/components/ui/dialog';
+import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
+import CreateWalletForm from '@/components/wallets/CreateWalletForm.vue';
+import WalletFlipCard from '@/components/wallets/WalletFlipCard.vue';
+import WalletActionsBack, { type WalletBackAction } from '@/components/wallets/WalletActionsBack.vue';
+import { apiGet } from '@/utils/api';
+
+interface WalletTheme {
+    gradient: string;
+    icon: Component;
+    iconColor: string;
+    tagColor: string;
+    mutedText: string;
+    footerText: string;
+    backTitle: string;
+    actions: WalletBackAction[];
+}
+
+const sparkLines = {
+    withMoney: 'M0 20 L15 15 L30 18 L45 10 L60 14 L75 5 L100 12',
+    withoutMoney: 'M0 15 L20 15 L40 15 L60 15 L80 15 L100 15',
+}
+
+const TYPE_ICONS: Record<string, Component> = {
+    generic: Wallet2,
+    saving: PiggyBank,
+    investment: TrendingUp,
+};
+
+const COLOR_THEMES: Record<string, Omit<WalletTheme, 'icon' | 'backTitle' | 'actions'>> = {
+    indigo: {
+        gradient: 'linear-gradient(180deg, #3730a3 0%, #312e81 100%)',
+        iconColor: 'text-indigo-200',
+        tagColor: 'text-indigo-200',
+        mutedText: 'text-indigo-300',
+        footerText: 'text-indigo-200/80',
+    },
+    emerald: {
+        gradient: 'linear-gradient(180deg, #065f46 0%, #064e3b 100%)',
+        iconColor: 'text-emerald-200',
+        tagColor: 'text-emerald-200',
+        mutedText: 'text-emerald-300',
+        footerText: 'text-emerald-200/80',
+    },
+    purple: {
+        gradient: 'linear-gradient(180deg, #7c3aed 0%, #5b21b6 100%)',
+        iconColor: 'text-purple-200',
+        tagColor: 'text-purple-200',
+        mutedText: 'text-purple-200/80',
+        footerText: 'text-purple-200/70',
+    },
+    gray: {
+        gradient: 'linear-gradient(180deg, #374151 0%, #1f2937 100%)',
+        iconColor: 'text-gray-200',
+        tagColor: 'text-gray-300',
+        mutedText: 'text-gray-400',
+        footerText: 'text-gray-400/80',
+    },
+    pink: {
+        gradient: 'linear-gradient(180deg, #be185d 0%, #9f1239 100%)',
+        iconColor: 'text-pink-200',
+        tagColor: 'text-pink-200',
+        mutedText: 'text-pink-300',
+        footerText: 'text-pink-200/80',
+    },
+};
+
+const WALLET_THEMES: WalletTheme[] = [
+    {
+        gradient: 'linear-gradient(180deg, #3730a3 0%, #312e81 100%)',
+        icon: Wallet2,
+        iconColor: 'text-indigo-200',
+        tagColor: 'text-indigo-200',
+        mutedText: 'text-indigo-300',
+        footerText: 'text-indigo-200/80',
+        backTitle: 'Ações',
+        actions: [
+            { label: 'Transferir', icon: Send, iconColor: 'text-indigo-400' },
+            { label: 'Saldo', icon: DollarSign, iconColor: 'text-indigo-400' },
+            { label: 'Editar', icon: Settings2, iconColor: 'text-indigo-400' },
+            { label: 'Excluir', icon: Trash2, iconColor: 'text-indigo-400' },
+        ],
+    },
+    {
+        gradient: 'linear-gradient(180deg, #065f46 0%, #064e3b 100%)',
+        icon: ShieldCheck,
+        iconColor: 'text-emerald-200',
+        tagColor: 'text-emerald-200',
+        mutedText: 'text-emerald-300',
+        footerText: 'text-emerald-200/80',
+        backTitle: 'Ações',
+        actions: [
+            { label: 'Transferir', icon: Send, iconColor: 'text-emerald-300' },
+            { label: 'Saldo', icon: DollarSign, iconColor: 'text-emerald-300' },
+            { label: 'Editar', icon: Settings2, iconColor: 'text-emerald-300' },
+            { label: 'Excluir', icon: Trash2, iconColor: 'text-emerald-300' },
+        ],
+    },
+    {
+        gradient: 'linear-gradient(180deg, #7c3aed 0%, #5b21b6 100%)',
+        icon: Smartphone,
+        iconColor: 'text-purple-200',
+        tagColor: 'text-purple-200',
+        mutedText: 'text-purple-200/80',
+        footerText: 'text-purple-200/70',
+        backTitle: 'Ações',
+        actions: [
+            { label: 'Transferir', icon: Send, iconColor: 'text-purple-300' },
+            { label: 'Saldo', icon: DollarSign, iconColor: 'text-purple-300' },
+            { label: 'Editar', icon: Settings2, iconColor: 'text-purple-300' },
+            { label: 'Excluir', icon: Trash2, iconColor: 'text-purple-300' },
+        ],
+    },
+    {
+        gradient: 'linear-gradient(180deg, #374151 0%, #1f2937 100%)',
+        icon: Banknote,
+        iconColor: 'text-gray-200',
+        tagColor: 'text-gray-300',
+        mutedText: 'text-gray-400',
+        footerText: 'text-gray-400/80',
+        backTitle: 'Ações',
+        actions: [
+            { label: 'Transferir', icon: Send, iconColor: 'text-gray-300' },
+            { label: 'Saldo', icon: DollarSign, iconColor: 'text-gray-300' },
+            { label: 'Editar', icon: Settings2, iconColor: 'text-gray-300' },
+            { label: 'Excluir', icon: Trash2, iconColor: 'text-gray-300' },
+        ],
+    },
+];
+
+export default {
+    name: 'Wallets',
+    components: {
+        MainLayout,
+        InertiaHead,
+        Plus,
+        LoaderCircle,
+        UiDialog,
+        DialogTitle,
+        DraggableDialogContent,
+        CreateWalletForm,
+        TrendingUp,
+        TrendingDown,
+        WalletFlipCard,
+        WalletActionsBack,
+        MoreHorizontal,
+        CreditCard,
+        Target,
+        ChevronLeft,
+        ChevronRight,
+    },
+    data() {
+        return {
+            wallets: [] as Wallet[],
+            isModalOpen: false,
+            loading: false,
+            isRefreshing: false,
+            refreshInterval: null as ReturnType<typeof setInterval> | null,
+            formResetTrigger: 0,
+            pagination: null as {
+                total: number;
+                per_page: number;
+                current_page: number;
+                last_page: number;
+                from: number | null;
+                to: number | null;
+                total_balance?: number;
+            } | null,
+            currentPage: 1,
+            perPage: 10,
+            walletThemes: WALLET_THEMES,
+            flippedCards: {} as Record<number, boolean>,
+            previousBalance: 0,
+            balanceChangeDirection: null as 'up' | 'down' | null,
+            isAnimating: false,
+        };
+    },
+    computed: {
+        totalBalance() {
+            return this.pagination?.total_balance ?? 0;
+        },
+        balanceAnimationClass() {
+            if (!this.isAnimating) {
+                return 'text-white';
+            }
+
+            if (this.balanceChangeDirection === 'up') {
+                return 'text-emerald-400 balance-pulse-up';
+            } else if (this.balanceChangeDirection === 'down') {
+                return 'text-red-400 balance-pulse-down';
+            }
+
+            return 'text-white';
+        },
+        needsTotalBalanceScrollAnimation(): boolean {
+            const formattedValue = this.formatCurrencyValue(this.totalBalance);
+            return formattedValue.length > 12;
+        },
+    },
+    watch: {
+        totalBalance(newValue) {
+            const oldValue = this.previousBalance;
+
+            if (oldValue === 0 && newValue >= 0) {
+                this.previousBalance = newValue;
+                return;
+            }
+
+            const difference = Math.abs(newValue - oldValue);
+            if (difference > 0.01 && oldValue > 0) {
+                const direction = newValue > oldValue ? 'up' : 'down';
+                this.balanceChangeDirection = direction;
+                this.isAnimating = true;
+                this.previousBalance = newValue;
+
+                setTimeout(() => {
+                    this.isAnimating = false;
+                    this.balanceChangeDirection = null;
+                }, 1500);
+            } else {
+                this.previousBalance = newValue;
+            }
+        },
+    },
+    mounted() {
+        this.loadWallets();
+        this.refreshInterval = setInterval(() => {
+            this.refreshWallets();
+        }, 30000);
+    },
+    beforeUnmount() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+        }
+    },
+    methods: {
+        async fetchWallets(page?: number, showFullLoading: boolean = false) {
+            const targetPage = page ?? this.currentPage;
+            try {
+                if (showFullLoading) {
+                    this.loading = true;
+                } else {
+                    this.isRefreshing = true;
+                }
+
+                const url = `/api/wallets?page=${targetPage}&per_page=${this.perPage}`;
+                const response = await apiGet(url);
+
+                if (!response.ok) {
+                    throw new Error('Failed to load wallets');
+                }
+
+                const data = await response.json();
+                this.wallets = data.data;
+                this.initializeFlipState();
+                this.pagination = {
+                    total: data.total,
+                    per_page: data.per_page,
+                    current_page: data.current_page,
+                    last_page: data.last_page,
+                    from: data.from,
+                    to: data.to,
+                    total_balance: data.total_balance ?? 0,
+                };
+                this.currentPage = data.current_page;
+            } catch (error) {
+                console.error('Error loading wallets:', error);
+            } finally {
+                if (showFullLoading) {
+                    this.loading = false;
+                } else {
+                    this.isRefreshing = false;
+                }
+            }
+        },
+        async loadWallets(page: number = 1) {
+            await this.fetchWallets(page, true);
+        },
+        async refreshWallets() {
+            await this.fetchWallets(this.currentPage, false);
+        },
+        goToPage(page: number) {
+            if (page >= 1 && page <= (this.pagination?.last_page || 1)) {
+                this.loadWallets(page);
+            }
+        },
+        getPageNumbers(): number[] {
+            if (!this.pagination) return [];
+
+            const current = this.pagination.current_page;
+            const last = this.pagination.last_page;
+            const pages: number[] = [];
+
+            let start = Math.max(1, current - 2);
+            const end = Math.min(last, start + 4);
+
+            if (end - start < 4) {
+                start = Math.max(1, end - 4);
+            }
+
+            for (let i = start; i <= end; i++) {
+                pages.push(i);
+            }
+
+            return pages;
+        },
+        async handleWalletCreated() {
+            await this.loadWallets(this.currentPage);
+            this.closeModal();
+        },
+        openModal() {
+            this.isModalOpen = true;
+        },
+        closeModal() {
+            this.isModalOpen = false;
+            this.formResetTrigger += 1;
+        },
+        formatCurrency(value: number): string {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+            }).format(value);
+        },
+        formatCurrencyValue(value: number): string {
+            return new Intl.NumberFormat('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(value);
+        },
+        formatDate(dateString: string): string {
+            return new Intl.DateTimeFormat('pt-BR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+            }).format(new Date(dateString));
+        },
+        calculatePercentageChange(): number {
+            return 12;
+        },
+        getWalletTheme(wallet: Wallet, index: number): WalletTheme {
+            if (wallet.color && COLOR_THEMES[wallet.color]) {
+                const colorTheme = COLOR_THEMES[wallet.color];
+                const typeIcon = TYPE_ICONS[wallet.type] || Wallet2;
+
+                const iconColorClass = wallet.color === 'indigo' ? 'text-indigo-400' :
+                                     wallet.color === 'emerald' ? 'text-emerald-300' :
+                                     wallet.color === 'purple' ? 'text-purple-300' :
+                                     wallet.color === 'pink' ? 'text-pink-300' :
+                                     'text-gray-300';
+
+                return {
+                    gradient: colorTheme.gradient,
+                    icon: typeIcon,
+                    iconColor: colorTheme.iconColor,
+                    tagColor: colorTheme.tagColor,
+                    mutedText: colorTheme.mutedText,
+                    footerText: colorTheme.footerText,
+                    backTitle: 'Ações',
+                    actions: [
+                        { label: 'Transferir', icon: Send, iconColor: iconColorClass },
+                        { label: 'Saldo', icon: DollarSign, iconColor: iconColorClass },
+                        { label: 'Editar', icon: Settings2, iconColor: iconColorClass },
+                        { label: 'Excluir', icon: Trash2, iconColor: iconColorClass },
+                    ],
+                };
+            }
+
+            return this.walletThemes[index % this.walletThemes.length];
+        },
+        initializeFlipState() {
+            const nextState: Record<number, boolean> = {};
+            this.wallets.forEach((wallet) => {
+                nextState[wallet.id] = this.flippedCards[wallet.id] || false;
+            });
+            this.flippedCards = nextState;
+        },
+        toggleCard(id: number) {
+            this.flippedCards = {
+                ...this.flippedCards,
+                [id]: !this.flippedCards[id],
+            };
+        },
+        flipToFront(id: number) {
+            if (!this.flippedCards[id]) return;
+            this.flippedCards = {
+                ...this.flippedCards,
+                [id]: false,
+            };
+        },
+        walletSparkline(wallet: Wallet) {
+            return wallet.balance > 0 ? sparkLines.withMoney : sparkLines.withoutMoney;
+        },
+        needsWalletBalanceScrollAnimation(wallet: Wallet): boolean {
+            const formattedValue = this.formatCurrencyValue(wallet.balance ?? 0);
+            return formattedValue.length > 12;
+        },
+    },
+};
+</script>
+<style scoped>
+.card-sparkline {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.card-sparkline path {
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+    animation: drawLine 2.5s ease-out forwards;
+    filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes drawLine {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.tooltip-scroll-container {
+    mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+
+.tooltip-scroll-content {
+    transform: translateY(0);
+    transition: transform 0.3s ease-out;
+}
+
+.group:hover .track-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.group:hover .tooltip-scroll-content {
+    animation: scrollLoop 10s ease-in-out infinite;
+    transition: none;
+}
+
+.group:not(:hover) .tooltip-scroll-content {
+    animation: none;
+    transform: translateY(0) !important;
+    transition: transform 0.3s ease-out;
+}
+
+@keyframes scrollLoop {
+    0% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-50%);
+    }
+    80% {
+        transform: translateY(-50%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.balance-pulse-up {
+    animation: pulseUp 1.5s ease-out;
+    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.4));
+}
+
+.balance-pulse-down {
+    animation: pulseDown 1.5s ease-out;
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4));
+}
+
+@keyframes pulseUp {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    20% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+    40% {
+        transform: scale(1.05);
+        opacity: 0.95;
+    }
+    60% {
+        transform: scale(1.02);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulseDown {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    20% {
+        transform: scale(0.95);
+        opacity: 1;
+    }
+    40% {
+        transform: scale(0.98);
+        opacity: 0.95;
+    }
+    60% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Container para números grandes */
+.balance-container {
+    max-width: 100%;
+    position: relative;
+}
+
+.balance-container--scrollable {
+    max-width: 10rem;
+}
+
+.balance-container--large {
+    max-width: 30rem;
+}
+.balance-scroll-animation {
+    display: inline-block;
+    animation: scrollBalanceHorizontal 8s ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes scrollBalanceHorizontal {
+    0% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(calc(-100% + 10rem));
+    }
+    75% {
+        transform: translateX(calc(-100% + 10rem));
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.balance-container--large .balance-scroll-animation {
+    animation: scrollBalanceHorizontalLarge 8s ease-in-out infinite;
+}
+
+@keyframes scrollBalanceHorizontalLarge {
+    0% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(calc(-100% + 30rem));
+    }
+    75% {
+        transform: translateX(calc(-100% + 30rem));
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+</style>
