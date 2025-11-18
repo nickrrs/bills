@@ -11,4 +11,6 @@ Route::get('/user', function (Request $request) {
 Route::middleware(['web', 'auth:web'])->group(function () {
     Route::get('/wallets', [WalletController::class, 'apiIndex'])->name('api.wallets.index');
     Route::post('/wallets', [WalletController::class, 'apiStore'])->name('api.wallets.store');
+    Route::put('/wallets/{wallet}', [WalletController::class, 'apiUpdate'])->name('api.wallets.update');
+    Route::delete('/wallets/{wallet}', [WalletController::class, 'apiDestroy'])->name('api.wallets.destroy');
 });

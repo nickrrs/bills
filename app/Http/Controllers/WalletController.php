@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWalletRequest;
+use App\Http\Requests\UpdateWalletRequest;
+use App\Models\Wallet;
 use App\Services\WalletService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -60,5 +62,27 @@ class WalletController extends Controller
 
         $wallet = $this->walletService->createWallet($data);
         return response()->json($wallet, 201);
+    }
+
+    public function apiUpdate(UpdateWalletRequest $request, Wallet $wallet): JsonResponse
+    {
+        if ($wallet->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $data = $request->validated();
+
+        $wallet = $this->walletService->updateWallet($wallet, $data);
+        return response()->json($wallet);
+    }
+
+    public function apiDestroy(Request $request, Wallet $wallet): JsonResponse
+    {
+        if ($wallet->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $this->walletService->deleteWallet($wallet);
+        return response()->json(['message' => 'Wallet deleted successfully']);
     }
 }

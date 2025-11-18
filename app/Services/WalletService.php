@@ -13,8 +13,14 @@ class WalletService
         $order_by = $payload['order_by'] ?? 'is_default';
         $order_direction = $payload['order_direction'] ?? 'desc';
         $search = $payload['search'] ?? null;
+        $user_id = $payload['user_id'] ?? null;
 
         $query = Wallet::query();
+
+        if ($user_id) {
+            $query->where('user_id', $user_id);
+        }
+
         if ($search) {
             $query->where('name', 'like', '%' . $search . '%');
         }

@@ -225,7 +225,7 @@
 <script lang="ts">
 import { LoaderCircle, CreditCard, Wallet2, ShieldCheck, Smartphone, Banknote, PiggyBank, TrendingUp } from 'lucide-vue-next';
 import type { Component } from 'vue';
-import { apiPost } from '@/utils/api';
+import { apiPost, apiPut } from '@/utils/api';
 import { useToast } from '@/components/ui/toast';
 
 interface ColorOption {
@@ -319,6 +319,10 @@ export default {
             type: Number,
             default: 0,
         },
+        wallet: {
+            type: Object as () => any,
+            default: null,
+        },
     },
     data() {
         return {
@@ -367,6 +371,16 @@ export default {
     watch: {
         resetTrigger() {
             this.resetForm();
+        },
+        wallet: {
+            handler(newWallet) {
+                if (newWallet) {
+                    this.loadWalletData(newWallet);
+                } else {
+                    this.resetForm();
+                }
+            },
+            immediate: true,
         },
     },
     methods: {
@@ -452,11 +466,25 @@ export default {
             const str = value.toString();
             return str.replace('.', ',');
         },
+        loadWalletData(wallet: any) {
+            this.formData = {
+                name: wallet.name || '',
+                icon: wallet.icon || '',
+                description: wallet.description || '',
+                balance: wallet.balance || 0,
+                active: wallet.active ?? true,
+                is_default: wallet.is_default ?? false,
+                type: wallet.type || 'generic',
+                color: wallet.color || 'indigo',
+            };
+        },
         async handleSubmit() {
             this.loading = true;
 
             try {
-                // Generate slug from name
+                const isEditing = !!this.wallet;
+
+                // Generate slug from name (será regenerado no backend para garantir consistência)
                 const slug = this.formData.name
                     .toLowerCase()
                     .replace(/[^a-z0-9]+/g, '-')
@@ -469,34 +497,39 @@ export default {
                     description: this.formData.description || null,
                 };
 
-                // Fazer a requisição de criação
-                const response = await apiPost('/api/wallets', data);
+                // Fazer a requisição de criação ou atualização
+                const response = isEditing
+                    ? await apiPut(`/api/wallets/${this.wallet.id}`, data)
+                    : await apiPost('/api/wallets', data);
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to create wallet');
+                    throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'create'} wallet`);
                 }
 
                 // Toast de sucesso
                 this.toast({
-                    title: 'Carteira criada com sucesso!',
-                    description: `A carteira "${this.formData.name}" foi criada com sucesso.`,
+                    title: isEditing ? 'carteira atualizada com sucesso!' : 'carteira criada com sucesso!',
+                    description: `a carteira "${this.formData.name}" foi ${isEditing ? 'atualizada' : 'criada'} com sucesso.`,
                     variant: 'default',
                 });
 
                 // Emitir evento de sucesso para o componente pai
                 this.$emit('success');
 
-                // Resetar o formulário
-                this.resetForm();
+                // Resetar o formulário apenas se não estiver editando
+                if (!isEditing) {
+                    this.resetForm();
+                }
             } catch (error: any) {
+                const isEditing = !!this.wallet;
                 // Toast de erro
                 const errorMessage = error?.response?.data?.message ||
                                    error?.message ||
-                                   'Erro ao criar carteira. Tente novamente.';
+                                   `Erro ao ${isEditing ? 'atualizar' : 'criar'} carteira. Tente novamente.`;
 
                 this.toast({
-                    title: 'Erro ao criar carteira',
+                    title: `erro ao ${isEditing ? 'atualizar' : 'criar'} carteira`,
                     description: errorMessage,
                     variant: 'destructive',
                 });

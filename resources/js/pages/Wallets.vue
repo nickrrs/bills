@@ -9,7 +9,7 @@
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-2">
-                        <span v-if="!isRefreshing" class="text-sm text-[#B6B6B6]">informações atualizadas a cada 30 segundos</span>
+                        <span v-if="!isRefreshing" class="text-sm text-[#B6B6B6]">informações atualizadas a cada 45 segundos</span>
                         <div v-if="isRefreshing" class="flex items-center gap-2 text-[#6965f2]">
                             <LoaderCircle class="!h-4 !w-4 animate-spin" />
                             <span class="text-xs">atualizando...</span>
@@ -82,22 +82,26 @@
             <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-4">
                 <template v-if="wallets.length">
                     <WalletFlipCard
-                        v-for="(wallet, index) in wallets"
+                        v-for="wallet in wallets"
                         :key="wallet.id"
                         :flipped="flippedCards[wallet.id]"
-                        :front-style="{ background: getWalletTheme(wallet, index).gradient }"
+                        :front-style="{ background: getWalletTheme(wallet).gradient }"
+                        class="cursor-pointer hover:scale-105 transition-all duration-300"
                         @toggle="toggleCard(wallet.id)"
                     >
                         <template #front>
-                            <div class="flex h-full flex-col justify-between" :style="{ background: getWalletTheme(wallet, index).gradient }">
+                            <div class="flex h-full flex-col justify-between" :style="{ background: getWalletTheme(wallet).gradient }">
                                 <div class="flex items-start justify-between z-10">
                                     <div class="flex items-center space-x-3">
                                         <div class="rounded-lg bg-white/10 p-2 backdrop-blur-md">
-                                            <component :is="getWalletTheme(wallet, index).icon" class="h-6 w-6" :class="getWalletTheme(wallet, index).iconColor" />
+                                            <component :is="getWalletTheme(wallet).icon" class="h-6 w-6" :class="getWalletTheme(wallet).iconColor" />
                                         </div>
                                         <div>
-                                            <h3 class="text-lg font-bold text-white">{{ wallet.name }}</h3>
-                                            <p class="text-xs font-medium uppercase tracking-wide" :class="getWalletTheme(wallet, index).tagColor">
+                                            <div class="flex items-center gap-2">
+                                                <h3 class="text-lg font-bold text-white">{{ wallet.name }}</h3>
+                                                <Star v-if="isDefaultWallet(wallet)" class="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                                            </div>
+                                            <p class="text-xs font-medium uppercase tracking-wide" :class="getWalletTheme(wallet).tagColor">
                                                 {{ wallet.description || 'Sem descrição' }}
                                             </p>
                                         </div>
@@ -108,7 +112,7 @@
                                 </div>
 
                                 <div class="z-10 flex flex-1 flex-col justify-center">
-                                    <p class="mb-1 text-xs uppercase tracking-wider" :class="getWalletTheme(wallet, index).mutedText">Saldo Atual</p>
+                                    <p class="mb-1 text-xs uppercase tracking-wider" :class="getWalletTheme(wallet).mutedText">Saldo Atual</p>
                                     <div class="flex items-baseline gap-1">
                                         <span class="text-3xl font-bold text-white tracking-tight">R$</span>
                                         <div
@@ -132,7 +136,7 @@
                                 </svg>
 
                                 <div class="z-10 mt-2 flex items-center justify-between border-t border-white/10 pt-4">
-                                    <div class="flex items-center space-x-2" :class="getWalletTheme(wallet, index).footerText">
+                                    <div class="flex items-center space-x-2" :class="getWalletTheme(wallet).footerText">
                                         <CreditCard class="h-4 w-4" />
                                         <span class="text-xs font-medium">
                                             {{ wallet.active ? 'Carteira ativa' : 'Carteira inativa' }}
@@ -193,8 +197,8 @@
 
                         <template #back>
                             <WalletActionsBack
-                                :title="getWalletTheme(wallet, index).backTitle"
-                                :actions="getWalletTheme(wallet, index).actions"
+                                :title="getWalletTheme(wallet).backTitle"
+                                :actions="getWalletTheme(wallet).actions"
                                 @close="flipToFront(wallet.id)"
                             >
                             </WalletActionsBack>
@@ -225,7 +229,7 @@
 
             <div v-if="pagination && pagination.last_page > 1" class="mt-8 flex items-center justify-between">
                 <div class="text-sm text-gray-400">
-                    <span>Mostrando</span>
+                    <span>mostrando</span>
                     <span class="mx-1 font-medium text-white">{{ pagination.from ?? 0 }}</span>
                     <span>até</span>
                     <span class="mx-1 font-medium text-white">{{ pagination.to ?? 0 }}</span>
@@ -278,6 +282,95 @@
                 <CreateWalletForm :reset-trigger="formResetTrigger" @success="handleWalletCreated" @cancel="closeModal" />
             </DraggableDialogContent>
         </UiDialog>
+
+        <UiDialog v-model:open="isEditDialogOpen">
+            <DraggableDialogContent class="w-full max-w-6xl max-h-[80vh] overflow-y-auto">
+                <template #header>
+                    <DialogTitle class="text-white text-lg font-semibold">editar carteira</DialogTitle>
+                </template>
+                <CreateWalletForm
+                    v-if="walletToEdit"
+                    :wallet="walletToEdit"
+                    @success="handleWalletUpdated"
+                    @cancel="closeEditModal"
+                />
+            </DraggableDialogContent>
+        </UiDialog>
+
+        <UiDialog v-model:open="isManageBalanceDialogOpen">
+            <DraggableDialogContent class="w-full max-w-md">
+                <template #header>
+                    <DialogTitle class="text-white text-lg font-semibold">gerenciar saldo</DialogTitle>
+                </template>
+                <div v-if="walletToManageBalance" class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-white">carteira</label>
+                        <p class="text-[#B6B6B6] text-sm">{{ walletToManageBalance.name }}</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-white">saldo atual</label>
+                        <p class="text-white text-2xl font-bold">R$ {{ formatCurrencyValue(walletToManageBalance.balance ?? 0) }}</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-white">novo saldo</label>
+                        <input
+                            :value="newBalance"
+                            type="text"
+                            @input="handleBalanceInput"
+                            placeholder="0,00"
+                            class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent text-right text-lg font-semibold"
+                        />
+                        <span class="text-xs text-[#767676]">digite o novo valor do saldo</span>
+                    </div>
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <UiButton
+                            variant="outline"
+                            @click="closeManageBalanceDialog"
+                            class="border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131] p-2 rounded-md cursor-pointer"
+                        >
+                            cancelar
+                        </UiButton>
+                        <UiButton
+                            @click="updateBalance"
+                            :disabled="isUpdatingBalance"
+                            class="bg-indigo-600 text-white hover:bg-indigo-700 p-2 rounded-md cursor-pointer disabled:opacity-50"
+                        >
+                            <LoaderCircle v-if="isUpdatingBalance" class="!h-4 !w-4 animate-spin mr-2" />
+                            {{ isUpdatingBalance ? 'atualizando...' : 'atualizar' }}
+                        </UiButton>
+                    </div>
+                </div>
+            </DraggableDialogContent>
+        </UiDialog>
+
+        <UiDialog v-model:open="isDeleteDialogOpen">
+            <DraggableDialogContent class="w-full max-w-md">
+                <template #header>
+                    <DialogTitle class="text-white text-lg font-semibold">confirmar exclusão</DialogTitle>
+                </template>
+                <div class="flex flex-col gap-4">
+                    <p class="text-[#B6B6B6] text-sm">
+                        tem certeza que deseja excluir esta carteira? esta ação não pode ser desfeita.
+                    </p>
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <UiButton
+                            variant="outline"
+                            @click="isDeleteDialogOpen = false"
+                            class="border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131] p-2 rounded-md cursor-pointer"
+                        >
+                            cancelar
+                        </UiButton>
+                        <UiButton
+                            variant="destructive"
+                            @click="confirmDelete"
+                            class="bg-red-600 text-white hover:bg-red-700 p-2 rounded-md cursor-pointer"
+                        >
+                            excluir
+                        </UiButton>
+                    </div>
+                </div>
+            </DraggableDialogContent>
+        </UiDialog>
     </MainLayout>
 </template>
 <script lang="ts">
@@ -290,9 +383,6 @@ import {
     TrendingUp,
     TrendingDown,
     Wallet2,
-    ShieldCheck,
-    Smartphone,
-    Banknote,
     MoreHorizontal,
     CreditCard,
     Target,
@@ -303,14 +393,20 @@ import {
     PiggyBank,
     ChevronLeft,
     ChevronRight,
+    Star,
 } from 'lucide-vue-next';
 import type { Wallet } from '@/types';
-import { Dialog as UiDialog, DialogTitle } from '@/components/ui/dialog';
+import {
+    Dialog as UiDialog,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Button as UiButton } from '@/components/ui/button';
 import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
 import CreateWalletForm from '@/components/wallets/CreateWalletForm.vue';
 import WalletFlipCard from '@/components/wallets/WalletFlipCard.vue';
 import WalletActionsBack, { type WalletBackAction } from '@/components/wallets/WalletActionsBack.vue';
-import { apiGet } from '@/utils/api';
+import { apiDelete, apiGet, apiPut } from '@/utils/api';
+import { useToast } from '@/components/ui/toast';
 
 interface WalletTheme {
     gradient: string;
@@ -372,68 +468,6 @@ const COLOR_THEMES: Record<string, Omit<WalletTheme, 'icon' | 'backTitle' | 'act
     },
 };
 
-const WALLET_THEMES: WalletTheme[] = [
-    {
-        gradient: 'linear-gradient(180deg, #3730a3 0%, #312e81 100%)',
-        icon: Wallet2,
-        iconColor: 'text-indigo-200',
-        tagColor: 'text-indigo-200',
-        mutedText: 'text-indigo-300',
-        footerText: 'text-indigo-200/80',
-        backTitle: 'Ações',
-        actions: [
-            { label: 'Transferir', icon: Send, iconColor: 'text-indigo-400' },
-            { label: 'Saldo', icon: DollarSign, iconColor: 'text-indigo-400' },
-            { label: 'Editar', icon: Settings2, iconColor: 'text-indigo-400' },
-            { label: 'Excluir', icon: Trash2, iconColor: 'text-indigo-400' },
-        ],
-    },
-    {
-        gradient: 'linear-gradient(180deg, #065f46 0%, #064e3b 100%)',
-        icon: ShieldCheck,
-        iconColor: 'text-emerald-200',
-        tagColor: 'text-emerald-200',
-        mutedText: 'text-emerald-300',
-        footerText: 'text-emerald-200/80',
-        backTitle: 'Ações',
-        actions: [
-            { label: 'Transferir', icon: Send, iconColor: 'text-emerald-300' },
-            { label: 'Saldo', icon: DollarSign, iconColor: 'text-emerald-300' },
-            { label: 'Editar', icon: Settings2, iconColor: 'text-emerald-300' },
-            { label: 'Excluir', icon: Trash2, iconColor: 'text-emerald-300' },
-        ],
-    },
-    {
-        gradient: 'linear-gradient(180deg, #7c3aed 0%, #5b21b6 100%)',
-        icon: Smartphone,
-        iconColor: 'text-purple-200',
-        tagColor: 'text-purple-200',
-        mutedText: 'text-purple-200/80',
-        footerText: 'text-purple-200/70',
-        backTitle: 'Ações',
-        actions: [
-            { label: 'Transferir', icon: Send, iconColor: 'text-purple-300' },
-            { label: 'Saldo', icon: DollarSign, iconColor: 'text-purple-300' },
-            { label: 'Editar', icon: Settings2, iconColor: 'text-purple-300' },
-            { label: 'Excluir', icon: Trash2, iconColor: 'text-purple-300' },
-        ],
-    },
-    {
-        gradient: 'linear-gradient(180deg, #374151 0%, #1f2937 100%)',
-        icon: Banknote,
-        iconColor: 'text-gray-200',
-        tagColor: 'text-gray-300',
-        mutedText: 'text-gray-400',
-        footerText: 'text-gray-400/80',
-        backTitle: 'Ações',
-        actions: [
-            { label: 'Transferir', icon: Send, iconColor: 'text-gray-300' },
-            { label: 'Saldo', icon: DollarSign, iconColor: 'text-gray-300' },
-            { label: 'Editar', icon: Settings2, iconColor: 'text-gray-300' },
-            { label: 'Excluir', icon: Trash2, iconColor: 'text-gray-300' },
-        ],
-    },
-];
 
 export default {
     name: 'Wallets',
@@ -444,6 +478,7 @@ export default {
         LoaderCircle,
         UiDialog,
         DialogTitle,
+        UiButton,
         DraggableDialogContent,
         CreateWalletForm,
         TrendingUp,
@@ -455,11 +490,20 @@ export default {
         Target,
         ChevronLeft,
         ChevronRight,
+        Star,
     },
     data() {
         return {
             wallets: [] as Wallet[],
             isModalOpen: false,
+            isEditDialogOpen: false,
+            isDeleteDialogOpen: false,
+            isManageBalanceDialogOpen: false,
+            walletToEditId: null as number | null,
+            walletToDeleteId: null as number | null,
+            walletToManageBalanceId: null as number | null,
+            newBalance: '' as string | number,
+            isUpdatingBalance: false,
             loading: false,
             isRefreshing: false,
             refreshInterval: null as ReturnType<typeof setInterval> | null,
@@ -475,7 +519,6 @@ export default {
             } | null,
             currentPage: 1,
             perPage: 10,
-            walletThemes: WALLET_THEMES,
             flippedCards: {} as Record<number, boolean>,
             previousBalance: 0,
             balanceChangeDirection: null as 'up' | 'down' | null,
@@ -485,6 +528,14 @@ export default {
     computed: {
         totalBalance() {
             return this.pagination?.total_balance ?? 0;
+        },
+        walletToEdit() {
+            if (!this.walletToEditId) return null;
+            return this.wallets.find(w => w.id === this.walletToEditId) || null;
+        },
+        walletToManageBalance() {
+            if (!this.walletToManageBalanceId) return null;
+            return this.wallets.find(w => w.id === this.walletToManageBalanceId) || null;
         },
         balanceAnimationClass() {
             if (!this.isAnimating) {
@@ -533,12 +584,16 @@ export default {
         this.loadWallets();
         this.refreshInterval = setInterval(() => {
             this.refreshWallets();
-        }, 30000);
+        }, 45000);
     },
     beforeUnmount() {
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
         }
+    },
+    setup() {
+        const { toast } = useToast();
+        return { toast };
     },
     methods: {
         async fetchWallets(page?: number, showFullLoading: boolean = false) {
@@ -585,6 +640,33 @@ export default {
         },
         async refreshWallets() {
             await this.fetchWallets(this.currentPage, false);
+            this.resetAllCardsToFront();
+        },
+        async deleteWallet(walletId: number) {
+            try {
+                const response = await apiDelete(`/api/wallets/${walletId}`);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || 'Erro ao deletar carteira');
+                }
+
+                this.toast({
+                    title: 'carteira deletada',
+                    description: 'a carteira foi deletada com sucesso.',
+                    variant: 'default',
+                });
+
+                await this.loadWallets(this.currentPage);
+                this.resetAllCardsToFront();
+            } catch (error: any) {
+                console.error('Error deleting wallet:', error);
+                this.toast({
+                    title: 'erro ao deletar carteira',
+                    description: error.message || 'erro ao deletar carteira. tente novamente.',
+                    variant: 'destructive',
+                });
+            }
         },
         goToPage(page: number) {
             if (page >= 1 && page <= (this.pagination?.last_page || 1)) {
@@ -613,7 +695,13 @@ export default {
         },
         async handleWalletCreated() {
             await this.loadWallets(this.currentPage);
+            this.resetAllCardsToFront();
             this.closeModal();
+        },
+        async handleWalletUpdated() {
+            await this.loadWallets(this.currentPage);
+            this.resetAllCardsToFront();
+            this.closeEditModal();
         },
         openModal() {
             this.isModalOpen = true;
@@ -621,6 +709,10 @@ export default {
         closeModal() {
             this.isModalOpen = false;
             this.formResetTrigger += 1;
+        },
+        closeEditModal() {
+            this.isEditDialogOpen = false;
+            this.walletToEditId = null;
         },
         formatCurrency(value: number): string {
             return new Intl.NumberFormat('pt-BR', {
@@ -644,35 +736,155 @@ export default {
         calculatePercentageChange(): number {
             return 12;
         },
-        getWalletTheme(wallet: Wallet, index: number): WalletTheme {
-            if (wallet.color && COLOR_THEMES[wallet.color]) {
-                const colorTheme = COLOR_THEMES[wallet.color];
-                const typeIcon = TYPE_ICONS[wallet.type] || Wallet2;
+        getWalletTheme(wallet: Wallet): WalletTheme {
+            const walletColor = wallet.color && COLOR_THEMES[wallet.color] ? wallet.color : 'gray';
+            const colorTheme = COLOR_THEMES[walletColor];
+            const typeIcon = TYPE_ICONS[wallet.type] || Wallet2;
 
-                const iconColorClass = wallet.color === 'indigo' ? 'text-indigo-400' :
-                                     wallet.color === 'emerald' ? 'text-emerald-300' :
-                                     wallet.color === 'purple' ? 'text-purple-300' :
-                                     wallet.color === 'pink' ? 'text-pink-300' :
-                                     'text-gray-300';
+            const iconColorClass = walletColor === 'indigo' ? 'text-indigo-400' :
+                                 walletColor === 'emerald' ? 'text-emerald-300' :
+                                 walletColor === 'purple' ? 'text-purple-300' :
+                                 walletColor === 'pink' ? 'text-pink-300' :
+                                 'text-gray-300';
 
-                return {
-                    gradient: colorTheme.gradient,
-                    icon: typeIcon,
-                    iconColor: colorTheme.iconColor,
-                    tagColor: colorTheme.tagColor,
-                    mutedText: colorTheme.mutedText,
-                    footerText: colorTheme.footerText,
-                    backTitle: 'Ações',
-                    actions: [
-                        { label: 'Transferir', icon: Send, iconColor: iconColorClass },
-                        { label: 'Saldo', icon: DollarSign, iconColor: iconColorClass },
-                        { label: 'Editar', icon: Settings2, iconColor: iconColorClass },
-                        { label: 'Excluir', icon: Trash2, iconColor: iconColorClass },
-                    ],
-                };
+            return {
+                gradient: colorTheme.gradient,
+                icon: typeIcon,
+                iconColor: colorTheme.iconColor,
+                tagColor: colorTheme.tagColor,
+                mutedText: colorTheme.mutedText,
+                footerText: colorTheme.footerText,
+                backTitle: 'Ações',
+                actions: [
+                    { label: 'Transferir', icon: Send, iconColor: iconColorClass, disabled: true },
+                    { label: 'Saldo', icon: DollarSign, iconColor: iconColorClass, action: () => this.handleManageBalance(wallet.id) },
+                    { label: 'Editar', icon: Settings2, iconColor: iconColorClass, action: () => this.handleEditWallet(wallet.id) },
+                    { label: 'Excluir', icon: Trash2, iconColor: iconColorClass, action: () => this.handleDeleteWallet(wallet.id) },
+                ],
+            };
+        },
+        handleManageBalance(walletId: number) {
+            const wallet = this.wallets.find(w => w.id === walletId);
+            if (wallet) {
+                this.walletToManageBalanceId = walletId;
+                this.newBalance = this.formatBalanceInput(wallet.balance ?? 0);
+                this.isManageBalanceDialogOpen = true;
+            }
+        },
+        closeManageBalanceDialog() {
+            this.isManageBalanceDialogOpen = false;
+            this.walletToManageBalanceId = null;
+            this.newBalance = '';
+        },
+        handleBalanceInput(event: Event) {
+            const target = event.target as HTMLInputElement;
+            let value = target.value;
+
+            value = value.replace(/[^0-9.,]/g, '');
+            value = value.replace(/,/g, '.');
+
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
             }
 
-            return this.walletThemes[index % this.walletThemes.length];
+            if (value.startsWith('-')) {
+                value = value.replace('-', '');
+            }
+
+            if (value === '' || value === '.') {
+                this.newBalance = '';
+                target.value = '';
+                return;
+            }
+
+            const isValidNumber = /^\d+(\.\d*)?$/.test(value);
+            if (!isValidNumber) {
+                const lastValid = this.newBalance || '';
+                target.value = typeof lastValid === 'string' ? lastValid : this.formatBalanceInput(lastValid);
+                return;
+            }
+
+            this.newBalance = value;
+            target.value = value.replace('.', ',');
+        },
+        formatBalanceInput(value: number | string): string {
+            if (value === null || value === undefined || value === '' || value === 0) {
+                return '';
+            }
+
+            if (typeof value === 'string') {
+                return value.replace('.', ',');
+            }
+
+            const str = value.toString();
+            return str.replace('.', ',');
+        },
+        async updateBalance() {
+            if (!this.walletToManageBalanceId || !this.walletToManageBalance) {
+                return;
+            }
+
+            const balanceValue = typeof this.newBalance === 'string'
+                ? parseFloat(this.newBalance.replace(',', '.')) || 0
+                : this.newBalance;
+
+            if (balanceValue < 0) {
+                this.toast({
+                    title: 'erro',
+                    description: 'o saldo não pode ser negativo',
+                    variant: 'destructive',
+                });
+                return;
+            }
+
+            this.isUpdatingBalance = true;
+
+            try {
+                const response = await apiPut(`/api/wallets/${this.walletToManageBalanceId}`, {
+                    ...this.walletToManageBalance,
+                    balance: balanceValue,
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || 'erro ao atualizar saldo');
+                }
+
+                this.toast({
+                    title: 'saldo atualizado',
+                    description: 'o saldo da carteira foi atualizado com sucesso.',
+                    variant: 'default',
+                });
+
+                await this.loadWallets(this.currentPage);
+                this.resetAllCardsToFront();
+                this.closeManageBalanceDialog();
+            } catch (error: any) {
+                console.error('Error updating balance:', error);
+                this.toast({
+                    title: 'erro ao atualizar saldo',
+                    description: error.message || 'erro ao atualizar saldo. tente novamente.',
+                    variant: 'destructive',
+                });
+            } finally {
+                this.isUpdatingBalance = false;
+            }
+        },
+        handleEditWallet(walletId: number) {
+            this.walletToEditId = walletId;
+            this.isEditDialogOpen = true;
+        },
+        handleDeleteWallet(walletId: number) {
+            this.walletToDeleteId = walletId;
+            this.isDeleteDialogOpen = true;
+        },
+        async confirmDelete() {
+            if (this.walletToDeleteId) {
+                this.isDeleteDialogOpen = false;
+                await this.deleteWallet(this.walletToDeleteId);
+                this.walletToDeleteId = null;
+            }
         },
         initializeFlipState() {
             const nextState: Record<number, boolean> = {};
@@ -680,6 +892,13 @@ export default {
                 nextState[wallet.id] = this.flippedCards[wallet.id] || false;
             });
             this.flippedCards = nextState;
+        },
+        resetAllCardsToFront() {
+            const resetState: Record<number, boolean> = {};
+            this.wallets.forEach((wallet) => {
+                resetState[wallet.id] = false;
+            });
+            this.flippedCards = resetState;
         },
         toggleCard(id: number) {
             this.flippedCards = {
@@ -700,6 +919,9 @@ export default {
         needsWalletBalanceScrollAnimation(wallet: Wallet): boolean {
             const formattedValue = this.formatCurrencyValue(wallet.balance ?? 0);
             return formattedValue.length > 12;
+        },
+        isDefaultWallet(wallet: Wallet): boolean {
+            return wallet.is_default === true || wallet.is_default === '1' || wallet.is_default === 'true';
         },
     },
 };
