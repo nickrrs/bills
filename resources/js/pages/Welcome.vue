@@ -90,11 +90,11 @@ onUnmounted(() => {
             </div>
             <!-- END LOGO SECTION -->
 
-            <div class="hidden md:flex items-center space-x-8">
+            <!-- <div class="hidden md:flex items-center space-x-8">
                 <a href="#features" class="text-gray-300 hover:text-white transition duration-300 hover-target">Recursos</a>
                 <a href="#security" class="text-gray-300 hover:text-white transition duration-300 hover-target">Segurança</a>
                 <a href="#pricing" class="text-gray-300 hover:text-white transition duration-300 hover-target">Preços</a>
-            </div>
+            </div> -->
             <div>
                 <a href="login" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition duration-300 hover-target">
                     Comece Agora
