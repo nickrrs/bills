@@ -5,19 +5,19 @@
                 <img src="https://github.com/shadcn.png" alt="profile" class="!w-[32px] !h-[32px] rounded-full cursor-pointer">
             </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent :align="'end'" class="w-56 bg-[#1E1E1E] border-[#2F2F2F] !rounded-none">
+        <DropdownMenuContent :align="'end'" class="w-56 bg-[#1E1E1E] border-[#2F2F2F] !rounded-md">
             <DropdownMenuLabel class="flex flex-col gap-1">
                 <span class="text-white text-sm font-medium">Nickolas Ribeiro</span>
                 <span class="text-[#B6B6B6] text-xs">nick@bills.com.br</span>
             </DropdownMenuLabel>
             <template v-for="(item, index) in menuItems" :key="index">
                 <DropdownMenuSeparator v-if="item.separatorBefore" class="bg-[#2F2F2F]"/>
-                <DropdownMenuItem class="cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
+                <DropdownMenuItem class="cursor-pointer text-[#b8b8b8] p-0" :class="logoutItemClass(item.label)">
                     <InertiaLink
                         v-if="item.method"
                         :method="item.method as any"
                         :href="route(item.route)"
-                        class="flex items-center gap-x-2"
+                        class="flex items-center gap-x-2 w-full h-full px-2 py-1.5"
                     >
                         <component :is="item.icon" class="!h-4 !w-4" />
                         {{ item.label }}
@@ -25,7 +25,7 @@
                     <InertiaLink
                         v-else
                         :href="route(item.route)"
-                        class="flex items-center gap-x-2"
+                        class="flex items-center gap-x-2 w-full h-full px-2 py-1.5"
                     >
                         <component :is="item.icon" class="!h-4 !w-4" />
                         {{ item.label }}
@@ -90,9 +90,9 @@ export default {
                     separatorBefore: false,
                 },
                 {
-                    route: 'dashboard',
+                    route: 'wallets',
                     icon: Wallet,
-                    label: 'my accounts',
+                    label: 'my wallets',
                     separatorBefore: false,
                 },
                 {
@@ -128,6 +128,11 @@ export default {
                 },
             ],
         };
+    },
+    methods: {
+        logoutItemClass(itemLabel: string) {
+            return itemLabel === 'logout' ? 'hover:!bg-red-400' : 'hover:!bg-[#38353C]';
+        }
     },
 };
 </script>

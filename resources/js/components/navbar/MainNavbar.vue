@@ -11,22 +11,22 @@
                     </div>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <AccountSwitch />
+                    <WalletSwitch />
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                     <div v-if="!emailIsVerified"
                         class="flex items-center justify-center text-center gap-2 h-[32px] px-[8px]  bg-[#1E1E1E] border border-[#2F2F2F] rounded-none"
                     >
                         <OctagonAlert class="!h-4 !w-4 text-[#FFD600] animate-pulse" />
-                        <span class="text-sm text-[#FFD600] cursor-default animate-pulse">please check your e-mail to verify your account</span>
+                        <span class="text-sm text-[#FFD600] cursor-default animate-pulse">por favor, cheque seu e-mail para verificar sua conta</span>
                     </div>
                 </NavigationMenuItem>
             </NavigationMenuList>
 
             <NavigationMenuList class="w-full flex self-end gap-4 text-[#B6B6B6] ">
                 <NavigationMenuItem class="hover:text-white cursor-pointer">
-                    <InertiaLink :href="route('accounts')" class="flex items-center gap-x-2">
-                        accounts
+                    <InertiaLink :href="route('wallets')" class="flex items-center gap-x-2">
+                        carteiras
                     </InertiaLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem class="hover:text-white cursor-pointer">
@@ -36,20 +36,20 @@
                     <DropdownMenu v-model:open="isOpen">
                         <DropdownMenuTrigger>
                             <DropdownMenuLabel class="flex flex-row items-center gap-1">
-                                <span>finance categories</span>
+                                <span>categorias financeiras</span>
                                 <ChevronDown v-if="!isOpen" class="!h-4 !w-4 text-[#767676]" />
                                 <ChevronUp v-else class="!h-4 !w-4 text-[#767676]" />
                             </DropdownMenuLabel>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent class="w-40 bg-[#1E1E1E] border-[#2F2F2F] !rounded-none">
-                            <DropdownMenuItem class="!rounded-none cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
+                        <DropdownMenuContent class="w-40 bg-[#1E1E1E] border-[#2F2F2F] !rounded-md">
+                            <DropdownMenuItem class="!rounded-md cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
                                 <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                                    categories
+                                    categorias
                                 </InertiaLink>
                             </DropdownMenuItem>
-                            <DropdownMenuItem class="!rounded-none cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
+                            <DropdownMenuItem class="!rounded-md cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
                                 <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                                    subcategories
+                                    subcategorias
                                 </InertiaLink>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -57,14 +57,14 @@
                 </NavigationMenuItem>
                 <NavigationMenuItem class="hover:text-white cursor-pointer">
                     <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
-                        tracks
+                        rastreios
                     </InertiaLink>
                 </NavigationMenuItem>
                 <div class="relative shrink-0 bg-border h-full w-px ">
                     <div class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-[#444444] w-[1px] px-0 py-3"></div>
                 </div>
-                <UiButton class="text-white !h-[32px] !border border-[#2F2F2F] bg-[#1E1E1E] hover:bg-[#313131] !rounded-none">
-                    add record
+                <UiButton class="text-white !h-[32px] !border border-[#2F2F2F] bg-[#1E1E1E] hover:bg-[#313131] !rounded-md">
+                    nova transação
                 </UiButton>
                 <div class="relative shrink-0 bg-border h-full w-px ">
                     <div class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-[#444444] w-[1px] px-0 py-3"></div>
@@ -87,13 +87,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu"
 import AppLogoIcon from "../assets/AppLogoIcon.vue";
 import { OctagonAlert, ChevronDown, ChevronUp } from "lucide-vue-next";
 import { Button as UiButton } from "@/components/ui/button";
 import { Link as InertiaLink } from '@inertiajs/vue3';
-import AccountSwitch from "../dropdowns/AccountSwitch.vue";
-import UserDropdown from "../dropdowns/UserDropdown.vue";
+import WalletSwitch from "@/components/dropdowns/WalletSwitch.vue";
+import UserDropdown from "@/components/dropdowns/UserDropdown.vue";
 export default {
     name: 'MainNavbar',
     components: {
@@ -102,7 +103,7 @@ export default {
         NavigationMenuList,
         AppLogoIcon,
         InertiaLink,
-        AccountSwitch,
+        WalletSwitch,
         OctagonAlert,
         UiButton,
         UserDropdown,
@@ -112,6 +113,7 @@ export default {
         DropdownMenuTrigger,
         ChevronDown,
         ChevronUp,
+        DropdownMenuLabel,
     },
     props: {
         noSubNav: {
