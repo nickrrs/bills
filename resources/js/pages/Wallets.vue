@@ -67,7 +67,19 @@
 
             <div class="bg-gradient-to-r from-[#1e1b4b] to-[#0f172a] rounded-[20px] border-2 border-[#252c3e] p-8 mb-10 flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-indigo-300 uppercase font-semibold tracking-wider mb-2">Patrimônio Total</p>
+                    <div class="flex flex-row items-baseline gap-1">
+                        <p class="text-sm text-indigo-300 uppercase font-semibold tracking-wider mb-2">Patrimônio Total</p>
+                        <TooltipProvider :delay-duration="200">
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <HelpCircle class="!h-4 !w-4 text-indigo-300" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right">
+                                    <p class="text-sm text-white">o patrimônio total não considera os valores armazenados na caixinha de reserva, ou direcionados para seus objetivos.</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
                     <div class="flex items-baseline gap-1">
                         <span
                             :class="[
@@ -559,6 +571,7 @@ import {
     ChevronRight,
     Star,
     Search,
+    HelpCircle,
 } from 'lucide-vue-next';
 import type { Wallet } from '@/types';
 import {
@@ -573,6 +586,10 @@ import WalletFlipCard from '@/components/wallets/WalletFlipCard.vue';
 import WalletActionsBack, { type WalletBackAction } from '@/components/wallets/WalletActionsBack.vue';
 import { apiDelete, apiGet, apiPut } from '@/utils/api';
 import { useToast } from '@/components/ui/toast';
+import TooltipProvider from '@/components/ui/tooltip/TooltipProvider.vue';
+import Tooltip from '@/components/ui/tooltip/Tooltip.vue';
+import TooltipTrigger from '@/components/ui/tooltip/TooltipTrigger.vue';
+import TooltipContent from '@/components/ui/tooltip/TooltipContent.vue';
 
 interface WalletTheme {
     gradient: string;
@@ -660,6 +677,11 @@ export default {
         Star,
         Trash2,
         Search,
+        HelpCircle,
+        TooltipProvider,
+        Tooltip,
+        TooltipTrigger,
+        TooltipContent,
     },
     data() {
         return {
