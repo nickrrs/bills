@@ -34,6 +34,23 @@
                         </button>
                     </div>
                     <button
+                        v-if="!isSelectionMode"
+                        @click="toggleSelectionMode"
+                        class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
+                        title="selecionar múltiplas categorias (Ctrl + Espaço)"
+                    >
+                        <Target class="!h-4 !w-4" />
+                        <span>selecionar</span>
+                        <span class="text-[11px] uppercase text-[#8c8c8c] border border-[#2F2F2F] rounded px-1 py-0.5 hidden lg:inline-flex">Ctrl + Espaço</span>
+                    </button>
+                    <button
+                        v-else
+                        @click="exitSelectionMode"
+                        class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
+                    >
+                        cancelar seleção
+                    </button>
+                    <button
                         @click="openModal"
                         class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
                     >
@@ -83,11 +100,21 @@
                     <div
                         v-for="category in filteredCategories"
                         :key="category.id"
-                        class="relative bg-[#131316] border border-[#2F2F2F] rounded-xl p-6 hover:-translate-y-1 transition-all duration-300 group"
+                        class="relative bg-[#131316] border border-[#2F2F2F] rounded-xl p-6 transition-all duration-300 group"
+                        :class="{
+                            'ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] cursor-pointer': isSelectionMode && selectedCategoryIds.includes(category.id),
+                            'cursor-pointer': isSelectionMode && !selectedCategoryIds.includes(category.id),
+                            'hover:-translate-y-1': !isSelectionMode
+                        }"
+                        @click="isSelectionMode ? toggleCategorySelection(category.id) : null"
                     >
                         <!-- Botões de ação -->
-                        <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div
+                            v-if="!isSelectionMode"
+                            class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
                             <button
+                                @click.stop
                                 @click="handleEditCategory(category.id)"
                                 class="p-1.5 rounded-md bg-[#1E1E1E] border border-[#2F2F2F] text-[#767676] hover:text-white hover:border-[#3800D8] transition-colors"
                                 title="Editar"
@@ -95,6 +122,7 @@
                                 <Pencil class="h-4 w-4" />
                             </button>
                             <button
+                                @click.stop
                                 @click="handleDeleteCategory(category.id)"
                                 class="p-1.5 rounded-md bg-[#1E1E1E] border border-[#2F2F2F] text-[#767676] hover:text-red-400 hover:border-red-500 transition-colors"
                                 title="Excluir"
@@ -105,7 +133,7 @@
 
                         <!-- Ícone -->
                         <div
-                            class="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                            class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 relative"
                             :style="{ backgroundColor: category.color + '20' }"
                         >
                             <component
@@ -119,6 +147,21 @@
                                 class="h-6 w-6"
                                 :style="{ color: category.color }"
                             />
+                            <div
+                                v-if="isSelectionMode"
+                                class="absolute -top-2 -left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
+                                :class="selectedCategoryIds.includes(category.id) ? 'bg-[#6965f2] border-[#6965f2]' : 'bg-[#131316]/80 border-white/30'"
+                            >
+                                <svg
+                                    v-if="selectedCategoryIds.includes(category.id)"
+                                    class="w-3 h-3 text-white"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
                         </div>
 
                         <!-- Nome -->
@@ -280,6 +323,82 @@
                 </div>
             </DraggableDialogContent>
         </UiDialog>
+
+        <!-- Modal de Exclusão em Lote -->
+        <UiDialog v-model:open="isBulkDeleteDialogOpen">
+            <DraggableDialogContent class="w-full max-w-md">
+                <template #header>
+                    <DialogTitle class="text-white text-lg font-semibold">confirmar exclusão em lote</DialogTitle>
+                    <DialogDescription class="sr-only">confirme a exclusão das categorias selecionadas</DialogDescription>
+                </template>
+                <div class="flex flex-col gap-4">
+                    <p class="text-[#B6B6B6] text-sm">
+                        tem certeza que deseja excluir {{ selectedCategoryIds.length }}
+                        {{ selectedCategoryIds.length === 1 ? 'categoria' : 'categorias' }}? esta ação não pode ser desfeita.
+                    </p>
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <UiButton
+                            variant="outline"
+                            @click="isBulkDeleteDialogOpen = false"
+                            class="border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131] p-2 rounded-md cursor-pointer"
+                        >
+                            cancelar
+                        </UiButton>
+                        <UiButton
+                            variant="destructive"
+                            @click="confirmBulkDeleteAction"
+                            class="bg-red-600 text-white hover:bg-red-700 p-2 rounded-md cursor-pointer"
+                        >
+                            excluir {{ selectedCategoryIds.length }}
+                        </UiButton>
+                    </div>
+                </div>
+            </DraggableDialogContent>
+        </UiDialog>
+
+        <Transition
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 translate-y-4"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition-all duration-200 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 translate-y-4"
+        >
+            <div
+                v-if="isSelectionMode && selectedCategoryIds.length > 0"
+                class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[#1E1E1E] border border-[#2F2F2F] rounded-lg shadow-2xl px-6 py-4 flex items-center gap-4"
+            >
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-[#6965f2] flex items-center justify-center">
+                        <span class="text-white text-sm font-semibold">{{ selectedCategoryIds.length }}</span>
+                    </div>
+                    <span class="text-white text-sm font-medium">
+                        {{ selectedCategoryIds.length === 1 ? 'categoria selecionada' : 'categorias selecionadas' }}
+                    </span>
+                </div>
+                <div class="h-6 w-px bg-[#2F2F2F]"></div>
+                <button
+                    @click="selectAllCategories"
+                    class="text-sm text-[#B6B6B6] hover:text-white transition-colors"
+                >
+                    selecionar todas
+                </button>
+                <button
+                    @click="clearSelection"
+                    class="text-sm text-[#B6B6B6] hover:text-white transition-colors"
+                >
+                    limpar seleção
+                </button>
+                <div class="h-6 w-px bg-[#2F2F2F]"></div>
+                <button
+                    @click="confirmBulkDelete"
+                    class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                >
+                    <Trash2 class="!h-4 !w-4" />
+                    excluir ({{ selectedCategoryIds.length }})
+                </button>
+            </div>
+        </Transition>
     </MainLayout>
 </template>
 
@@ -295,6 +414,7 @@ import {
     ChevronLeft,
     ChevronRight,
     ShoppingBag,
+    Target,
 } from 'lucide-vue-next';
 import {
     Dialog as UiDialog,
@@ -331,6 +451,7 @@ export default {
         ChevronLeft,
         ChevronRight,
         ShoppingBag,
+        Target,
         UiDialog,
         DialogTitle,
         DialogDescription,
@@ -348,6 +469,7 @@ export default {
             isModalOpen: false,
             isEditDialogOpen: false,
             isDeleteDialogOpen: false,
+            isBulkDeleteDialogOpen: false,
             categoryToEditId: null as number | null,
             categoryToDeleteId: null as number | null,
             loading: false,
@@ -365,6 +487,9 @@ export default {
             activeTab: 'expense' as 'expense' | 'recept',
             searchQuery: '',
             searchTimeout: null as ReturnType<typeof setTimeout> | null,
+            isSelectionMode: false,
+            selectedCategoryIds: [] as number[],
+            selectionHotkeyListener: null as ((event: KeyboardEvent) => void) | null,
         };
     },
     computed: {
@@ -376,12 +501,30 @@ export default {
             return this.categories.filter(category => category.type === this.activeTab);
         },
     },
+    watch: {
+        activeTab() {
+            if (this.isSelectionMode) {
+                this.clearSelection();
+            }
+        },
+        filteredCategories() {
+            if (!this.isSelectionMode) return;
+            const validIds = new Set(this.filteredCategories.map(category => category.id));
+            this.selectedCategoryIds = this.selectedCategoryIds.filter(id => validIds.has(id));
+        },
+    },
     mounted() {
         this.loadCategories();
+        this.selectionHotkeyListener = (event: KeyboardEvent) => this.handleSelectionHotkey(event);
+        window.addEventListener('keydown', this.selectionHotkeyListener);
     },
     beforeUnmount() {
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
+        }
+        if (this.selectionHotkeyListener) {
+            window.removeEventListener('keydown', this.selectionHotkeyListener);
+            this.selectionHotkeyListener = null;
         }
     },
     methods: {
@@ -532,6 +675,104 @@ export default {
         getIconComponent(iconName: string | null): Component | null {
             if (!iconName) return null;
             return (icons as unknown as Record<string, Component>)[iconName] || null;
+        },
+        toggleSelectionMode() {
+            this.isSelectionMode = true;
+            this.selectedCategoryIds = [];
+        },
+        exitSelectionMode() {
+            this.isSelectionMode = false;
+            this.selectedCategoryIds = [];
+        },
+        toggleCategorySelection(categoryId: number) {
+            const index = this.selectedCategoryIds.indexOf(categoryId);
+            if (index > -1) {
+                this.selectedCategoryIds.splice(index, 1);
+            } else {
+                this.selectedCategoryIds.push(categoryId);
+            }
+        },
+        selectAllCategories() {
+            this.selectedCategoryIds = this.filteredCategories.map(category => category.id);
+        },
+        clearSelection() {
+            this.selectedCategoryIds = [];
+        },
+        confirmBulkDelete() {
+            if (this.selectedCategoryIds.length === 0) return;
+            this.isBulkDeleteDialogOpen = true;
+        },
+        async confirmBulkDeleteAction() {
+            this.isBulkDeleteDialogOpen = false;
+            const idsToDelete = [...this.selectedCategoryIds];
+            try {
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (const categoryId of idsToDelete) {
+                    try {
+                        const response = await apiDelete(`/api/categories/${categoryId}`);
+                        if (response.ok) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                    } catch {
+                        errorCount++;
+                    }
+                }
+
+                if (successCount > 0) {
+                    this.toast({
+                        title: successCount === idsToDelete.length ? 'categorias deletadas' : 'exclusão parcial',
+                        description: errorCount > 0
+                            ? `${successCount} categoria(s) deletada(s). ${errorCount} falha(s).`
+                            : `${successCount} categoria(s) deletada(s) com sucesso.`,
+                        variant: successCount === idsToDelete.length ? 'default' : 'destructive',
+                    });
+                }
+
+                if (errorCount > 0 && successCount === 0) {
+                    this.toast({
+                        title: 'erro ao deletar categorias',
+                        description: 'não foi possível deletar as categorias selecionadas.',
+                        variant: 'destructive',
+                    });
+                }
+
+                this.exitSelectionMode();
+                await this.loadCategories(this.currentPage);
+            } catch (error) {
+                console.error('Error deleting categories:', error);
+                this.toast({
+                    title: 'erro ao deletar categorias',
+                    description: 'ocorreu um erro ao tentar deletar as categorias.',
+                    variant: 'destructive',
+                });
+            }
+        },
+        handleSelectionHotkey(event: KeyboardEvent) {
+            if (!event.ctrlKey || event.code !== 'Space') {
+                return;
+            }
+
+            const target = event.target as HTMLElement | null;
+            if (target) {
+                const tagName = target.tagName?.toLowerCase();
+                // evita acionar o evento se o elemento é um input, textarea ou select
+                // ou se o elemento é editável
+                if (['input', 'textarea', 'select'].includes(tagName) || target.isContentEditable) {
+                    return;
+                }
+            }
+
+            event.preventDefault();
+
+            if (this.isSelectionMode) {
+                this.exitSelectionMode();
+            } else {
+                this.toggleSelectionMode();
+            }
         },
     },
 };

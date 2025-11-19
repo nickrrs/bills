@@ -19,10 +19,11 @@
                         v-if="!isSelectionMode"
                         @click="toggleSelectionMode"
                         class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
-                        title="selecionar múltiplas carteiras"
+                        title="selecionar múltiplas carteiras (Ctrl + Espaço)"
                     >
                         <Target class="!h-4 !w-4" />
-                        selecionar
+                        <span>selecionar</span>
+                        <span class="text-[11px] uppercase text-[#8c8c8c] border border-[#2F2F2F] rounded px-1 py-0.5 hidden lg:inline-flex">Ctrl + Espaço</span>
                     </button>
                     <button
                         v-else
@@ -721,6 +722,7 @@ export default {
             isBulkDeleteDialogOpen: false,
             searchQuery: '',
             searchTimeout: null as ReturnType<typeof setTimeout> | null,
+            selectionHotkeyListener: null as ((event: KeyboardEvent) => void) | null,
         };
     },
     computed: {
@@ -795,6 +797,9 @@ export default {
             this.refreshWallets();
         };
         window.addEventListener('wallet-default-changed', this.walletDefaultChangedListener);
+
+        this.selectionHotkeyListener = (event: KeyboardEvent) => this.handleSelectionHotkey(event);
+        window.addEventListener('keydown', this.selectionHotkeyListener);
     },
     beforeUnmount() {
         if (this.refreshInterval) {
@@ -808,6 +813,10 @@ export default {
         }
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
+        }
+        if (this.selectionHotkeyListener) {
+            window.removeEventListener('keydown', this.selectionHotkeyListener);
+            this.selectionHotkeyListener = null;
         }
     },
     setup() {
@@ -1248,6 +1257,27 @@ export default {
                     description: 'ocorreu um erro ao tentar deletar as carteiras.',
                     variant: 'destructive',
                 });
+            }
+        },
+        handleSelectionHotkey(event: KeyboardEvent) {
+            if (!event.ctrlKey || event.code !== 'Space') {
+                return;
+            }
+
+            const target = event.target as HTMLElement | null;
+            if (target) {
+                const tag = target.tagName?.toLowerCase();
+                if (['input', 'textarea', 'select'].includes(tag) || target.isContentEditable) {
+                    return;
+                }
+            }
+
+            event.preventDefault();
+
+            if (this.isSelectionMode) {
+                this.exitSelectionMode();
+            } else {
+                this.toggleSelectionMode();
             }
         },
         handleSearchInput() {
