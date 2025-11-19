@@ -134,7 +134,10 @@
             </div>
 
             <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-20">
-                <template v-if="wallets.length">
+                <template v-if="loading">
+                    <WalletCardSkeleton v-for="n in 3" :key="`skeleton-${n}`" />
+                </template>
+                <template v-else-if="wallets.length">
                     <div
                         v-for="wallet in wallets"
                         :key="wallet.id"
@@ -314,7 +317,11 @@
 
                 <button
                     class="flex h-[260px] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/10 text-gray-400 transition-all hover:border-indigo-500/50 hover:bg-white/5 hover:text-white"
+                    :class="{
+                        'opacity-50 cursor-not-allowed': loading
+                    }"
                     type="button"
+                    :disabled="loading"
                     @click="openModal"
                 >
                     <div
@@ -585,6 +592,7 @@ import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogConten
 import CreateWalletForm from '@/components/wallets/CreateWalletForm.vue';
 import WalletFlipCard from '@/components/wallets/WalletFlipCard.vue';
 import WalletActionsBack, { type WalletBackAction } from '@/components/wallets/WalletActionsBack.vue';
+import WalletCardSkeleton from '@/components/wallets/WalletCardSkeleton.vue';
 import { apiDelete, apiGet, apiPut } from '@/utils/api';
 import { useToast } from '@/components/ui/toast';
 import selectionModeMixin from '@/mixins/selectionModeMixin';
@@ -685,6 +693,7 @@ export default {
         Tooltip,
         TooltipTrigger,
         TooltipContent,
+        WalletCardSkeleton,
     },
     data() {
         return {
@@ -830,6 +839,7 @@ export default {
                     url += `&search=${encodeURIComponent(this.searchQuery.trim())}`;
                 }
 
+                await new Promise(resolve => setTimeout(resolve, 3000));
                 const response = await apiGet(url);
 
                 if (!response.ok) {

@@ -95,8 +95,11 @@
             </div>
 
             <!-- Grid de Categorias -->
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-20">
-                <template v-if="filteredCategories.length">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-4">
+                <template v-if="loading">
+                    <CategoryCardSkeleton v-for="n in skeletonCount" :key="`category-skeleton-${n}`" />
+                </template>
+                <template v-else-if="filteredCategories.length">
                     <div
                         v-for="category in filteredCategories"
                         :key="category.id"
@@ -208,7 +211,11 @@
                 <!-- Card de Criar Nova -->
                 <button
                     class="flex h-full min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/10 text-gray-400 transition-all hover:border-indigo-500/50 hover:bg-white/5 hover:text-white"
+                    :class="{
+                        'opacity-50 cursor-not-allowed': loading
+                    }"
                     type="button"
+                    :disabled="loading"
                     @click="openModal"
                 >
                     <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 bg-white/5 transition-colors">
@@ -424,6 +431,7 @@ import {
 import { Button as UiButton } from '@/components/ui/button';
 import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
 import CreateCategoryForm from '@/components/categories/CreateCategoryForm.vue';
+import CategoryCardSkeleton from '@/components/categories/CategoryCardSkeleton.vue';
 import { apiDelete, apiGet } from '@/utils/api';
 import { useToast } from '@/components/ui/toast';
 import * as icons from 'lucide-vue-next';
@@ -460,6 +468,7 @@ export default {
         UiButton,
         DraggableDialogContent,
         CreateCategoryForm,
+        CategoryCardSkeleton,
     },
     setup() {
         const { toast } = useToast();
@@ -499,12 +508,17 @@ export default {
         filteredCategories(): Category[] {
             return this.categories.filter(category => category.type === this.activeTab);
         },
+        skeletonCount(): number {
+            return Math.min(this.perPage, 8);
+        },
     },
     watch: {
         activeTab() {
             if (this.isSelectionMode) {
                 this.clearSelection();
             }
+            this.currentPage = 1;
+            this.loadCategories(1);
         },
     },
     mounted() {
@@ -524,6 +538,9 @@ export default {
                 let url = `/api/categories?page=${targetPage}&per_page=${this.perPage}`;
                 if (this.searchQuery.trim()) {
                     url += `&search=${encodeURIComponent(this.searchQuery.trim())}`;
+                }
+                if (this.activeTab) {
+                    url += `&type=${this.activeTab}`;
                 }
 
                 const response = await apiGet(url);
