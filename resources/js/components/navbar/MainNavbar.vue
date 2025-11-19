@@ -43,7 +43,7 @@
                         </DropdownMenuTrigger>
                         <DropdownMenuContent class="w-40 bg-[#1E1E1E] border-[#2F2F2F] !rounded-md">
                             <DropdownMenuItem class="!rounded-md cursor-pointer hover:!bg-[#38353C] text-[#b8b8b8]">
-                                <InertiaLink :href="route('dashboard')" class="flex items-center gap-x-2">
+                                <InertiaLink :href="route('categories')" class="flex items-center gap-x-2">
                                     categorias
                                 </InertiaLink>
                             </DropdownMenuItem>

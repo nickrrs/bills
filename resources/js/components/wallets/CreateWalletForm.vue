@@ -12,7 +12,7 @@
                         v-model="formData.name"
                         required
                         type="text"
-                        maxlength="24"
+                        maxlength="20"
                         placeholder="escolha um nome para a carteira"
                         class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
                     />
@@ -144,7 +144,7 @@
                 <button
                     type="button"
                     @click="handleSubmit"
-                    :disabled="loading"
+                    :disabled="loading || !formData.name"
                     class="px-4 py-2 text-sm font-medium bg-[#6965f2] text-white rounded-md hover:bg-[#3800D8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                     <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />

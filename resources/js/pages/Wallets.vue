@@ -309,7 +309,7 @@
                     >
                         <Plus class="h-8 w-8" />
                     </div>
-                    <span class="text-sm font-medium">Adicionar Carteira</span>
+                    <span class="text-sm font-medium">adicionar carteira</span>
                 </button>
             </div>
 

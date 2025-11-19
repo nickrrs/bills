@@ -80,49 +80,49 @@ export default {
                 {
                     route: 'dashboard',
                     icon: User,
-                    label: 'edit profile',
+                    label: 'editar perfil',
                     separatorBefore: true,
                 },
                 {
                     route: 'dashboard',
                     icon: Settings,
-                    label: 'settings',
+                    label: 'configurações',
                     separatorBefore: false,
                 },
                 {
                     route: 'wallets',
                     icon: Wallet,
-                    label: 'my wallets',
+                    label: 'carteiras',
                     separatorBefore: false,
                 },
                 {
                     route: 'dashboard',
                     icon: CreditCard,
-                    label: 'my cards',
+                    label: 'cartões',
                     separatorBefore: false,
                 },
                 {
                     route: 'dashboard',
                     icon: Layers,
-                    label: 'finance categories',
+                    label: 'categorias financeiras',
                     separatorBefore: false,
                 },
                 {
                     route: 'dashboard',
                     icon: Layers2,
-                    label: 'finance subcategories',
+                    label: 'subcategorias financeiras',
                     separatorBefore: false,
                 },
                 {
                     route: 'dashboard',
                     icon: TrendingUp,
-                    label: 'my tracks',
+                    label: 'minhas movimentações',
                     separatorBefore: false,
                 },
                 {
                     route: 'logout',
                     icon: LogOut,
-                    label: 'logout',
+                    label: 'sair',
                     method: 'post',
                     separatorBefore: true,
                 },
@@ -131,7 +131,7 @@ export default {
     },
     methods: {
         logoutItemClass(itemLabel: string) {
-            return itemLabel === 'logout' ? 'hover:!bg-red-400' : 'hover:!bg-[#38353C]';
+            return itemLabel === 'sair' ? 'hover:!bg-red-400' : 'hover:!bg-[#38353C]';
         }
     },
 };
