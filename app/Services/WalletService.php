@@ -39,13 +39,21 @@ class WalletService
 
     public function createWallet(array $data)
     {
+        if ($data['is_default']) {
+            Wallet::where('user_id', $data['user_id'])->update(['is_default' => false]);
+        }
+
         return Wallet::create($data);
     }
 
     public function updateWallet(Wallet $wallet, array $data)
     {
-        if ($data['is_default']) {
-            Wallet::where('user_id', $wallet->user_id)->update(['is_default' => false]);
+        // Se está definindo como padrão, desativa todas as outras
+        // Garante que apenas uma wallet pode ser is_default por vez
+        if (isset($data['is_default']) && $data['is_default']) {
+            Wallet::where('user_id', $wallet->user_id)
+                ->where('id', '!=', $wallet->id)
+                ->update(['is_default' => false]);
         }
 
         $wallet->update($data);

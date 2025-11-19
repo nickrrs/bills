@@ -22,7 +22,7 @@ class StoreWalletRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:24',
             'icon' => 'nullable|string|max:255',
             'user_id' => 'sometimes|required|exists:users,id',
             'active' => 'required|boolean',
@@ -44,6 +44,7 @@ class StoreWalletRequest extends FormRequest
     {
         return [
             'name.required' => 'O nome da carteira é obrigatório',
+            'name.max' => 'O nome da carteira não pode ter mais de 24 caracteres',
             'balance.min' => 'O saldo não pode ser negativo',
             'balance.required' => 'O saldo é obrigatório',
             'balance.numeric' => 'O saldo deve ser um valor numérico',

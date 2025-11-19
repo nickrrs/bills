@@ -278,8 +278,9 @@
             <DraggableDialogContent class="w-full max-w-6xl max-h-[80vh] overflow-y-auto">
                 <template #header>
                     <DialogTitle class="text-white text-lg font-semibold">criar nova carteira</DialogTitle>
+                    <DialogDescription class="sr-only">preencha os dados para criar uma nova carteira</DialogDescription>
                 </template>
-                <CreateWalletForm :reset-trigger="formResetTrigger" @success="handleWalletCreated" @cancel="closeModal" />
+                <CreateWalletForm :reset-form="shouldResetForm" @success="handleWalletCreated" @cancel="closeModal" @reset-complete="handleResetComplete" />
             </DraggableDialogContent>
         </UiDialog>
 
@@ -287,6 +288,7 @@
             <DraggableDialogContent class="w-full max-w-6xl max-h-[80vh] overflow-y-auto">
                 <template #header>
                     <DialogTitle class="text-white text-lg font-semibold">editar carteira</DialogTitle>
+                    <DialogDescription class="sr-only">edite os dados da carteira</DialogDescription>
                 </template>
                 <CreateWalletForm
                     v-if="walletToEdit"
@@ -301,6 +303,7 @@
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
                     <DialogTitle class="text-white text-lg font-semibold">gerenciar saldo</DialogTitle>
+                    <DialogDescription class="sr-only">atualize o saldo da carteira</DialogDescription>
                 </template>
                 <div v-if="walletToManageBalance" class="flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
@@ -347,6 +350,7 @@
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
                     <DialogTitle class="text-white text-lg font-semibold">confirmar exclusão</DialogTitle>
+                    <DialogDescription class="sr-only">confirme a exclusão da carteira</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
                     <p class="text-[#B6B6B6] text-sm">
@@ -399,6 +403,7 @@ import type { Wallet } from '@/types';
 import {
     Dialog as UiDialog,
     DialogTitle,
+    DialogDescription,
 } from '@/components/ui/dialog';
 import { Button as UiButton } from '@/components/ui/button';
 import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
@@ -478,6 +483,7 @@ export default {
         LoaderCircle,
         UiDialog,
         DialogTitle,
+        DialogDescription,
         UiButton,
         DraggableDialogContent,
         CreateWalletForm,
@@ -507,7 +513,7 @@ export default {
             loading: false,
             isRefreshing: false,
             refreshInterval: null as ReturnType<typeof setInterval> | null,
-            formResetTrigger: 0,
+            shouldResetForm: false,
             pagination: null as {
                 total: number;
                 per_page: number;
@@ -523,6 +529,8 @@ export default {
             previousBalance: 0,
             balanceChangeDirection: null as 'up' | 'down' | null,
             isAnimating: false,
+            openModalListener: null as (() => void) | null,
+            walletDefaultChangedListener: null as (() => void) | null,
         };
     },
     computed: {
@@ -585,10 +593,28 @@ export default {
         this.refreshInterval = setInterval(() => {
             this.refreshWallets();
         }, 45000);
+
+        // Listener para abrir o modal quando o evento for disparado do WalletSwitch
+        this.openModalListener = () => {
+            this.openModal();
+        };
+        window.addEventListener('open-wallet-modal', this.openModalListener);
+
+        // Listener para recarregar wallets quando a wallet padrão é alterada no switch
+        this.walletDefaultChangedListener = () => {
+            this.refreshWallets();
+        };
+        window.addEventListener('wallet-default-changed', this.walletDefaultChangedListener);
     },
     beforeUnmount() {
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
+        }
+        if (this.openModalListener) {
+            window.removeEventListener('open-wallet-modal', this.openModalListener);
+        }
+        if (this.walletDefaultChangedListener) {
+            window.removeEventListener('wallet-default-changed', this.walletDefaultChangedListener);
         }
     },
     setup() {
@@ -705,10 +731,15 @@ export default {
         },
         openModal() {
             this.isModalOpen = true;
+            // Garantir que o boolean está em false quando o modal abre
+            this.shouldResetForm = false;
         },
         closeModal() {
             this.isModalOpen = false;
-            this.formResetTrigger += 1;
+            this.shouldResetForm = true;
+        },
+        handleResetComplete() {
+            this.shouldResetForm = false;
         },
         closeEditModal() {
             this.isEditDialogOpen = false;
@@ -780,54 +811,93 @@ export default {
             const target = event.target as HTMLInputElement;
             let value = target.value;
 
+            // Remove qualquer caractere que não seja número ou ponto/vírgula
             value = value.replace(/[^0-9.,]/g, '');
+
+            // Converte vírgula para ponto para processamento
             value = value.replace(/,/g, '.');
 
+            // Remove múltiplos pontos, mantendo apenas o primeiro
             const parts = value.split('.');
             if (parts.length > 2) {
                 value = parts[0] + '.' + parts.slice(1).join('');
             }
 
+            // Limita a 2 casas decimais
+            if (parts.length === 2 && parts[1].length > 2) {
+                value = parts[0] + '.' + parts[1].substring(0, 2);
+            }
+
+            // Garante que não seja negativo
             if (value.startsWith('-')) {
                 value = value.replace('-', '');
             }
 
+            // Se estiver vazio, limpa o valor
             if (value === '' || value === '.') {
                 this.newBalance = '';
                 target.value = '';
                 return;
             }
 
-            const isValidNumber = /^\d+(\.\d*)?$/.test(value);
+            // Valida se é um formato numérico válido (máximo 2 casas decimais)
+            const isValidNumber = /^\d+(\.\d{0,2})?$/.test(value);
+
             if (!isValidNumber) {
                 const lastValid = this.newBalance || '';
                 target.value = typeof lastValid === 'string' ? lastValid : this.formatBalanceInput(lastValid);
                 return;
             }
 
-            this.newBalance = value;
-            target.value = value.replace('.', ',');
+            // Converte para número e limita a 2 casas decimais
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue) && numValue >= 0 && isFinite(numValue)) {
+                this.newBalance = Math.round(numValue * 100) / 100;
+            } else {
+                const lastValid = this.newBalance || '';
+                target.value = typeof lastValid === 'string' ? lastValid : this.formatBalanceInput(lastValid);
+                return;
+            }
+
+            // Atualiza o valor do input mantendo o formato com vírgula
+            target.value = this.formatBalanceInput(this.newBalance);
         },
         formatBalanceInput(value: number | string): string {
             if (value === null || value === undefined || value === '' || value === 0) {
                 return '';
             }
 
+            let numValue: number;
+
+            // Converte string para número se necessário
             if (typeof value === 'string') {
-                return value.replace('.', ',');
+                numValue = parseFloat(value.replace(',', '.')) || 0;
+            } else {
+                numValue = value;
             }
 
-            const str = value.toString();
-            return str.replace('.', ',');
+            // Se não for um número válido, retorna vazio
+            if (isNaN(numValue) || !isFinite(numValue) || numValue < 0) {
+                return '';
+            }
+
+            // Formata com até 2 casas decimais, removendo zeros desnecessários
+            const formatted = numValue.toFixed(2).replace(/\.?0+$/, '');
+            return formatted.replace('.', ',');
         },
         async updateBalance() {
             if (!this.walletToManageBalanceId || !this.walletToManageBalance) {
                 return;
             }
 
-            const balanceValue = typeof this.newBalance === 'string'
-                ? parseFloat(this.newBalance.replace(',', '.')) || 0
-                : this.newBalance;
+            // Garantir que balance seja sempre um número com 2 casas decimais
+            let balanceValue: number;
+            if (typeof this.newBalance === 'string') {
+                balanceValue = parseFloat(this.newBalance.replace(',', '.')) || 0;
+            } else {
+                balanceValue = this.newBalance || 0;
+            }
+            balanceValue = Math.round(balanceValue * 100) / 100; // Limita a 2 casas decimais
 
             if (balanceValue < 0) {
                 this.toast({

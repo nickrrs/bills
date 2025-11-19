@@ -12,6 +12,7 @@
                         v-model="formData.name"
                         required
                         type="text"
+                        maxlength="24"
                         placeholder="escolha um nome para a carteira"
                         class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
                     />
@@ -137,7 +138,7 @@
                             type="checkbox"
                             class="w-4 h-4 rounded border-[#2F2F2F] bg-[#131316] text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
                         />
-                        <span class="text-sm text-white">pre-selecionar como padrão?</span>
+                        <span class="text-sm text-white">selecionar como padrão?</span>
                     </label>
                 </div>
             </div>
@@ -309,15 +310,15 @@ export default {
         PiggyBank,
         TrendingUp,
     },
-    emits: ['success', 'cancel'],
+    emits: ['success', 'cancel', 'reset-complete'],
     setup() {
         const { toast } = useToast();
         return { toast };
     },
     props: {
-        resetTrigger: {
-            type: Number,
-            default: 0,
+        resetForm: {
+            type: Boolean,
+            default: false,
         },
         wallet: {
             type: Object as () => any,
@@ -369,15 +370,19 @@ export default {
         },
     },
     watch: {
-        resetTrigger() {
-            this.resetForm();
+        resetForm(newValue) {
+            if (newValue) {
+                this.resetFormData();
+                // Emite evento para o pai resetar o boolean
+                this.$emit('reset-complete');
+            }
         },
         wallet: {
             handler(newWallet) {
                 if (newWallet) {
                     this.loadWalletData(newWallet);
                 } else {
-                    this.resetForm();
+                    this.resetFormData();
                 }
             },
             immediate: true,
@@ -450,21 +455,23 @@ export default {
                 return '';
             }
 
-            // Se for string, retorna diretamente (já está no formato correto)
+            let numValue: number;
+
+            // Converte string para número se necessário
             if (typeof value === 'string') {
-                return value.replace('.', ',');
+                numValue = parseFloat(value.replace(',', '.')) || 0;
+            } else {
+                numValue = value;
             }
 
-            // Se for número, converte para string sem notação científica
-            // Para números grandes, usa toFixed(0) e depois remove zeros desnecessários
-            if (typeof value === 'number' && value >= 1e15) {
-                // Para números muito grandes, mantém como string sem decimais
-                return value.toFixed(0).replace('.', ',');
+            // Se não for um número válido, retorna vazio
+            if (isNaN(numValue) || !isFinite(numValue) || numValue < 0) {
+                return '';
             }
 
-            // Para números menores, converte normalmente
-            const str = value.toString();
-            return str.replace('.', ',');
+            // Formata com até 2 casas decimais, removendo zeros desnecessários
+            const formatted = numValue.toFixed(2).replace(/\.?0+$/, '');
+            return formatted.replace('.', ',');
         },
         loadWalletData(wallet: any) {
             this.formData = {
@@ -490,11 +497,19 @@ export default {
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/(^-|-$)/g, '');
 
+                // Garantir que balance seja sempre um número
+                let balanceValue = this.formData.balance;
+                if (typeof balanceValue === 'string') {
+                    balanceValue = parseFloat(balanceValue.replace(',', '.')) || 0;
+                }
+                balanceValue = Math.round((balanceValue as number) * 100) / 100; // Limita a 2 casas decimais
+
                 const data = {
                     ...this.formData,
                     slug,
                     icon: this.formData.icon || null,
                     description: this.formData.description || null,
+                    balance: balanceValue,
                 };
 
                 // Fazer a requisição de criação ou atualização
@@ -514,12 +529,17 @@ export default {
                     variant: 'default',
                 });
 
+                // Se a wallet foi criada/editada como padrão, emitir evento para o WalletSwitch
+                if (this.formData.is_default) {
+                    window.dispatchEvent(new CustomEvent('wallet-default-created-or-updated'));
+                }
+
                 // Emitir evento de sucesso para o componente pai
                 this.$emit('success');
 
                 // Resetar o formulário apenas se não estiver editando
                 if (!isEditing) {
-                    this.resetForm();
+                    this.resetFormData();
                 }
             } catch (error: any) {
                 const isEditing = !!this.wallet;
@@ -553,12 +573,17 @@ export default {
                 value = parts[0] + '.' + parts.slice(1).join('');
             }
 
+            // Limita a 2 casas decimais
+            if (parts.length === 2 && parts[1].length > 2) {
+                value = parts[0] + '.' + parts[1].substring(0, 2);
+            }
+
             // Garante que não seja negativo
             if (value.startsWith('-')) {
                 value = value.replace('-', '');
             }
 
-            // Se estiver vazio, define como 0
+            // Se estiver vazio, define como 0 mas mantém o input vazio para melhor UX
             if (value === '' || value === '.') {
                 this.formData.balance = 0;
                 target.value = '';
@@ -566,43 +591,30 @@ export default {
             }
 
             // Valida se é um formato numérico válido
-            const isValidNumber = /^\d+(\.\d*)?$/.test(value);
+            const isValidNumber = /^\d+(\.\d{0,2})?$/.test(value);
 
             if (!isValidNumber) {
                 // Se não for válido, mantém o último valor válido
                 const lastValid = this.formData.balance || 0;
-                if (typeof lastValid === 'string') {
-                    target.value = lastValid.replace('.', ',');
-                } else {
-                    target.value = lastValid === 0 ? '' : lastValid.toString().replace('.', ',');
-                }
+                target.value = this.formatBalanceInput(lastValid);
                 return;
             }
 
-            // Para números muito grandes (mais de 15 dígitos), mantém como string
-            // para evitar conversão para notação científica
-            const integerPart = parts[0];
-            if (integerPart.length > 15) {
-                // Mantém como string para preservar todos os dígitos
-                this.formData.balance = value;
+            // Converte para número (limite de precisão para números muito grandes)
+            const numValue = parseFloat(value);
+
+            if (!isNaN(numValue) && numValue >= 0 && isFinite(numValue)) {
+                // Limita a 2 casas decimais no valor numérico
+                this.formData.balance = Math.round(numValue * 100) / 100;
             } else {
-                // Para números menores, converte para número
-                const numValue = parseFloat(value);
-                if (!isNaN(numValue) && numValue >= 0) {
-                    this.formData.balance = numValue;
-                } else {
-                    const lastValid = this.formData.balance || 0;
-                    if (typeof lastValid === 'string') {
-                        target.value = lastValid.replace('.', ',');
-                    } else {
-                        target.value = lastValid === 0 ? '' : lastValid.toString().replace('.', ',');
-                    }
-                    return;
-                }
+                // Se não for válido, mantém o último valor válido
+                const lastValid = this.formData.balance || 0;
+                target.value = this.formatBalanceInput(lastValid);
+                return;
             }
 
-            // Atualiza o valor do input mantendo o formato com vírgula
-            const displayValue = value.replace('.', ',');
+            // Atualiza o valor do input mantendo o formato com vírgula e 2 casas decimais
+            const displayValue = this.formatBalanceInput(this.formData.balance);
             target.value = displayValue;
         },
         preventInvalidKeys(event: KeyboardEvent) {
@@ -634,15 +646,21 @@ export default {
                 return;
             }
 
-            // Se for ponto ou vírgula e ainda não tiver no valor, deixa passar
-            if ((key === '.' || key === ',') && !value.includes('.') && !value.includes(',')) {
+            // Se for ponto ou vírgula
+            if (key === '.' || key === ',') {
+                // Verifica se já existe ponto ou vírgula no valor
+                if (value.includes('.') || value.includes(',')) {
+                    event.preventDefault();
+                    return;
+                }
+                // Permite inserir ponto/vírgula
                 return;
             }
 
             // Bloqueia qualquer outra tecla
             event.preventDefault();
         },
-        resetForm() {
+        resetFormData() {
             this.formData = {
                 name: '',
                 icon: '',

@@ -40,7 +40,7 @@ class UpdateWalletRequest extends FormRequest
         $wallet = $this->route('wallet');
 
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:24',
             'icon' => 'nullable|string|max:2',
             'description' => 'nullable|string|max:255',
             'balance' => 'nullable|numeric|min:0',
@@ -66,6 +66,7 @@ class UpdateWalletRequest extends FormRequest
     {
         return [
             'name.required' => 'O nome da carteira é obrigatório',
+            'name.max' => 'O nome da carteira não pode ter mais de 24 caracteres',
             'balance.min' => 'O saldo não pode ser negativo',
             'balance.numeric' => 'O saldo deve ser um valor numérico',
             'type.required' => 'O tipo da carteira é obrigatório',

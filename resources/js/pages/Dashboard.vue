@@ -1,21 +1,21 @@
 <template>
     <InertiaHead title="dashboard" />
     <MainLayout>
-        <div class="w-full h-[54px] bg-[#131316] flex items-end px-8 gap-x-4 border-b-2 border-[#212124]"> <!-- bg-[#131316] -->
-            <div class="w-[64px] h-full flex items-center justify-center gap-x-4 border-b-2 border-transparent" :class="selectedNavItemClass('overview')">
-                <span class="cursor-pointer select-none" @click="selectedNavItem = 'overview'">overview</span>
+        <div class="w-full h-[54px] bg-[#131316] flex items-end px-4 sm:px-6 md:px-8 gap-x-2 sm:gap-x-3 md:gap-x-4 border-b-2 border-[#212124] overflow-x-auto">
+            <div class="h-full flex items-center justify-center px-3 sm:px-4 border-b-2 border-transparent whitespace-nowrap" :class="selectedNavItemClass('overview')">
+                <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectedNavItem = 'overview'">overview</span>
             </div>
-            <div class="w-[64px] h-full flex items-center justify-center gap-x-4 border-b-2 border-transparent" :class="selectedNavItemClass('reports')">
-                <span class="cursor-pointer select-none" @click="selectedNavItem = 'reports'">reports</span>
+            <div class="h-full flex items-center justify-center px-3 sm:px-4 border-b-2 border-transparent whitespace-nowrap" :class="selectedNavItemClass('reports')">
+                <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectedNavItem = 'reports'">relatorios</span>
             </div>
-            <div class="w-[64px] h-full flex items-center justify-center gap-x-4 border-b-2 border-transparent" :class="selectedNavItemClass('releases')">
-                <span class="cursor-pointer select-none" @click="selectedNavItem = 'releases'">releases</span>
+            <div class="h-full flex items-center justify-center px-3 sm:px-4 border-b-2 border-transparent whitespace-nowrap" :class="selectedNavItemClass('releases')">
+                <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectedNavItem = 'releases'">lançamentos</span>
             </div>
-            <div class="w-[64px] h-full flex items-center justify-center gap-x-4 border-b-2 border-transparent" :class="selectedNavItemClass('cards')">
-                <span class="cursor-pointer select-none" @click="selectedNavItem = 'cards'">cards</span>
+            <div class="h-full flex items-center justify-center px-3 sm:px-4 border-b-2 border-transparent whitespace-nowrap" :class="selectedNavItemClass('cards')">
+                <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectedNavItem = 'cards'">cartões</span>
             </div>
         </div>
-        teste
+
     </MainLayout>
 </template>
 <script lang="ts">
