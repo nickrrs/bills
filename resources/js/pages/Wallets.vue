@@ -235,8 +235,8 @@
                                 <div class="z-10 mt-2 flex items-center justify-between border-t border-white/10 pt-4">
                                     <div class="flex items-center space-x-2" :class="getWalletTheme(wallet).footerText">
                                         <CreditCard class="h-4 w-4" />
-                                        <span class="text-xs font-medium">
-                                            {{ wallet.active ? 'Carteira ativa' : 'Carteira inativa' }}
+                                        <span class="text-xs font-medium mb-1">
+                                            {{ wallet.active ? 'carteira ativa' : 'carteira inativa' }}
                                         </span>
                                     </div>
 
