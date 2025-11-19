@@ -4,7 +4,18 @@
  */
 
 function getCsrfToken(): string {
-    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    // Primeiro tenta obter do meta tag
+    let token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    // Se não encontrar, tenta obter do cookie XSRF-TOKEN (Laravel envia automaticamente)
+    if (!token) {
+        const cookies = document.cookie.split(';');
+        const xsrfCookie = cookies.find(cookie => cookie.trim().startsWith('XSRF-TOKEN='));
+        if (xsrfCookie) {
+            token = decodeURIComponent(xsrfCookie.split('=')[1]);
+        }
+    }
+
     return token || '';
 }
 
