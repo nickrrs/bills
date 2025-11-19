@@ -102,8 +102,8 @@
                         :key="category.id"
                         class="relative bg-[#131316] border border-[#2F2F2F] rounded-xl p-6 transition-all duration-300 group"
                         :class="{
-                            'ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] cursor-pointer': isSelectionMode && selectedCategoryIds.includes(category.id),
-                            'cursor-pointer': isSelectionMode && !selectedCategoryIds.includes(category.id),
+                            'ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] cursor-pointer': isSelectionMode && selectedIds.includes(category.id),
+                            'cursor-pointer': isSelectionMode && !selectedIds.includes(category.id),
                             'hover:-translate-y-1': !isSelectionMode
                         }"
                         @click="isSelectionMode ? toggleCategorySelection(category.id) : null"
@@ -150,10 +150,10 @@
                             <div
                                 v-if="isSelectionMode"
                                 class="absolute -top-2 -left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
-                                :class="selectedCategoryIds.includes(category.id) ? 'bg-[#6965f2] border-[#6965f2]' : 'bg-[#131316]/80 border-white/30'"
+                                :class="selectedIds.includes(category.id) ? 'bg-[#6965f2] border-[#6965f2]' : 'bg-[#131316]/80 border-white/30'"
                             >
                                 <svg
-                                    v-if="selectedCategoryIds.includes(category.id)"
+                                    v-if="selectedIds.includes(category.id)"
                                     class="w-3 h-3 text-white"
                                     fill="none"
                                     stroke="currentColor"
@@ -333,8 +333,8 @@
                 </template>
                 <div class="flex flex-col gap-4">
                     <p class="text-[#B6B6B6] text-sm">
-                        tem certeza que deseja excluir {{ selectedCategoryIds.length }}
-                        {{ selectedCategoryIds.length === 1 ? 'categoria' : 'categorias' }}? esta ação não pode ser desfeita.
+                        tem certeza que deseja excluir {{ selectedIds.length }}
+                        {{ selectedIds.length === 1 ? 'categoria' : 'categorias' }}? esta ação não pode ser desfeita.
                     </p>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
@@ -349,7 +349,7 @@
                             @click="confirmBulkDeleteAction"
                             class="bg-red-600 text-white hover:bg-red-700 p-2 rounded-md cursor-pointer"
                         >
-                            excluir {{ selectedCategoryIds.length }}
+                            excluir {{ selectedIds.length }}
                         </UiButton>
                     </div>
                 </div>
@@ -365,15 +365,15 @@
             leave-to-class="opacity-0 translate-y-4"
         >
             <div
-                v-if="isSelectionMode && selectedCategoryIds.length > 0"
+                v-if="isSelectionMode && selectedIds.length > 0"
                 class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[#1E1E1E] border border-[#2F2F2F] rounded-lg shadow-2xl px-6 py-4 flex items-center gap-4"
             >
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-[#6965f2] flex items-center justify-center">
-                        <span class="text-white text-sm font-semibold">{{ selectedCategoryIds.length }}</span>
+                        <span class="text-white text-sm font-semibold">{{ selectedIds.length }}</span>
                     </div>
                     <span class="text-white text-sm font-medium">
-                        {{ selectedCategoryIds.length === 1 ? 'categoria selecionada' : 'categorias selecionadas' }}
+                        {{ selectedIds.length === 1 ? 'categoria selecionada' : 'categorias selecionadas' }}
                     </span>
                 </div>
                 <div class="h-6 w-px bg-[#2F2F2F]"></div>
@@ -395,7 +395,7 @@
                     class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                 >
                     <Trash2 class="!h-4 !w-4" />
-                    excluir ({{ selectedCategoryIds.length }})
+                    excluir ({{ selectedIds.length }})
                 </button>
             </div>
         </Transition>
@@ -427,6 +427,7 @@ import CreateCategoryForm from '@/components/categories/CreateCategoryForm.vue';
 import { apiDelete, apiGet } from '@/utils/api';
 import { useToast } from '@/components/ui/toast';
 import * as icons from 'lucide-vue-next';
+import selectionModeMixin from '@/mixins/selectionModeMixin';
 
 interface Category {
     id: number;
@@ -441,6 +442,7 @@ interface Category {
 
 export default {
     name: 'Categories',
+    mixins: [selectionModeMixin],
     components: {
         MainLayout,
         InertiaHead,
@@ -487,9 +489,6 @@ export default {
             activeTab: 'expense' as 'expense' | 'recept',
             searchQuery: '',
             searchTimeout: null as ReturnType<typeof setTimeout> | null,
-            isSelectionMode: false,
-            selectedCategoryIds: [] as number[],
-            selectionHotkeyListener: null as ((event: KeyboardEvent) => void) | null,
         };
     },
     computed: {
@@ -507,24 +506,13 @@ export default {
                 this.clearSelection();
             }
         },
-        filteredCategories() {
-            if (!this.isSelectionMode) return;
-            const validIds = new Set(this.filteredCategories.map(category => category.id));
-            this.selectedCategoryIds = this.selectedCategoryIds.filter(id => validIds.has(id));
-        },
     },
     mounted() {
         this.loadCategories();
-        this.selectionHotkeyListener = (event: KeyboardEvent) => this.handleSelectionHotkey(event);
-        window.addEventListener('keydown', this.selectionHotkeyListener);
     },
     beforeUnmount() {
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
-        }
-        if (this.selectionHotkeyListener) {
-            window.removeEventListener('keydown', this.selectionHotkeyListener);
-            this.selectionHotkeyListener = null;
         }
     },
     methods: {
@@ -676,35 +664,19 @@ export default {
             if (!iconName) return null;
             return (icons as unknown as Record<string, Component>)[iconName] || null;
         },
-        toggleSelectionMode() {
-            this.isSelectionMode = true;
-            this.selectedCategoryIds = [];
-        },
-        exitSelectionMode() {
-            this.isSelectionMode = false;
-            this.selectedCategoryIds = [];
-        },
         toggleCategorySelection(categoryId: number) {
-            const index = this.selectedCategoryIds.indexOf(categoryId);
-            if (index > -1) {
-                this.selectedCategoryIds.splice(index, 1);
-            } else {
-                this.selectedCategoryIds.push(categoryId);
-            }
+            this.toggleSelectionItem(categoryId);
         },
         selectAllCategories() {
-            this.selectedCategoryIds = this.filteredCategories.map(category => category.id);
-        },
-        clearSelection() {
-            this.selectedCategoryIds = [];
+            this.selectAllItems();
         },
         confirmBulkDelete() {
-            if (this.selectedCategoryIds.length === 0) return;
+            if (this.selectedIds.length === 0) return;
             this.isBulkDeleteDialogOpen = true;
         },
         async confirmBulkDeleteAction() {
             this.isBulkDeleteDialogOpen = false;
-            const idsToDelete = [...this.selectedCategoryIds];
+            const idsToDelete = [...this.selectedIds];
             try {
                 let successCount = 0;
                 let errorCount = 0;
@@ -751,28 +723,8 @@ export default {
                 });
             }
         },
-        handleSelectionHotkey(event: KeyboardEvent) {
-            if (!event.ctrlKey || event.code !== 'Space') {
-                return;
-            }
-
-            const target = event.target as HTMLElement | null;
-            if (target) {
-                const tagName = target.tagName?.toLowerCase();
-                // evita acionar o evento se o elemento é um input, textarea ou select
-                // ou se o elemento é editável
-                if (['input', 'textarea', 'select'].includes(tagName) || target.isContentEditable) {
-                    return;
-                }
-            }
-
-            event.preventDefault();
-
-            if (this.isSelectionMode) {
-                this.exitSelectionMode();
-            } else {
-                this.toggleSelectionMode();
-            }
+        getSelectionIds() {
+            return this.filteredCategories.map(category => category.id);
         },
     },
 };

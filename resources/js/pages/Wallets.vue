@@ -139,7 +139,7 @@
                         v-for="wallet in wallets"
                         :key="wallet.id"
                         class="relative"
-                        :class="{ 'ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] rounded-3xl': isSelectionMode && selectedWalletIds.includes(wallet.id) }"
+                        :class="{ 'ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] rounded-3xl': isSelectionMode && selectedIds.includes(wallet.id) }"
                     >
                         <div
                             v-if="isSelectionMode"
@@ -149,13 +149,13 @@
                             <div
                                 :class="[
                                     'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer',
-                                    selectedWalletIds.includes(wallet.id)
+                                    selectedIds.includes(wallet.id)
                                         ? 'bg-[#6965f2] border-[#6965f2]'
                                         : 'bg-[#131316]/80 backdrop-blur-sm border-white/30 hover:border-white/50'
                                 ]"
                             >
                                 <svg
-                                    v-if="selectedWalletIds.includes(wallet.id)"
+                                    v-if="selectedIds.includes(wallet.id)"
                                     class="w-4 h-4 text-white"
                                     fill="none"
                                     stroke="currentColor"
@@ -483,7 +483,7 @@
                 </template>
                 <div class="flex flex-col gap-4">
                     <p class="text-[#B6B6B6] text-sm">
-                        tem certeza que deseja excluir {{ selectedWalletIds.length }} {{ selectedWalletIds.length === 1 ? 'carteira' : 'carteiras' }}? esta ação não pode ser desfeita.
+                        tem certeza que deseja excluir {{ selectedIds.length }} {{ selectedIds.length === 1 ? 'carteira' : 'carteiras' }}? esta ação não pode ser desfeita.
                     </p>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
@@ -498,7 +498,7 @@
                             @click="confirmBulkDeleteAction"
                             class="bg-red-600 text-white hover:bg-red-700 p-2 rounded-md cursor-pointer"
                         >
-                            excluir {{ selectedWalletIds.length }}
+                            excluir {{ selectedIds.length }}
                         </UiButton>
                     </div>
                 </div>
@@ -514,15 +514,15 @@
             leave-to-class="opacity-0 translate-y-4"
         >
             <div
-                v-if="isSelectionMode && selectedWalletIds.length > 0"
+                v-if="isSelectionMode && selectedIds.length > 0"
                 class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[#1E1E1E] border border-[#2F2F2F] rounded-lg shadow-2xl px-6 py-4 flex items-center gap-4"
             >
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-[#6965f2] flex items-center justify-center">
-                        <span class="text-white text-sm font-semibold">{{ selectedWalletIds.length }}</span>
+                        <span class="text-white text-sm font-semibold">{{ selectedIds.length }}</span>
                     </div>
                     <span class="text-white text-sm font-medium">
-                        {{ selectedWalletIds.length === 1 ? 'carteira selecionada' : 'carteiras selecionadas' }}
+                        {{ selectedIds.length === 1 ? 'carteira selecionada' : 'carteiras selecionadas' }}
                     </span>
                 </div>
                 <div class="h-6 w-px bg-[#2F2F2F]"></div>
@@ -544,7 +544,7 @@
                     class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                 >
                     <Trash2 class="!h-4 !w-4" />
-                    excluir ({{ selectedWalletIds.length }})
+                    excluir ({{ selectedIds.length }})
                 </button>
             </div>
         </Transition>
@@ -587,6 +587,7 @@ import WalletFlipCard from '@/components/wallets/WalletFlipCard.vue';
 import WalletActionsBack, { type WalletBackAction } from '@/components/wallets/WalletActionsBack.vue';
 import { apiDelete, apiGet, apiPut } from '@/utils/api';
 import { useToast } from '@/components/ui/toast';
+import selectionModeMixin from '@/mixins/selectionModeMixin';
 import TooltipProvider from '@/components/ui/tooltip/TooltipProvider.vue';
 import Tooltip from '@/components/ui/tooltip/Tooltip.vue';
 import TooltipTrigger from '@/components/ui/tooltip/TooltipTrigger.vue';
@@ -655,6 +656,7 @@ const COLOR_THEMES: Record<string, Omit<WalletTheme, 'icon' | 'backTitle' | 'act
 
 export default {
     name: 'Wallets',
+    mixins: [selectionModeMixin],
     components: {
         MainLayout,
         InertiaHead,
@@ -717,12 +719,9 @@ export default {
             isAnimating: false,
             openModalListener: null as (() => void) | null,
             walletDefaultChangedListener: null as (() => void) | null,
-            isSelectionMode: false,
-            selectedWalletIds: [] as number[],
             isBulkDeleteDialogOpen: false,
             searchQuery: '',
             searchTimeout: null as ReturnType<typeof setTimeout> | null,
-            selectionHotkeyListener: null as ((event: KeyboardEvent) => void) | null,
         };
     },
     computed: {
@@ -797,9 +796,6 @@ export default {
             this.refreshWallets();
         };
         window.addEventListener('wallet-default-changed', this.walletDefaultChangedListener);
-
-        this.selectionHotkeyListener = (event: KeyboardEvent) => this.handleSelectionHotkey(event);
-        window.addEventListener('keydown', this.selectionHotkeyListener);
     },
     beforeUnmount() {
         if (this.refreshInterval) {
@@ -813,10 +809,6 @@ export default {
         }
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
-        }
-        if (this.selectionHotkeyListener) {
-            window.removeEventListener('keydown', this.selectionHotkeyListener);
-            this.selectionHotkeyListener = null;
         }
     },
     setup() {
@@ -1182,35 +1174,19 @@ export default {
                 [id]: !this.flippedCards[id],
             };
         },
-        toggleSelectionMode() {
-            this.isSelectionMode = true;
-            this.resetAllCardsToFront();
-        },
-        exitSelectionMode() {
-            this.isSelectionMode = false;
-            this.selectedWalletIds = [];
-        },
         toggleWalletSelection(walletId: number) {
-            const index = this.selectedWalletIds.indexOf(walletId);
-            if (index > -1) {
-                this.selectedWalletIds.splice(index, 1);
-            } else {
-                this.selectedWalletIds.push(walletId);
-            }
+            this.toggleSelectionItem(walletId);
         },
         selectAllWallets() {
-            this.selectedWalletIds = this.wallets.map(w => w.id);
-        },
-        clearSelection() {
-            this.selectedWalletIds = [];
+            this.selectAllItems();
         },
         confirmBulkDelete() {
-            if (this.selectedWalletIds.length === 0) return;
+            if (this.selectedIds.length === 0) return;
             this.isBulkDeleteDialogOpen = true;
         },
         async confirmBulkDeleteAction() {
             this.isBulkDeleteDialogOpen = false;
-            const walletIdsToDelete = [...this.selectedWalletIds];
+            const walletIdsToDelete = [...this.selectedIds];
 
             try {
                 let successCount = 0;
@@ -1259,26 +1235,14 @@ export default {
                 });
             }
         },
-        handleSelectionHotkey(event: KeyboardEvent) {
-            if (!event.ctrlKey || event.code !== 'Space') {
-                return;
-            }
-
-            const target = event.target as HTMLElement | null;
-            if (target) {
-                const tag = target.tagName?.toLowerCase();
-                if (['input', 'textarea', 'select'].includes(tag) || target.isContentEditable) {
-                    return;
-                }
-            }
-
-            event.preventDefault();
-
-            if (this.isSelectionMode) {
-                this.exitSelectionMode();
-            } else {
-                this.toggleSelectionMode();
-            }
+        getSelectionIds() {
+            return this.wallets.map(wallet => wallet.id);
+        },
+        onSelectionModeEnter() {
+            this.resetAllCardsToFront();
+        },
+        onSelectionModeExit() {
+            this.resetAllCardsToFront();
         },
         handleSearchInput() {
             if (this.searchTimeout) {
