@@ -16,6 +16,23 @@
                         </div>
                     </div>
                     <button
+                        v-if="!isSelectionMode"
+                        @click="toggleSelectionMode"
+                        class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
+                        title="selecionar múltiplas carteiras"
+                    >
+                        <Target class="!h-4 !w-4" />
+                        selecionar
+                    </button>
+                    <button
+                        v-else
+                        @click="exitSelectionMode"
+                        class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
+                    >
+                        <span class="text-sm">cancelar seleção</span>
+                    </button>
+                    <button
+                        v-if="!isSelectionMode"
                         @click="openModal"
                         class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
                     >
@@ -79,22 +96,66 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-4">
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-20">
                 <template v-if="wallets.length">
-                    <WalletFlipCard
+                    <div
                         v-for="wallet in wallets"
                         :key="wallet.id"
-                        :flipped="flippedCards[wallet.id]"
-                        :front-style="{ background: getWalletTheme(wallet).gradient }"
-                        class="cursor-pointer hover:scale-105 transition-all duration-300"
-                        @toggle="toggleCard(wallet.id)"
+                        class="relative"
+                        :class="{ 'ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] rounded-3xl': isSelectionMode && selectedWalletIds.includes(wallet.id) }"
                     >
+                        <div
+                            v-if="isSelectionMode"
+                            class="absolute top-3 left-3 z-20"
+                            @click.stop="toggleWalletSelection(wallet.id)"
+                        >
+                            <div
+                                :class="[
+                                    'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer',
+                                    selectedWalletIds.includes(wallet.id)
+                                        ? 'bg-[#6965f2] border-[#6965f2]'
+                                        : 'bg-[#131316]/80 backdrop-blur-sm border-white/30 hover:border-white/50'
+                                ]"
+                            >
+                                <svg
+                                    v-if="selectedWalletIds.includes(wallet.id)"
+                                    class="w-4 h-4 text-white"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                        </div>
+                        <WalletFlipCard
+                            :key="wallet.id"
+                            :flipped="flippedCards[wallet.id]"
+                            :front-style="{ background: getWalletTheme(wallet).gradient }"
+                            :class="[
+                                isSelectionMode
+                                    ? 'cursor-pointer'
+                                    : 'cursor-pointer hover:-translate-y-2 transition-all duration-300'
+                            ]"
+                            @toggle="isSelectionMode ? toggleWalletSelection(wallet.id) : toggleCard(wallet.id)"
+                        >
                         <template #front>
                             <div class="flex h-full flex-col justify-between" :style="{ background: getWalletTheme(wallet).gradient }">
                                 <div class="flex items-start justify-between z-10">
                                     <div class="flex items-center space-x-3">
-                                        <div class="rounded-lg bg-white/10 p-2 backdrop-blur-md">
-                                            <component :is="getWalletTheme(wallet).icon" class="h-6 w-6" :class="getWalletTheme(wallet).iconColor" />
+                                        <div class="rounded-lg bg-white/10 p-2 backdrop-blur-md flex items-center justify-center">
+                                            <img
+                                                v-if="wallet.icon && wallet.icon.startsWith('/images/')"
+                                                :src="wallet.icon"
+                                                :alt="wallet.name"
+                                                class="h-6 w-6 object-contain"
+                                            />
+                                            <component
+                                                v-else
+                                                :is="getWalletTheme(wallet).icon"
+                                                class="h-6 w-6"
+                                                :class="getWalletTheme(wallet).iconColor"
+                                            />
                                         </div>
                                         <div>
                                             <div class="flex items-center gap-2">
@@ -203,7 +264,8 @@
                             >
                             </WalletActionsBack>
                         </template>
-                    </WalletFlipCard>
+                        </WalletFlipCard>
+                    </div>
                 </template>
                 <div
                     v-else
@@ -375,6 +437,80 @@
                 </div>
             </DraggableDialogContent>
         </UiDialog>
+
+        <UiDialog v-model:open="isBulkDeleteDialogOpen">
+            <DraggableDialogContent class="w-full max-w-md">
+                <template #header>
+                    <DialogTitle class="text-white text-lg font-semibold">confirmar exclusão em lote</DialogTitle>
+                    <DialogDescription class="sr-only">confirme a exclusão das carteiras selecionadas</DialogDescription>
+                </template>
+                <div class="flex flex-col gap-4">
+                    <p class="text-[#B6B6B6] text-sm">
+                        tem certeza que deseja excluir {{ selectedWalletIds.length }} {{ selectedWalletIds.length === 1 ? 'carteira' : 'carteiras' }}? esta ação não pode ser desfeita.
+                    </p>
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <UiButton
+                            variant="outline"
+                            @click="isBulkDeleteDialogOpen = false"
+                            class="border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131] p-2 rounded-md cursor-pointer"
+                        >
+                            cancelar
+                        </UiButton>
+                        <UiButton
+                            variant="destructive"
+                            @click="confirmBulkDeleteAction"
+                            class="bg-red-600 text-white hover:bg-red-700 p-2 rounded-md cursor-pointer"
+                        >
+                            excluir {{ selectedWalletIds.length }}
+                        </UiButton>
+                    </div>
+                </div>
+            </DraggableDialogContent>
+        </UiDialog>
+
+        <Transition
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 translate-y-4"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition-all duration-200 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 translate-y-4"
+        >
+            <div
+                v-if="isSelectionMode && selectedWalletIds.length > 0"
+                class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[#1E1E1E] border border-[#2F2F2F] rounded-lg shadow-2xl px-6 py-4 flex items-center gap-4"
+            >
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-[#6965f2] flex items-center justify-center">
+                        <span class="text-white text-sm font-semibold">{{ selectedWalletIds.length }}</span>
+                    </div>
+                    <span class="text-white text-sm font-medium">
+                        {{ selectedWalletIds.length === 1 ? 'carteira selecionada' : 'carteiras selecionadas' }}
+                    </span>
+                </div>
+                <div class="h-6 w-px bg-[#2F2F2F]"></div>
+                <button
+                    @click="selectAllWallets"
+                    class="text-sm text-[#B6B6B6] hover:text-white transition-colors"
+                >
+                    selecionar todas
+                </button>
+                <button
+                    @click="clearSelection"
+                    class="text-sm text-[#B6B6B6] hover:text-white transition-colors"
+                >
+                    limpar seleção
+                </button>
+                <div class="h-6 w-px bg-[#2F2F2F]"></div>
+                <button
+                    @click="confirmBulkDelete"
+                    class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                >
+                    <Trash2 class="!h-4 !w-4" />
+                    excluir ({{ selectedWalletIds.length }})
+                </button>
+            </div>
+        </Transition>
     </MainLayout>
 </template>
 <script lang="ts">
@@ -497,6 +633,7 @@ export default {
         ChevronLeft,
         ChevronRight,
         Star,
+        Trash2,
     },
     data() {
         return {
@@ -531,6 +668,9 @@ export default {
             isAnimating: false,
             openModalListener: null as (() => void) | null,
             walletDefaultChangedListener: null as (() => void) | null,
+            isSelectionMode: false,
+            selectedWalletIds: [] as number[],
+            isBulkDeleteDialogOpen: false,
         };
     },
     computed: {
@@ -975,6 +1115,83 @@ export default {
                 ...this.flippedCards,
                 [id]: !this.flippedCards[id],
             };
+        },
+        toggleSelectionMode() {
+            this.isSelectionMode = true;
+            this.resetAllCardsToFront();
+        },
+        exitSelectionMode() {
+            this.isSelectionMode = false;
+            this.selectedWalletIds = [];
+        },
+        toggleWalletSelection(walletId: number) {
+            const index = this.selectedWalletIds.indexOf(walletId);
+            if (index > -1) {
+                this.selectedWalletIds.splice(index, 1);
+            } else {
+                this.selectedWalletIds.push(walletId);
+            }
+        },
+        selectAllWallets() {
+            this.selectedWalletIds = this.wallets.map(w => w.id);
+        },
+        clearSelection() {
+            this.selectedWalletIds = [];
+        },
+        confirmBulkDelete() {
+            if (this.selectedWalletIds.length === 0) return;
+            this.isBulkDeleteDialogOpen = true;
+        },
+        async confirmBulkDeleteAction() {
+            this.isBulkDeleteDialogOpen = false;
+            const walletIdsToDelete = [...this.selectedWalletIds];
+
+            try {
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (const walletId of walletIdsToDelete) {
+                    try {
+                        const response = await apiDelete(`/api/wallets/${walletId}`);
+                        if (response.ok) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                    } catch {
+                        errorCount++;
+                    }
+                }
+
+                if (successCount > 0) {
+                    this.toast({
+                        title: successCount === walletIdsToDelete.length ? 'carteiras deletadas' : 'exclusão parcial',
+                        description: errorCount > 0
+                            ? `${successCount} carteira(s) deletada(s) com sucesso. ${errorCount} falha(s).`
+                            : `${successCount} carteira(s) deletada(s) com sucesso.`,
+                        variant: successCount === walletIdsToDelete.length ? 'default' : 'destructive',
+                    });
+                }
+
+                if (errorCount > 0 && successCount === 0) {
+                    this.toast({
+                        title: 'erro ao deletar carteiras',
+                        description: 'não foi possível deletar as carteiras selecionadas.',
+                        variant: 'destructive',
+                    });
+                }
+
+                this.exitSelectionMode();
+                await this.loadWallets(this.currentPage);
+                this.resetAllCardsToFront();
+            } catch (error) {
+                console.error('Error deleting wallets:', error);
+                this.toast({
+                    title: 'erro ao deletar carteiras',
+                    description: 'ocorreu um erro ao tentar deletar as carteiras.',
+                    variant: 'destructive',
+                });
+            }
         },
         flipToFront(id: number) {
             if (!this.flippedCards[id]) return;
