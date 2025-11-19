@@ -33,4 +33,20 @@ export interface User {
     updated_at: string;
 }
 
+export interface Wallet {
+    id: number;
+    name: string;
+    icon: string | null;
+    user_id: number;
+    active: boolean;
+    slug: string;
+    description: string | null;
+    is_default: boolean | string;
+    balance: number;
+    color: string | null;
+    type: 'generic' | 'saving' | 'investment';
+    created_at: string;
+    updated_at: string;
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;

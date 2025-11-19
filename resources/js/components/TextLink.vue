@@ -6,6 +6,7 @@ interface Props {
     tabindex?: number;
     method?: string;
     as?: string;
+    data?: object;
 }
 
 defineProps<Props>();
@@ -17,6 +18,7 @@ defineProps<Props>();
         :tabindex="tabindex"
         :method="method"
         :as="as"
+        :data="data"
         class="hover:!decoration-current text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out dark:decoration-neutral-500"
     >
         <slot />

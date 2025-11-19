@@ -1,36 +1,44 @@
-<script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '../components/PlaceholderPattern.vue';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
-];
-</script>
-
 <template>
-    <Head title="Dashboard" />
-
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
-                </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
-                </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
-                </div>
+    <InertiaHead title="dashboard" />
+    <MainLayout>
+        <div class="w-full h-[54px] bg-[#131316] flex items-end px-4 sm:px-6 md:px-8 gap-x-2 sm:gap-x-3 md:gap-x-4 border-b-2 border-[#212124] overflow-x-auto">
+            <div class="h-full flex items-center justify-center px-3 sm:px-4 border-b-2 border-transparent whitespace-nowrap" :class="selectedNavItemClass('overview')">
+                <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectedNavItem = 'overview'">overview</span>
             </div>
-            <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border md:min-h-min">
-                <PlaceholderPattern />
+            <div class="h-full flex items-center justify-center px-3 sm:px-4 border-b-2 border-transparent whitespace-nowrap" :class="selectedNavItemClass('reports')">
+                <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectedNavItem = 'reports'">relatorios</span>
+            </div>
+            <div class="h-full flex items-center justify-center px-3 sm:px-4 border-b-2 border-transparent whitespace-nowrap" :class="selectedNavItemClass('releases')">
+                <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectedNavItem = 'releases'">lançamentos</span>
+            </div>
+            <div class="h-full flex items-center justify-center px-3 sm:px-4 border-b-2 border-transparent whitespace-nowrap" :class="selectedNavItemClass('cards')">
+                <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectedNavItem = 'cards'">cartões</span>
             </div>
         </div>
-    </AppLayout>
+
+    </MainLayout>
 </template>
+<script lang="ts">
+import MainLayout from '@/layouts/MainLayout.vue';
+import { Head as InertiaHead } from '@inertiajs/vue3';
+
+export default {
+    name: 'Dashboard',
+    components: {
+        InertiaHead,
+        MainLayout,
+    },
+    data() {
+        return {
+            selectedAccount: null,
+            selectedNavItem: 'overview',
+        };
+    },
+    methods: {
+        selectedNavItemClass(label: string) {
+            return this.selectedNavItem === label ? 'border-b-[#3800D8] hover:border-b-opacity-100' : 'hover:border-b-[#FFFFFF33]/20 border-b-none';
+        }
+    },
+};
+</script>
+
