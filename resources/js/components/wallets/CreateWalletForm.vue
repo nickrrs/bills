@@ -88,17 +88,7 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">icone (opcional)</label>
-                    <input
-                        v-model="formData.icon"
-                        type="text"
-                        placeholder="ex: 💰"
-                        maxlength="2"
-                        class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent text-center text-2xl"
-                    />
-                    <span class="text-xs text-[#767676]">escolha um emoji ou icone</span>
-                </div>
+                <WalletIconSelector v-model="formData.icon" :is-in-drawer="isInDrawer" />
 
                 <div class="flex flex-col gap-2">
                     <label class="text-sm font-medium text-white">descrição</label>
@@ -172,8 +162,19 @@
                     <div class="flex h-full flex-col justify-between p-6">
                         <div class="flex items-start justify-between z-10">
                             <div class="flex items-center space-x-3">
-                                <div class="rounded-lg bg-white/10 p-2 backdrop-blur-md">
-                                    <component :is="previewTheme.icon" class="h-6 w-6" :class="previewTheme.iconColor" />
+                                <div class="rounded-lg bg-white/10 p-2 backdrop-blur-md flex items-center justify-center">
+                                    <img
+                                        v-if="formData.icon && formData.icon.startsWith('/images/')"
+                                        :src="formData.icon"
+                                        :alt="formData.name"
+                                        class="h-6 w-6 object-contain"
+                                    />
+                                    <component
+                                        v-else
+                                        :is="previewTheme.icon"
+                                        class="h-6 w-6"
+                                        :class="previewTheme.iconColor"
+                                    />
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-bold text-white">{{ formData.name || 'Nome da Carteira' }}</h3>
@@ -228,6 +229,7 @@ import { LoaderCircle, CreditCard, Wallet2, ShieldCheck, Smartphone, Banknote, P
 import type { Component } from 'vue';
 import { apiPost, apiPut } from '@/utils/api';
 import { useToast } from '@/components/ui/toast';
+import WalletIconSelector from './WalletIconSelector.vue';
 
 interface ColorOption {
     value: string;
@@ -309,6 +311,7 @@ export default {
         Banknote,
         PiggyBank,
         TrendingUp,
+        WalletIconSelector,
     },
     emits: ['success', 'cancel', 'reset-complete'],
     setup() {
@@ -323,6 +326,10 @@ export default {
         wallet: {
             type: Object as () => any,
             default: null,
+        },
+        isInDrawer: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
@@ -350,7 +357,6 @@ export default {
     computed: {
         previewTheme(): WalletTheme {
             const baseTheme = COLOR_THEMES[this.formData.color] || COLOR_THEMES.indigo;
-            // Ajusta o ícone baseado no tipo
             const typeIcon = TYPE_ICONS[this.formData.type] || Wallet2;
             return {
                 ...baseTheme,
@@ -364,8 +370,6 @@ export default {
         },
         needsScrollAnimation(): boolean {
             const formattedValue = this.formatCurrencyValue(this.formData.balance || 0);
-            // Considera animação necessária se o valor formatado tiver mais de 12 caracteres
-            // (exemplo: "1.000.000,00" tem 12 caracteres)
             return formattedValue.length > 12;
         },
     },
@@ -373,7 +377,6 @@ export default {
         resetForm(newValue) {
             if (newValue) {
                 this.resetFormData();
-                // Emite evento para o pai resetar o boolean
                 this.$emit('reset-complete');
             }
         },
@@ -396,80 +399,59 @@ export default {
             }).format(value);
         },
         formatCurrencyValue(value: number | string): string {
-            // Retorna apenas o valor numérico sem o "R$"
             let numValue: number;
             let valueStr: string;
 
             if (typeof value === 'string') {
                 valueStr = value.replace(',', '.');
-                // Para strings muito longas (números gigantes), formata diretamente
                 if (valueStr.length > 15 && /^\d+(\.\d*)?$/.test(valueStr)) {
                     const parts = valueStr.split('.');
                     const integerPart = parts[0];
                     const decimalPart = parts[1] || '00';
-
-                    // Formata a parte inteira com separadores de milhar
                     const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-                    // Garante 2 casas decimais
                     const formattedDecimal = decimalPart.padEnd(2, '0').substring(0, 2);
-
                     return `${formattedInteger},${formattedDecimal}`;
                 }
-                // Converte string para número, tratando vírgula
                 numValue = parseFloat(valueStr) || 0;
             } else {
                 numValue = value || 0;
             }
 
-            // Para números muito grandes, formata manualmente para evitar notação científica
             if (numValue >= 1e15 || isNaN(numValue)) {
-                // Usa formatação manual para números muito grandes
                 const str = numValue.toString();
-                // Se estiver em notação científica, retorna como está (não deveria acontecer com nossa lógica)
                 if (str.includes('e+') || str.includes('E+')) {
                     return str;
                 }
                 const parts = str.split('.');
                 const integerPart = parts[0];
                 const decimalPart = parts[1] || '00';
-
-                // Formata a parte inteira com separadores de milhar
                 const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-                // Garante 2 casas decimais
                 const formattedDecimal = decimalPart.padEnd(2, '0').substring(0, 2);
-
                 return `${formattedInteger},${formattedDecimal}`;
             }
 
-            // Para números menores, usa Intl.NumberFormat
             return new Intl.NumberFormat('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
             }).format(numValue);
         },
         formatBalanceInput(value: number | string): string {
-            // Formata o valor para exibição no input, permitindo edição
             if (value === null || value === undefined || value === '' || value === 0) {
                 return '';
             }
 
             let numValue: number;
 
-            // Converte string para número se necessário
             if (typeof value === 'string') {
                 numValue = parseFloat(value.replace(',', '.')) || 0;
             } else {
                 numValue = value;
             }
 
-            // Se não for um número válido, retorna vazio
             if (isNaN(numValue) || !isFinite(numValue) || numValue < 0) {
                 return '';
             }
 
-            // Formata com até 2 casas decimais, removendo zeros desnecessários
             const formatted = numValue.toFixed(2).replace(/\.?0+$/, '');
             return formatted.replace('.', ',');
         },
@@ -491,18 +473,16 @@ export default {
             try {
                 const isEditing = !!this.wallet;
 
-                // Generate slug from name (será regenerado no backend para garantir consistência)
                 const slug = this.formData.name
                     .toLowerCase()
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/(^-|-$)/g, '');
 
-                // Garantir que balance seja sempre um número
                 let balanceValue = this.formData.balance;
                 if (typeof balanceValue === 'string') {
                     balanceValue = parseFloat(balanceValue.replace(',', '.')) || 0;
                 }
-                balanceValue = Math.round((balanceValue as number) * 100) / 100; // Limita a 2 casas decimais
+                balanceValue = Math.round((balanceValue as number) * 100) / 100;
 
                 const data = {
                     ...this.formData,
@@ -512,7 +492,6 @@ export default {
                     balance: balanceValue,
                 };
 
-                // Fazer a requisição de criação ou atualização
                 const response = isEditing
                     ? await apiPut(`/api/wallets/${this.wallet.id}`, data)
                     : await apiPost('/api/wallets', data);
@@ -522,28 +501,23 @@ export default {
                     throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'create'} wallet`);
                 }
 
-                // Toast de sucesso
                 this.toast({
                     title: isEditing ? 'carteira atualizada com sucesso!' : 'carteira criada com sucesso!',
                     description: `a carteira "${this.formData.name}" foi ${isEditing ? 'atualizada' : 'criada'} com sucesso.`,
                     variant: 'default',
                 });
 
-                // Se a wallet foi criada/editada como padrão, emitir evento para o WalletSwitch
                 if (this.formData.is_default) {
                     window.dispatchEvent(new CustomEvent('wallet-default-created-or-updated'));
                 }
 
-                // Emitir evento de sucesso para o componente pai
                 this.$emit('success');
 
-                // Resetar o formulário apenas se não estiver editando
                 if (!isEditing) {
                     this.resetFormData();
                 }
             } catch (error: any) {
                 const isEditing = !!this.wallet;
-                // Toast de erro
                 const errorMessage = error?.response?.data?.message ||
                                    error?.message ||
                                    `Erro ao ${isEditing ? 'atualizar' : 'criar'} carteira. Tente novamente.`;
@@ -561,59 +535,46 @@ export default {
             const target = event.target as HTMLInputElement;
             let value = target.value;
 
-            // Remove qualquer caractere que não seja número ou ponto/vírgula
             value = value.replace(/[^0-9.,]/g, '');
-
-            // Converte vírgula para ponto para processamento
             value = value.replace(/,/g, '.');
 
-            // Remove múltiplos pontos, mantendo apenas o primeiro
             const parts = value.split('.');
             if (parts.length > 2) {
                 value = parts[0] + '.' + parts.slice(1).join('');
             }
 
-            // Limita a 2 casas decimais
             if (parts.length === 2 && parts[1].length > 2) {
                 value = parts[0] + '.' + parts[1].substring(0, 2);
             }
 
-            // Garante que não seja negativo
             if (value.startsWith('-')) {
                 value = value.replace('-', '');
             }
 
-            // Se estiver vazio, define como 0 mas mantém o input vazio para melhor UX
             if (value === '' || value === '.') {
                 this.formData.balance = 0;
                 target.value = '';
                 return;
             }
 
-            // Valida se é um formato numérico válido
             const isValidNumber = /^\d+(\.\d{0,2})?$/.test(value);
 
             if (!isValidNumber) {
-                // Se não for válido, mantém o último valor válido
                 const lastValid = this.formData.balance || 0;
                 target.value = this.formatBalanceInput(lastValid);
                 return;
             }
 
-            // Converte para número (limite de precisão para números muito grandes)
             const numValue = parseFloat(value);
 
             if (!isNaN(numValue) && numValue >= 0 && isFinite(numValue)) {
-                // Limita a 2 casas decimais no valor numérico
                 this.formData.balance = Math.round(numValue * 100) / 100;
             } else {
-                // Se não for válido, mantém o último valor válido
                 const lastValid = this.formData.balance || 0;
                 target.value = this.formatBalanceInput(lastValid);
                 return;
             }
 
-            // Atualiza o valor do input mantendo o formato com vírgula e 2 casas decimais
             const displayValue = this.formatBalanceInput(this.formData.balance);
             target.value = displayValue;
         },
@@ -622,42 +583,34 @@ export default {
             const input = event.target as HTMLInputElement;
             const value = input.value;
 
-            // Permite: números, ponto, vírgula, backspace, delete, tab, escape, enter, setas
             const allowedKeys = [
                 'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
                 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
                 'Home', 'End'
             ];
 
-            // Permite Ctrl/Cmd + A, C, V, X
             if (event.ctrlKey || event.metaKey) {
                 if (['a', 'c', 'v', 'x'].includes(key.toLowerCase())) {
                     return;
                 }
             }
 
-            // Se for uma tecla permitida, deixa passar
             if (allowedKeys.includes(key)) {
                 return;
             }
 
-            // Se for um número, deixa passar
             if (/[0-9]/.test(key)) {
                 return;
             }
 
-            // Se for ponto ou vírgula
             if (key === '.' || key === ',') {
-                // Verifica se já existe ponto ou vírgula no valor
                 if (value.includes('.') || value.includes(',')) {
                     event.preventDefault();
                     return;
                 }
-                // Permite inserir ponto/vírgula
                 return;
             }
 
-            // Bloqueia qualquer outra tecla
             event.preventDefault();
         },
         resetFormData() {
@@ -700,17 +653,15 @@ export default {
     }
 }
 
-/* Container para números grandes */
 .balance-container {
     max-width: 100%;
     position: relative;
 }
 
 .balance-container--scrollable {
-    max-width: 10rem; /* Largura máxima visível */
+    max-width: 10rem;
 }
 
-/* Animação de scroll horizontal para números grandes */
 .balance-scroll-animation {
     display: inline-block;
     animation: scrollBalanceHorizontal 8s ease-in-out infinite;
@@ -719,23 +670,18 @@ export default {
 
 @keyframes scrollBalanceHorizontal {
     0% {
-        /* Mostra o início do número */
         transform: translateX(0);
     }
     25% {
-        /* Pausa no início */
         transform: translateX(0);
     }
     50% {
-        /* Move para mostrar o final do número */
         transform: translateX(calc(-100% + 10rem));
     }
     75% {
-        /* Pausa no final */
         transform: translateX(calc(-100% + 10rem));
     }
     100% {
-        /* Volta ao início suavemente */
         transform: translateX(0);
     }
 }

@@ -105,6 +105,7 @@
             <div class="mt-6">
                 <CreateWalletForm
                     :reset-form="shouldResetForm"
+                    :is-in-drawer="true"
                     @success="handleWalletCreated"
                     @cancel="closeDrawer"
                     @reset-complete="handleResetComplete"
