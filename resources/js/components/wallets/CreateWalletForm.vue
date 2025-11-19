@@ -148,7 +148,7 @@
                     class="px-4 py-2 text-sm font-medium bg-[#6965f2] text-white rounded-md hover:bg-[#3800D8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                     <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />
-                    criar carteira
+                    {{ wallet ? 'salvar alterações' : 'criar carteira' }}
                 </button>
             </div>
         </div>
