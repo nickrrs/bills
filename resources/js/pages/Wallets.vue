@@ -41,6 +41,30 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Campo de busca -->
+            <div class="mb-6">
+                <div class="relative max-w-md">
+                    <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 !h-5 !w-5 text-[#767676]" />
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        placeholder="buscar carteiras por nome..."
+                        class="w-full pl-10 pr-4 py-2.5 bg-[#131316] border border-[#2F2F2F] rounded-md text-white text-sm placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent transition-all"
+                        @input="handleSearchInput"
+                    />
+                    <button
+                        v-if="searchQuery"
+                        @click="clearSearch"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#767676] hover:text-white transition-colors"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
             <div class="bg-gradient-to-r from-[#1e1b4b] to-[#0f172a] rounded-[20px] border-2 border-[#252c3e] p-8 mb-10 flex items-center justify-between">
                 <div>
                     <p class="text-sm text-indigo-300 uppercase font-semibold tracking-wider mb-2">Patrimônio Total</p>
@@ -534,6 +558,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Star,
+    Search,
 } from 'lucide-vue-next';
 import type { Wallet } from '@/types';
 import {
@@ -634,6 +659,7 @@ export default {
         ChevronRight,
         Star,
         Trash2,
+        Search,
     },
     data() {
         return {
@@ -671,6 +697,8 @@ export default {
             isSelectionMode: false,
             selectedWalletIds: [] as number[],
             isBulkDeleteDialogOpen: false,
+            searchQuery: '',
+            searchTimeout: null as ReturnType<typeof setTimeout> | null,
         };
     },
     computed: {
@@ -756,6 +784,9 @@ export default {
         if (this.walletDefaultChangedListener) {
             window.removeEventListener('wallet-default-changed', this.walletDefaultChangedListener);
         }
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
     },
     setup() {
         const { toast } = useToast();
@@ -771,7 +802,11 @@ export default {
                     this.isRefreshing = true;
                 }
 
-                const url = `/api/wallets?page=${targetPage}&per_page=${this.perPage}`;
+                let url = `/api/wallets?page=${targetPage}&per_page=${this.perPage}`;
+                if (this.searchQuery.trim()) {
+                    url += `&search=${encodeURIComponent(this.searchQuery.trim())}`;
+                }
+
                 const response = await apiGet(url);
 
                 if (!response.ok) {
@@ -1192,6 +1227,21 @@ export default {
                     variant: 'destructive',
                 });
             }
+        },
+        handleSearchInput() {
+            if (this.searchTimeout) {
+                clearTimeout(this.searchTimeout);
+            }
+
+            this.searchTimeout = setTimeout(() => {
+                this.currentPage = 1;
+                this.loadWallets(1);
+            }, 500);
+        },
+        clearSearch() {
+            this.searchQuery = '';
+            this.currentPage = 1;
+            this.loadWallets(1);
         },
         flipToFront(id: number) {
             if (!this.flippedCards[id]) return;
