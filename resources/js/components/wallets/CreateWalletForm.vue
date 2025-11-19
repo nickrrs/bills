@@ -14,14 +14,14 @@
                         type="text"
                         maxlength="20"
                         placeholder="escolha um nome para a carteira"
-                        class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
+                        class="w-full px-3 py-2 bg-[#0E0E10] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
                     />
                 </div>
 
                 <div class="flex flex-col gap-2">
                     <label class="text-sm font-medium text-white">tipo de carteira</label>
                     <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-3 p-3 bg-[#131316] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
+                        <label class="flex items-center gap-3 p-3 bg-[#0E0E10] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
                             <input
                                 v-model="formData.type"
                                 type="radio"
@@ -33,7 +33,7 @@
                                 <p class="text-xs text-[#767676]">carteira para uso geral do dia a dia</p>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 bg-[#131316] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
+                        <label class="flex items-center gap-3 p-3 bg-[#0E0E10] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
                             <input
                                 v-model="formData.type"
                                 type="radio"
@@ -45,7 +45,7 @@
                                 <p class="text-xs text-[#767676]">para economizar e alcançar seus objetivos</p>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 bg-[#131316] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
+                        <label class="flex items-center gap-3 p-3 bg-[#0E0E10] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
                             <input
                                 v-model="formData.type"
                                 type="radio"
@@ -96,7 +96,7 @@
                         v-model="formData.description"
                         placeholder="qual é o objetivo dessa carteira?"
                         rows="3"
-                        class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent resize-none"
+                        class="w-full px-3 py-2 bg-[#0E0E10] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent resize-none"
                     ></textarea>
                 </div>
 
@@ -108,7 +108,7 @@
                         placeholder="0,00"
                         @input="handleBalanceInput"
                         @keydown="preventInvalidKeys"
-                        class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
+                        class="w-full px-3 py-2 bg-[#0E0E10] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
                     />
                 </div>
 
@@ -117,7 +117,7 @@
                         <input
                             v-model="formData.active"
                             type="checkbox"
-                            class="w-4 h-4 rounded border-[#2F2F2F] bg-[#131316] text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                            class="w-4 h-4 rounded !border-[#2F2F2F] !bg-[#131316] text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
                         />
                         <span class="text-sm text-white">ativo</span>
                     </label>

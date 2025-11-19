@@ -14,7 +14,7 @@
                                 'flex-1 px-4 py-3 rounded-lg font-medium transition-all',
                                 formData.type === 'expense'
                                     ? 'bg-red-500 text-white'
-                                    : 'bg-[#131316] border border-[#2F2F2F] text-[#767676] hover:border-[#3800D8] hover:text-white'
+                                    : 'bg-[#0E0E10] border border-[#2F2F2F] text-[#767676] hover:border-[#3800D8] hover:text-white'
                             ]"
                         >
                             despesa
@@ -26,7 +26,7 @@
                                 'flex-1 px-4 py-3 rounded-lg font-medium transition-all',
                                 formData.type === 'recept'
                                     ? 'bg-green-500 text-white'
-                                    : 'bg-[#131316] border border-[#2F2F2F] text-[#767676] hover:border-[#3800D8] hover:text-white'
+                                    : 'bg-[#0E0E10] border border-[#2F2F2F] text-[#767676] hover:border-[#3800D8] hover:text-white'
                             ]"
                         >
                             receita
@@ -46,7 +46,7 @@
                         type="text"
                         maxlength="30"
                         placeholder="ex: viagens, streaming..."
-                        class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
+                        class="w-full px-3 py-2 bg-[#0E0E10] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
                     />
                 </div>
 
@@ -137,11 +137,11 @@
                         </div>
 
                         <!-- Nome -->
-                        <h2 class="text-3xl font-bold text-white mb-1 text-ellipsis overflow-hidden whitespace-nowrap w-full" :title="formData.name || 'nome da categoria'">
+                        <h2 class="text-3xl font-bold text-white mb-1 w-full" :class="formData.name ? 'text-ellipsis overflow-hidden whitespace-nowrap' : ''" :title="formData.name || 'nome da categoria'">
                             {{ formData.name || 'nome da categoria' }}
                         </h2>
                         <span class="text-sm text-gray-400 bg-white/5 px-3 py-1 rounded-full">
-                            {{ formData.type === 'expense' ? 'Despesa' : 'Receita' }}
+                            {{ formData.type === 'expense' ? 'despesa' : 'receita' }}
                         </span>
                     </div>
                 </div>

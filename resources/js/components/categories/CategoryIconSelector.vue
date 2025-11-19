@@ -37,7 +37,7 @@
                     type="button"
                     @click="selectIcon(icon.name)"
                     :class="[
-                        'w-full aspect-square rounded-lg border-2 transition-all hover:scale-105 bg-[#131316] flex items-center justify-center',
+                        'w-full aspect-square rounded-lg border-2 transition-all hover:scale-105 bg-[#0E0E10] flex items-center justify-center',
                         selectedIcon === icon.name
                             ? 'border-[#6965f2] ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] bg-[#6965f2]/20'
                             : 'border-[#2F2F2F] hover:border-[#3800D8]'
