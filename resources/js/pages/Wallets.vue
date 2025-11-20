@@ -928,14 +928,14 @@ export default {
             return pages;
         },
         async handleWalletCreated() {
+            this.closeModal();
             await this.loadWallets(this.currentPage);
             this.resetAllCardsToFront();
-            this.closeModal();
         },
         async handleWalletUpdated() {
+            this.closeEditModal();
             await this.loadWallets(this.currentPage);
             this.resetAllCardsToFront();
-            this.closeEditModal();
         },
         openModal() {
             this.isModalOpen = true;
