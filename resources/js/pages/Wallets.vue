@@ -76,7 +76,7 @@
                                     <HelpCircle class="!h-4 !w-4 text-indigo-300" />
                                 </TooltipTrigger>
                                 <TooltipContent side="right">
-                                    <p class="text-sm text-white">o patrimônio total não considera os valores armazenados na caixinha de reserva, ou direcionados para seus objetivos.</p>
+                                    <p class="text-sm text-white">o patrimônio total não considera os valores armazenados na caixinha de reserva, ou destinados para seus objetivos.</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
