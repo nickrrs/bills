@@ -14,7 +14,9 @@ class CategoryService
         $order_direction = $payload['order_direction'] ?? 'desc';
         $search = $payload['search'] ?? null;
         $user_id = $payload['user_id'] ?? null;
-        $query = Category::where('user_id', $user_id);
+        $type = $payload['type'] ?? null;
+
+        $query = Category::query();
 
         if ($user_id) {
             $query->where('user_id', $user_id);
@@ -22,6 +24,10 @@ class CategoryService
 
         if ($search) {
             $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        if ($type && in_array($type, ['expense', 'recept'], true)) {
+            $query->where('type', $type);
         }
 
         $query->orderBy($order_by, $order_direction);
