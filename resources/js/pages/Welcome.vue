@@ -1,109 +1,3 @@
-<script setup lang="ts">
-import BillsLogo from '@/components/assets/BillsLogo.vue';
-import HeroOrb from '@/components/assets/HeroOrb.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { CreditCard, Target } from 'lucide-vue-next';
-import { onMounted, onUnmounted, ref } from 'vue';
-
-let cursorLight: HTMLElement | null = null;
-let observer: IntersectionObserver | null = null;
-
-const isVideoModalOpen = ref(false);
-const videoPlayer = ref<HTMLVideoElement | null>(null);
-
-const handleEscapeKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && isVideoModalOpen.value) {
-        closeVideoModal();
-    }
-};
-
-const openVideoModal = () => {
-    isVideoModalOpen.value = true;
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', handleEscapeKey);
-};
-
-const closeVideoModal = () => {
-    isVideoModalOpen.value = false;
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', handleEscapeKey);
-    if (videoPlayer.value) {
-        videoPlayer.value.pause();
-        videoPlayer.value.currentTime = 0;
-    }
-};
-
-const handleMouseMove = (e: MouseEvent) => {
-    if (cursorLight) {
-        requestAnimationFrame(() => {
-            if (cursorLight) {
-                cursorLight.style.left = e.clientX + 'px';
-                cursorLight.style.top = e.clientY + 'px';
-            }
-        });
-    }
-};
-
-const handleMouseEnter = () => {
-    if (cursorLight) {
-        cursorLight.classList.add('cursor-light-hover');
-    }
-};
-
-const handleMouseLeave = () => {
-    if (cursorLight) {
-        cursorLight.classList.remove('cursor-light-hover');
-    }
-};
-
-onMounted(() => {
-    cursorLight = document.getElementById('cursor-light');
-    if (cursorLight) {
-        document.addEventListener('mousemove', handleMouseMove);
-
-        const hoverTargets = document.querySelectorAll('.hover-target, a, button, .tech-card, .sys-mockup-container, .real-tx-card');
-        hoverTargets.forEach((el) => {
-            el.addEventListener('mouseenter', handleMouseEnter);
-            el.addEventListener('mouseleave', handleMouseLeave);
-        });
-    }
-
-    const revealElements = document.querySelectorAll('.reveal-on-scroll');
-
-    observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                }
-            });
-        },
-        {
-            threshold: 0.1,
-        },
-    );
-
-    revealElements.forEach((el) => {
-        observer?.observe(el);
-    });
-});
-
-onUnmounted(() => {
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('keydown', handleEscapeKey);
-
-    const hoverTargets = document.querySelectorAll('.hover-target, a, button, .tech-card, .sys-mockup-container, .real-tx-card');
-    hoverTargets.forEach((el) => {
-        el.removeEventListener('mouseenter', handleMouseEnter);
-        el.removeEventListener('mouseleave', handleMouseLeave);
-    });
-
-    if (observer) {
-        observer.disconnect();
-    }
-});
-</script>
-
 <template>
     <Head title="bills - Controle Financeiro Total" />
 
@@ -173,15 +67,15 @@ onUnmounted(() => {
                         <!-- Header -->
                         <div class="mb-8 flex items-center justify-between border-b border-[#27272a] pb-4">
                             <div class="flex items-center gap-6">
-                                <div class="text-xl font-bold tracking-tight text-white">Visão Geral</div>
                                 <div class="hidden gap-4 text-sm md:flex">
-                                    <span class="-mb-4 border-b-2 border-white pb-4 font-medium text-white">Overview</span>
-                                    <span class="text-gray-500">Relatórios</span>
-                                    <span class="text-gray-500">Lançamentos</span>
+                                    <span class="-mb-4 border-b-2 border-[#3800d8] pb-4 font-medium text-white">overview</span>
+                                    <span class="text-gray-500">relatórios</span>
+                                    <span class="text-gray-500">lançamentos</span>
+                                    <span class="text-gray-500">cartões</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
-                                <span class="text-xs uppercase text-gray-500">Julho, 2024</span>
+                                <span class="text-xs font-semibold uppercase text-[#7d5ff4]">Julho, 2024</span>
                             </div>
                         </div>
 
@@ -190,7 +84,7 @@ onUnmounted(() => {
                             <div class="mockup-card">
                                 <div class="mb-2 flex items-start justify-between">
                                     <span class="text-xs text-gray-400">patrimônio</span>
-                                    <span class="text-xs text-gray-500">$</span>
+                                    <DollarSign class="h-4 w-4" />
                                 </div>
                                 <div class="mb-1 text-xl font-bold text-white">R$ 23.045,32</div>
                                 <div class="text-[10px] font-medium text-sys-green">+20% este mês</div>
@@ -198,7 +92,7 @@ onUnmounted(() => {
                             <div class="mockup-card">
                                 <div class="mb-2 flex items-start justify-between">
                                     <span class="text-xs text-gray-400">receita</span>
-                                    <span class="text-xs text-gray-500">↗</span>
+                                    <ArrowUpRight class="h-4 w-4" />
                                 </div>
                                 <div class="mb-1 text-xl font-bold text-white">R$ 23.045,32</div>
                                 <div class="text-[10px] font-medium text-sys-green">+20% este mês</div>
@@ -206,7 +100,7 @@ onUnmounted(() => {
                             <div class="mockup-card">
                                 <div class="mb-2 flex items-start justify-between">
                                     <span class="text-xs text-gray-400">despesa</span>
-                                    <span class="text-xs text-gray-500">↘</span>
+                                    <ArrowDownRight class="h-4 w-4" />
                                 </div>
                                 <div class="mb-1 text-xl font-bold text-white">R$ 23.045,32</div>
                                 <div class="text-[10px] font-medium text-sys-green">+20% este mês</div>
@@ -214,14 +108,10 @@ onUnmounted(() => {
                             <div class="mockup-card">
                                 <div class="mb-2 flex items-start justify-between">
                                     <span class="text-xs text-gray-400">pagamentos</span>
-                                    <div
-                                        class="flex h-3 w-3 items-center justify-center rounded-full border border-blue-500 text-[8px] text-blue-500"
-                                    >
-                                        ✓
-                                    </div>
+                                    <CircleCheck class="h-4 w-4 !text-blue-500" />
                                 </div>
                                 <div class="mb-1 text-xl font-bold text-white">12/15</div>
-                                <div class="text-[10px] font-medium text-gray-500">3 pendentes</div>
+                                <div class="text-[10px] font-medium text-yellow-500">3 pendentes</div>
                             </div>
                         </div>
 
@@ -231,7 +121,7 @@ onUnmounted(() => {
                                 <div class="mockup-card">
                                     <div class="mb-1 flex items-center justify-between">
                                         <span class="text-xs font-bold text-white">seus cartões</span>
-                                        <span class="text-xs text-gray-500">↗</span>
+                                        <ArrowUpRight class="h-4 w-4" />
                                     </div>
                                     <span class="mb-4 block text-[10px] text-gray-500">cartões com faturas ativas</span>
 
@@ -280,45 +170,45 @@ onUnmounted(() => {
                                 <div class="mockup-card flex-1">
                                     <div class="mb-1 flex items-center justify-between">
                                         <span class="text-xs font-bold text-white">seus rastreios</span>
-                                        <span class="text-xs text-gray-500">↗</span>
+                                        <ArrowUpRight class="h-4 w-4" />
                                     </div>
                                     <span class="mb-4 block text-[10px] text-gray-500">limites de gastos e objetivos</span>
 
                                     <div class="grid grid-cols-1 gap-x-6 gap-y-6 md:grid-cols-2">
                                         <div>
                                             <div class="mb-2 flex items-start gap-3">
-                                                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-red-400/20 text-xs text-red-400">
-                                                    🚗
+                                                <div class="flex h-8 w-8 items-center justify-center rounded-md bg-red-400/20 text-xs text-red-400">
+                                                    <Car class="h-4 w-4" />
                                                 </div>
                                                 <div class="flex-1">
-                                                    <div class="text-[11px] font-medium text-white">Manutenção Carro</div>
+                                                    <div class="text-[11px] font-medium text-white">manutenção do carro</div>
                                                     <div class="mt-1 flex justify-between text-[10px]">
                                                         <span class="text-gray-400">R$ 1.250</span>
-                                                        <span class="font-bold text-white">Meta: R$ 5k</span>
+                                                        <span class="font-bold text-white">meta: R$ 5k</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#27272a]">
-                                                <div class="h-full w-[25%] bg-indigo-500"></div>
+                                                <div class="h-full w-[25%] bg-red-500"></div>
                                             </div>
                                         </div>
                                         <div>
                                             <div class="mb-2 flex items-start gap-3">
                                                 <div
-                                                    class="flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/20 text-xs text-cyan-400"
+                                                    class="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-400/20 text-xs text-cyan-400"
                                                 >
-                                                    🍔
+                                                    <Utensils class="h-4 w-4" />
                                                 </div>
                                                 <div class="flex-1">
-                                                    <div class="text-[11px] font-medium text-white">Limite iFood</div>
+                                                    <div class="text-[11px] font-medium text-white">limite delivery</div>
                                                     <div class="mt-1 flex justify-between text-[10px]">
                                                         <span class="text-gray-400">R$ 450,00</span>
-                                                        <span class="font-bold text-white">Max: R$ 600</span>
+                                                        <span class="font-bold text-white">max: R$ 600</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#27272a]">
-                                                <div class="h-full w-[75%] bg-yellow-500"></div>
+                                                <div class="h-full w-[75%] bg-cyan-500"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -327,19 +217,19 @@ onUnmounted(() => {
 
                             <div class="mockup-card flex h-full flex-col">
                                 <div class="mb-4">
-                                    <span class="block text-xs font-bold text-white">Últimas movimentações</span>
+                                    <span class="block text-xs font-bold text-white">últimas movimentações</span>
                                     <span class="text-[10px] text-gray-500">15 transações este mês</span>
                                 </div>
 
                                 <div class="mockup-scroll flex-1 space-y-6 overflow-y-auto pr-2">
                                     <div class="flex items-start gap-3">
                                         <div
-                                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-[#27272a] text-xs text-pink-500"
+                                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-pink-500/20 text-xs text-pink-500"
                                         >
-                                            ☕
+                                            <Coffee class="h-4 w-4" />
                                         </div>
                                         <div class="min-w-0 flex-1">
-                                            <div class="truncate text-[11px] font-medium text-white">Café da Tarde</div>
+                                            <div class="truncate text-[11px] font-medium text-white">café da tarde</div>
                                             <div class="text-[10px] text-gray-500">alimentação</div>
                                             <div class="mt-0.5 text-[9px] text-gray-600">Hoje, 15:30</div>
                                         </div>
@@ -347,25 +237,29 @@ onUnmounted(() => {
                                     </div>
                                     <div class="flex items-start gap-3">
                                         <div
-                                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-[#27272a] text-xs text-blue-400"
+                                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-blue-400/20 text-xs text-blue-400"
                                         >
-                                            🛒
+                                            <ShoppingCart class="h-4 w-4" />
                                         </div>
                                         <div class="min-w-0 flex-1">
-                                            <div class="truncate text-[11px] font-medium text-white">Supermercado Semanal</div>
-                                            <div class="text-[10px] text-gray-500">casa</div>
+                                            <div class="truncate text-[11px] font-medium text-white">supermercado semanal</div>
+                                            <div class="text-[10px] flex flex-row gap-1">
+                                                <span class="text-gray-500">casa</span>
+                                                <span class="text-gray-500"> > </span>
+                                                <span class="text-blue-400">supermercado</span>
+                                            </div>
                                             <div class="mt-0.5 text-[9px] text-gray-600">Ontem</div>
                                         </div>
                                         <div class="whitespace-nowrap text-xs font-bold text-sys-red">-R$ 450,00</div>
                                     </div>
                                     <div class="flex items-start gap-3">
                                         <div
-                                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-[#27272a] text-xs text-green-500"
+                                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-green-500/20 text-xs text-green-500"
                                         >
-                                            💰
+                                            <PiggyBank class="h-4 w-4" />
                                         </div>
                                         <div class="min-w-0 flex-1">
-                                            <div class="truncate text-[11px] font-medium text-white">Freelance Design</div>
+                                            <div class="truncate text-[11px] font-medium text-white">freelance design</div>
                                             <div class="text-[10px] text-gray-500">extra</div>
                                             <div class="mt-0.5 text-[9px] text-gray-600">05/07</div>
                                         </div>
@@ -390,26 +284,26 @@ onUnmounted(() => {
                             <span class="text-gray-500">controle</span> total
                         </h2>
 
-                        <div class="relative space-y-10 pl-8">
-                            <div class="absolute bottom-2 left-0 top-2 w-px bg-gradient-to-b from-indigo-500 to-transparent"></div>
+                        <div class="timeline-steps relative space-y-10 pl-10">
+                            <div class="timeline-line"></div>
 
-                            <div class="relative">
-                                <div class="absolute -left-[36px] top-1 h-4 w-4 rounded-full bg-indigo-500 shadow-[0_0_10px_#6366f1]"></div>
+                            <div class="timeline-step reveal-on-scroll">
+                                <div class="timeline-dot"></div>
                                 <h3 class="mb-2 text-xl font-bold text-white">1. Organize</h3>
                                 <p class="text-sm text-gray-400">
                                     Crie <strong>Wallets</strong> customizáveis para facilitar a gestão de suas finanças.
                                 </p>
                             </div>
-                            <div class="relative">
-                                <div class="absolute -left-[36px] top-1 h-4 w-4 rounded-full border border-indigo-500 bg-[#1e293b]"></div>
+                            <div class="timeline-step reveal-on-scroll">
+                                <div class="timeline-dot"></div>
                                 <h3 class="mb-2 text-xl font-bold text-white">2. Classifique</h3>
-                                <p class="text-sm text-gray-400">Use categorias personalizadas para saber exatamente para onde vai cada centavo.</p>
+                                <p class="text-sm text-gray-400">Use <strong>categorias</strong> e <strong>subcategorias</strong> personalizadas para saber exatamente para onde vai cada centavo.</p>
                             </div>
-                            <div class="relative">
-                                <div class="absolute -left-[36px] top-1 h-4 w-4 rounded-full border border-indigo-500 bg-[#1e293b]"></div>
+                            <div class="timeline-step reveal-on-scroll">
+                                <div class="timeline-dot"></div>
                                 <h3 class="mb-2 text-xl font-bold text-white">3. Planeje e Projete</h3>
                                 <p class="text-sm text-gray-400">
-                                    Visualize relatórios de tendências e projeções futuras baseadas no seu comportamento.
+                                    Visualize relatórios de <strong>tendências</strong> e <strong>projeções futuras</strong> baseadas no seu comportamento.
                                 </p>
                             </div>
                         </div>
@@ -441,7 +335,7 @@ onUnmounted(() => {
                                             <div class="text-[10px] uppercase opacity-70">SEM DESCRIÇÃO</div>
                                         </div>
                                     </div>
-                                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">•••</div>
+                                    <MoreHorizontal class="h-4 w-4 text-white" />
                                 </div>
 
                                 <div class="relative z-10 mb-6">
@@ -550,22 +444,20 @@ onUnmounted(() => {
             <div class="container mx-auto px-6">
                 <div class="grid grid-cols-1 items-center gap-20 lg:grid-cols-2">
                     <div class="reveal-on-scroll">
-                        <div class="mb-2 text-xs font-bold uppercase tracking-wider text-real-trackYellow">Planeje com Antecedência</div>
-                        <h2 class="font-display mb-6 text-5xl font-bold leading-tight text-white">
-                            Defina, Acompanhe e <br />Bata Suas Metas.
-                        </h2>
+                        <div class="mb-2 text-xs font-bold uppercase tracking-wider text-real-iconPink">Planeje com Antecedência</div>
+                        <h2 class="font-display mb-6 text-5xl font-bold leading-tight text-white">Defina, Acompanhe e <br />Bata Suas Metas.</h2>
                         <p class="mb-8 text-lg leading-relaxed text-gray-400">
                             Seja um carro novo, férias ou a entrada de um imóvel, o bills ajuda você a visualizar seu progresso.
                         </p>
                         <ul class="space-y-4 text-gray-300">
                             <li class="flex items-center gap-3">
-                                <svg class="h-5 w-5 text-real-trackYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-5 w-5 text-real-iconPink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 Crie metas de economia com prazos.
                             </li>
                             <li class="flex items-center gap-3">
-                                <svg class="h-5 w-5 text-real-trackYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-5 w-5 text-real-iconPink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 Contribuições automáticas.
@@ -576,44 +468,47 @@ onUnmounted(() => {
                         <div class="space-y-10">
                             <div class="track-container">
                                 <div class="mb-2 flex items-center gap-3 font-medium text-white">
-                                    <span class="text-xl">✈️</span> Meta de Férias
+                                    <Plane class="h-6 w-6 text-real-greenText" />
+                                    <span>Meta de Férias</span>
                                 </div>
                                 <div class="track-bar-bg">
                                     <div class="track-bar-fill" style="width: 75%">
                                         <div class="track-handle"></div>
                                     </div>
                                 </div>
-                                <div class="mt-2 flex justify-between font-mono text-xs text-gray-400">
-                                    <span>$0</span>
-                                    <span class="text-white">$1,500</span>
+                                <div class="mt-2 flex justify-between font-mono text-sm text-gray-400">
+                                    <span>R$0</span>
+                                    <span class="text-white">R$1.500</span>
                                 </div>
                             </div>
                             <div class="track-container">
                                 <div class="mb-2 flex items-center gap-3 font-medium text-white">
-                                    <span class="text-xl">🚗</span> Fundo Carro Novo
+                                    <Car class="h-6 w-6 text-real-iconPink" />
+                                    <span>Fundo Carro Novo</span>
                                 </div>
                                 <div class="track-bar-bg">
                                     <div class="track-bar-fill" style="width: 35%">
                                         <div class="track-handle"></div>
                                     </div>
                                 </div>
-                                <div class="mt-2 flex justify-between font-mono text-xs text-gray-400">
-                                    <span>$0</span>
-                                    <span class="text-white">$5,000</span>
+                                <div class="mt-2 flex justify-between font-mono text-sm text-gray-400">
+                                    <span>R$0</span>
+                                    <span class="text-white">R$5,000</span>
                                 </div>
                             </div>
                             <div class="track-container">
                                 <div class="mb-2 flex items-center gap-3 font-medium text-white">
-                                    <span class="text-xl">🏠</span> Entrada Imóvel
+                                    <Home class="h-6 w-6 text-blue-500" />
+                                    <span>Entrada Imóvel</span>
                                 </div>
                                 <div class="track-bar-bg">
                                     <div class="track-bar-fill" style="width: 22%">
                                         <div class="track-handle"></div>
                                     </div>
                                 </div>
-                                <div class="mt-2 flex justify-between font-mono text-xs text-gray-400">
-                                    <span>$0</span>
-                                    <span class="text-white">$50,000</span>
+                                <div class="mt-2 flex justify-between font-mono text-sm text-gray-400">
+                                    <span>R$0</span>
+                                    <span class="text-white">R$50,000</span>
                                 </div>
                             </div>
                         </div>
@@ -629,7 +524,7 @@ onUnmounted(() => {
                     <div class="reveal-on-scroll flex justify-center">
                         <div class="group relative w-full max-w-md">
                             <div
-                                class="relative overflow-hidden rounded-2xl bg-real-nuPurple p-8 text-white shadow-2xl transition-transform duration-500 hover:scale-[1.03] hover:rotate-1"
+                                class="relative overflow-hidden rounded-2xl bg-real-nuPurple p-8 text-white shadow-2xl transition-transform duration-500 hover:rotate-1 hover:scale-[1.03]"
                             >
                                 <div class="mb-12 flex items-start justify-between">
                                     <span class="text-xl font-bold tracking-tight">bills</span>
@@ -639,7 +534,7 @@ onUnmounted(() => {
                                         <div
                                             class="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black/20"
                                         ></div>
-                </div>
+                                    </div>
                                 </div>
                                 <div class="mb-6 font-mono text-2xl tracking-widest opacity-90">**** **** **** 5678</div>
                                 <div class="flex items-end justify-between">
@@ -662,15 +557,18 @@ onUnmounted(() => {
                     <div class="reveal-on-scroll lg:pl-10">
                         <div class="mb-2 text-xs font-bold uppercase tracking-wider text-real-nuPurple">Gestão de Crédito</div>
                         <h2 class="font-display mb-6 text-4xl font-bold leading-tight text-white md:text-5xl">
-                            Cartões Virtuais e <br /> Controle de Limites.
+                            Cartões Virtuais e <br />
+                            Controle de Limites.
                         </h2>
                         <p class="mb-6 text-lg leading-relaxed text-gray-400">
                             Crie cartões fictícios para espelhar seus cartões reais (Nubank, XP, Inter) dentro do sistema.
                         </p>
                         <div class="space-y-6">
                             <div class="flex gap-4">
-                                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-real-nuPurple/20 text-lg text-real-nuPurple">
-                                    💳
+                                <div
+                                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-real-nuPurple/20 text-lg text-real-nuPurple"
+                                >
+                                    <CreditCard class="h-6 w-6 text-real-nuPurple" />
                                 </div>
                                 <div>
                                     <h4 class="mb-1 font-bold text-white">Múltiplos Cartões</h4>
@@ -680,8 +578,10 @@ onUnmounted(() => {
                                 </div>
                             </div>
                             <div class="flex gap-4">
-                                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-real-nuPurple/20 text-lg text-real-nuPurple">
-                                    📊
+                                <div
+                                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-real-nuPurple/20 text-lg text-real-nuPurple"
+                                >
+                                    <ChartBar class="h-6 w-6 text-real-nuPurple" />
                                 </div>
                                 <div>
                                     <h4 class="mb-1 font-bold text-white">Status de Fatura</h4>
@@ -702,29 +602,19 @@ onUnmounted(() => {
                 <div class="reveal-on-scroll mb-16 text-center">
                     <h2 class="font-display mb-4 text-4xl font-bold text-white">Caixinhas Inteligentes</h2>
                     <p class="mx-auto max-w-xl text-gray-400">
-                        Separe seu dinheiro em "Caixinhas" dedicadas para reservas ou investimentos de longo prazo. Visualize o rendimento
-                        projetado.
+                        Separe seu dinheiro em "Caixinhas" dedicadas para reservas ou investimentos de longo prazo. Visualize o rendimento projetado.
                     </p>
                 </div>
                 <div class="reveal-on-scroll mx-auto grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-3">
                     <!-- Caixinha 1: Reserva -->
                     <div
-                        class="real-tx-card h-full !flex-col !items-start !gap-4 border border-real-greenText/20 !p-6 transition-all hover:border-real-greenText/50 bg-[#09090b]"
+                        class="real-tx-card h-full !flex-col !items-start !gap-4 border border-real-greenText/20 bg-[#09090b] !p-6 transition-all hover:border-real-greenText/50"
                     >
                         <div class="flex w-full justify-between">
                             <div class="real-icon-box bg-real-greenText/10 text-real-greenText">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                    ></path>
-                                </svg>
+                                <Lock class="h-6 w-6" />
                             </div>
-                            <span class="rounded bg-real-greenText/10 px-2 py-1 text-[10px] font-bold uppercase text-real-greenText"
-                                >Reserva</span
-                            >
+                            <span class="rounded bg-real-greenText/10 px-2 py-1 text-[10px] font-bold uppercase text-real-greenText">Reserva</span>
                         </div>
                         <div class="mt-2">
                             <h4 class="text-lg font-bold text-white">Emergência</h4>
@@ -743,34 +633,27 @@ onUnmounted(() => {
 
                     <!-- Caixinha 2: Investimento -->
                     <div
-                        class="real-tx-card h-full !flex-col !items-start !gap-4 border border-real-blueVault/20 !p-6 transition-all hover:border-real-blueVault/50 bg-[#09090b]"
+                        class="real-tx-card h-full !flex-col !items-start !gap-4 border border-real-blueVault/20 bg-[#09090b] !p-6 transition-all hover:border-real-blueVault/50"
                     >
                         <div class="flex w-full justify-between">
                             <div class="real-icon-box bg-real-blueVault/10 text-real-blueVault">
                                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                                    ></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                                 </svg>
                             </div>
-                            <span class="rounded bg-real-blueVault/10 px-2 py-1 text-[10px] font-bold uppercase text-real-blueVault"
-                                >Renda Fixa</span
-                            >
+                            <span class="rounded bg-real-blueVault/10 px-2 py-1 text-[10px] font-bold uppercase text-real-blueVault">Renda Fixa</span>
                         </div>
                         <div class="mt-2">
                             <h4 class="text-lg font-bold text-white">Tesouro Direto</h4>
                             <p class="mt-1 text-xs text-gray-500">IPCA+ 2035</p>
-                            </div>
+                        </div>
                         <div class="mt-auto w-full">
                             <div class="mb-2 flex justify-between text-xs text-gray-300">
                                 <span>R$ 5.430</span>
                                 <span class="font-bold text-real-blueVault">+1.2% este mês</span>
                             </div>
                             <!-- Fake Graph Line -->
-                            <svg class="h-8 w-full opacity-50 text-real-blueVault" preserveAspectRatio="none" viewBox="0 0 100 20">
+                            <svg class="h-8 w-full text-real-blueVault opacity-50" preserveAspectRatio="none" viewBox="0 0 100 20">
                                 <path d="M0 15 Q 20 18, 40 10 T 100 5" fill="none" stroke="currentColor" stroke-width="2" />
                             </svg>
                         </div>
@@ -778,7 +661,7 @@ onUnmounted(() => {
 
                     <!-- Caixinha 3: Objetivo -->
                     <div
-                        class="real-tx-card h-full !flex-col !items-start !gap-4 border border-sys-purple/20 !p-6 transition-all hover:border-sys-purple/50 bg-[#09090b]"
+                        class="real-tx-card h-full !flex-col !items-start !gap-4 border border-sys-purple/20 bg-[#09090b] !p-6 transition-all hover:border-sys-purple/50"
                     >
                         <div class="flex w-full justify-between">
                             <div class="real-icon-box bg-sys-purple/10 text-sys-purple">
@@ -819,20 +702,20 @@ onUnmounted(() => {
                     <div class="reveal-on-scroll">
                         <div class="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-400">Futuro Financeiro</div>
                         <h2 class="font-display mb-6 text-4xl font-bold leading-tight text-white md:text-5xl">
-                            Automação que <br /> prevê o amanhã.
+                            Automação que <br />
+                            prevê o amanhã.
                         </h2>
                         <p class="mb-6 text-lg leading-relaxed text-gray-400">
-                            O sistema analisa seu histórico de gastos recorrentes, entradas fixas e investimentos para projetar sua saúde
-                            financeira.
+                            O sistema analisa seu histórico de gastos recorrentes, entradas fixas e investimentos para projetar sua saúde financeira.
                         </p>
                         <p class="mb-8 text-lg leading-relaxed text-gray-400">
-                            Saiba exatamente onde você estará daqui a 1 ano e receba sugestões inteligentes de economia para atingir seus
-                            objetivos mais rápido.
+                            Saiba exatamente onde você estará daqui a 1 ano e receba sugestões inteligentes de economia para atingir seus objetivos
+                            mais rápido.
                         </p>
                     </div>
                     <!-- Visual: Projection Graph & Insights -->
                     <div class="reveal-on-scroll relative">
-                        <div class="tech-card projection-card border-indigo-500/40 bg-[#0B0F19] p-6 w-[500px] max-w-full mx-auto">
+                        <div class="tech-card projection-card mx-auto w-[500px] max-w-full border-indigo-500/40 bg-[#0B0F19] p-6">
                             <div class="mb-6 flex items-center justify-between">
                                 <h4 class="text-sm font-bold text-white">Projeção Patrimonial (12 Meses)</h4>
                                 <span
@@ -845,12 +728,7 @@ onUnmounted(() => {
                             <div class="relative h-48 w-[452px] max-w-full border-b border-l border-gray-700">
                                 <!-- Historical (Solid) -->
                                 <svg class="absolute inset-0 h-full w-full" viewBox="0 0 400 100" preserveAspectRatio="none">
-                                    <path
-                                        d="M0 80 L50 75 L100 60 L150 65"
-                                        fill="none"
-                                        stroke="#3b82f6"
-                                        stroke-width="2"
-                                    />
+                                    <path d="M0 80 L50 75 L100 60 L150 65" fill="none" stroke="#3b82f6" stroke-width="2" />
                                     <!-- Projected (Dotted) -->
                                     <path
                                         d="M150 65 L200 50 L250 40 L300 25 L350 15 L400 5"
@@ -860,15 +738,11 @@ onUnmounted(() => {
                                         stroke-dasharray="5,5"
                                     />
                                     <!-- Fill -->
-                                    <path
-                                        d="M150 65 L200 50 L250 40 L300 25 L350 15 L400 5 V 100 H 150 Z"
-                                        fill="url(#gradProj)"
-                                        opacity="0.2"
-                                    />
+                                    <path d="M150 65 L200 50 L250 40 L300 25 L350 15 L400 5 V 100 H 150 Z" fill="url(#gradProj)" opacity="0.2" />
                                     <defs>
                                         <linearGradient id="gradProj" x1="0%" y1="0%" x2="0%" y2="100%">
-                                            <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
-                                            <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:0" />
+                                            <stop offset="0%" style="stop-color: #8b5cf6; stop-opacity: 1" />
+                                            <stop offset="100%" style="stop-color: #8b5cf6; stop-opacity: 0" />
                                         </linearGradient>
                                     </defs>
                                 </svg>
@@ -913,12 +787,10 @@ onUnmounted(() => {
                             <!-- CSS Pie Chart -->
                             <div
                                 class="relative h-40 w-40 rounded-full"
-                                style="background: conic-gradient(#3b82f6 0% 40%, #10b981 40% 65%, #f59e0b 65% 85%, #ec4899 85% 100%);"
+                                style="background: conic-gradient(#3b82f6 0% 40%, #10b981 40% 65%, #f59e0b 65% 85%, #ec4899 85% 100%)"
                             >
                                 <div class="absolute inset-4 flex items-center justify-center rounded-full bg-[#09090b]">
-                                    <span class="text-xs text-gray-500"
-                                        >Total<br /><strong class="text-lg text-white">100%</strong></span
-                                    >
+                                    <span class="text-xs text-gray-500">Total<br /><strong class="text-lg text-white">100%</strong></span>
                                 </div>
                             </div>
                             <!-- Legend -->
@@ -968,8 +840,8 @@ onUnmounted(() => {
                                 />
                                 <defs>
                                     <linearGradient id="gradPurple" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
-                                        <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:0" />
+                                        <stop offset="0%" style="stop-color: #8b5cf6; stop-opacity: 1" />
+                                        <stop offset="100%" style="stop-color: #8b5cf6; stop-opacity: 0" />
                                     </linearGradient>
                                 </defs>
                             </svg>
@@ -992,7 +864,7 @@ onUnmounted(() => {
                 <div class="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
                     <!-- Visuals -->
                     <div class="reveal-on-scroll order-2 grid grid-cols-2 gap-4 lg:order-1">
-                        <div class="sys-mockup-container flex flex-col items-center text-center p-6">
+                        <div class="sys-mockup-container flex flex-col items-center p-6 text-center">
                             <div class="security-icon-box">
                                 <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -1006,7 +878,7 @@ onUnmounted(() => {
                             <h4 class="mb-2 text-sm font-bold text-white">Dados Locais</h4>
                             <p class="text-xs text-gray-400">Você é o dono dos seus dados. Sem compartilhamento oculto.</p>
                         </div>
-                        <div class="sys-mockup-container mt-8 flex flex-col items-center text-center p-6">
+                        <div class="sys-mockup-container mt-8 flex flex-col items-center p-6 text-center">
                             <div class="security-icon-box">
                                 <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -1020,7 +892,7 @@ onUnmounted(() => {
                             <h4 class="mb-2 text-sm font-bold text-white">Controle Manual</h4>
                             <p class="text-xs text-gray-400">Input manual para precisão total, sem erros de sincronização bancária.</p>
                         </div>
-                        <div class="sys-mockup-container flex flex-col items-center text-center p-6">
+                        <div class="sys-mockup-container flex flex-col items-center p-6 text-center">
                             <div class="security-icon-box">
                                 <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -1038,17 +910,15 @@ onUnmounted(() => {
                     <!-- Text -->
                     <div class="reveal-on-scroll order-1 lg:order-2">
                         <div class="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-400">Segurança e Privacidade</div>
-                        <h2 class="font-display mb-6 text-4xl font-bold leading-tight text-white md:text-5xl">
-                            Confiança e Acesso.
-                        </h2>
+                        <h2 class="font-display mb-6 text-4xl font-bold leading-tight text-white md:text-5xl">Confiança e Acesso.</h2>
                         <p class="mb-6 text-lg leading-relaxed text-gray-400">
-                            O bills foi desenhado com a privacidade em mente. Sem dados confidenciais e sensíveis, apenas o que é preciso para
-                            sua gestão financeira.
+                            O bills foi desenhado com a privacidade em mente. Sem dados confidenciais e sensíveis, apenas o que é preciso para sua
+                            gestão financeira.
                         </p>
                         <p class="mb-6 text-lg leading-relaxed text-gray-400">
                             A princípio, todos os dados financeiros são inseridos e gerenciados por você. Utilizamos
-                            <strong>Wallets fictícias</strong> para representar suas contas e cartões, garantindo que nenhuma informação
-                            bancária real trafegue pelo sistema.
+                            <strong>Wallets fictícias</strong> para representar suas contas e cartões, garantindo que nenhuma informação bancária real
+                            trafegue pelo sistema.
                         </p>
                     </div>
                 </div>
@@ -1057,9 +927,11 @@ onUnmounted(() => {
 
         <!-- SECTION 9: CTA GREETINGS -->
         <section class="relative z-10 overflow-hidden border-t border-white/5 py-32 text-center">
-            <div class="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/10 blur-[120px]"></div>
+            <div
+                class="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/10 blur-[120px]"
+            ></div>
 
-            <div class="container relative z-10 mx-auto px-6 reveal-on-scroll">
+            <div class="reveal-on-scroll container relative z-10 mx-auto px-6">
                 <h2 class="font-display mb-8 text-5xl font-bold tracking-tight text-white md:text-6xl">Pronto para começar?</h2>
                 <p class="mx-auto mb-10 max-w-2xl text-xl text-gray-400">
                     Junte-se a milhares de usuários que estão retomando o controle de suas vidas financeiras. Simples, seguro e grátis.
@@ -1077,18 +949,14 @@ onUnmounted(() => {
 
         <footer class="relative z-10 border-t border-white/5 bg-[#050505] py-12 text-center">
             <div class="container mx-auto px-6">
-                <div class="text-xs text-gray-600">&copy; 2025 bills Inc. System Status: Operational</div>
+                <div class="text-xs text-gray-600">&copy; 2025 bills. Made by <a href="https://x.com/leondicielo" target="_blank" class="text-white hover:text-[#8b5cf6]">@leondicielo</a></div>
             </div>
         </footer>
 
         <!-- Video Modal -->
         <Teleport to="body">
             <Transition name="modal">
-                <div
-                    v-if="isVideoModalOpen"
-                    class="video-modal-overlay"
-                    @click.self="closeVideoModal"
-                >
+                <div v-if="isVideoModalOpen" class="video-modal-overlay" @click.self="closeVideoModal">
                     <div class="video-modal-container">
                         <button @click="closeVideoModal" class="video-modal-close hover-target" aria-label="Fechar">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1096,14 +964,7 @@ onUnmounted(() => {
                             </svg>
                         </button>
                         <div class="video-modal-content">
-                            <video
-                                ref="videoPlayer"
-                                class="video-player"
-                                controls
-                                autoplay
-                                src="/video/bills-23.mp4"
-                                @ended="closeVideoModal"
-                            >
+                            <video ref="videoPlayer" class="video-player" controls autoplay src="/video/bills-23.mp4" @ended="closeVideoModal">
                                 Seu navegador não suporta a reprodução de vídeo.
                             </video>
                         </div>
@@ -1113,6 +974,171 @@ onUnmounted(() => {
         </Teleport>
     </div>
 </template>
+
+<script setup lang="ts">
+import BillsLogo from '@/components/assets/BillsLogo.vue';
+import HeroOrb from '@/components/assets/HeroOrb.vue';
+import { Head, Link } from '@inertiajs/vue3';
+import { ArrowDownRight, ArrowUpRight, Car, ChartBar, CircleCheck, Coffee, CreditCard, DollarSign, Home, Lock, MoreHorizontal, PiggyBank, Plane, ShoppingCart, Target, Utensils } from 'lucide-vue-next';
+import { onMounted, onUnmounted, ref } from 'vue';
+
+let cursorLight: HTMLElement | null = null;
+let observer: IntersectionObserver | null = null;
+let timelineSteps: HTMLElement[] = [];
+let timelineContainer: HTMLElement | null = null;
+
+const isVideoModalOpen = ref(false);
+const videoPlayer = ref<HTMLVideoElement | null>(null);
+
+const handleEscapeKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && isVideoModalOpen.value) {
+        closeVideoModal();
+    }
+};
+
+const openVideoModal = () => {
+    isVideoModalOpen.value = true;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleEscapeKey);
+};
+
+const closeVideoModal = () => {
+    isVideoModalOpen.value = false;
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', handleEscapeKey);
+    if (videoPlayer.value) {
+        videoPlayer.value.pause();
+        videoPlayer.value.currentTime = 0;
+    }
+};
+
+const handleMouseMove = (e: MouseEvent) => {
+    if (cursorLight) {
+        requestAnimationFrame(() => {
+            if (cursorLight) {
+                cursorLight.style.left = e.clientX + 'px';
+                cursorLight.style.top = e.clientY + 'px';
+            }
+        });
+    }
+};
+
+const handleMouseEnter = () => {
+    if (cursorLight) {
+        cursorLight.classList.add('cursor-light-hover');
+    }
+};
+
+const handleMouseLeave = () => {
+    if (cursorLight) {
+        cursorLight.classList.remove('cursor-light-hover');
+    }
+};
+
+const handleMouseDown = () => {
+    if (cursorLight) {
+        cursorLight.classList.add('cursor-light-active');
+    }
+};
+
+const handleMouseUp = () => {
+    if (cursorLight) {
+        cursorLight.classList.remove('cursor-light-active');
+    }
+};
+
+const handleTimelineScroll = () => {
+    if (!timelineContainer || !timelineSteps.length) {
+        return;
+    }
+
+    const sectionRect = timelineContainer.getBoundingClientRect();
+    const sectionHeight = sectionRect.height || 1;
+    const viewportCenter = window.innerHeight / 2;
+    const rawProgress = (viewportCenter - sectionRect.top) / sectionHeight;
+    const progress = Math.min(1, Math.max(0, rawProgress));
+
+    timelineSteps.forEach((step, index) => {
+        const threshold = index / timelineSteps.length;
+        step.classList.toggle('timeline-active', progress >= threshold);
+    });
+};
+
+const initTimeline = () => {
+    timelineContainer = document.querySelector<HTMLElement>('.timeline-steps');
+    timelineSteps = Array.from(document.querySelectorAll<HTMLElement>('.timeline-step'));
+
+    if (timelineContainer && timelineSteps.length) {
+        window.addEventListener('scroll', handleTimelineScroll, { passive: true });
+        window.addEventListener('resize', handleTimelineScroll);
+        handleTimelineScroll();
+    }
+};
+
+const destroyTimeline = () => {
+    window.removeEventListener('scroll', handleTimelineScroll);
+    window.removeEventListener('resize', handleTimelineScroll);
+    timelineContainer = null;
+    timelineSteps = [];
+};
+
+onMounted(() => {
+    cursorLight = document.getElementById('cursor-light');
+    if (cursorLight) {
+        document.addEventListener('mousemove', handleMouseMove);
+
+        const hoverTargets = document.querySelectorAll('.hover-target, a, button, .tech-card, .sys-mockup-container, .real-tx-card');
+        hoverTargets.forEach((el) => {
+            el.addEventListener('mouseenter', handleMouseEnter);
+            el.addEventListener('mouseleave', handleMouseLeave);
+        });
+    }
+
+    const revealElements = document.querySelectorAll('.reveal-on-scroll');
+
+    observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        },
+        {
+            threshold: 0.1,
+        },
+    );
+
+    revealElements.forEach((el) => {
+        observer?.observe(el);
+    });
+
+    initTimeline();
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('keydown', handleEscapeKey);
+
+    const hoverTargets = document.querySelectorAll('.hover-target, a, button, .tech-card, .sys-mockup-container, .real-tx-card');
+    hoverTargets.forEach((el) => {
+        el.removeEventListener('mouseenter', handleMouseEnter);
+        el.removeEventListener('mouseleave', handleMouseLeave);
+    });
+
+    if (observer) {
+        observer.disconnect();
+    }
+
+    destroyTimeline();
+
+    window.removeEventListener('mousedown', handleMouseDown);
+    window.removeEventListener('mouseup', handleMouseUp);
+});
+</script>
 
 <style scoped>
 /* --- ESTILOS GERAIS --- */
@@ -1158,21 +1184,32 @@ section:nth-of-type(2) {
 
 .cursor-light {
     position: fixed;
-    width: 20px;
-    height: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 18px;
+    height: 18px;
+    border: 2px solid #7462f3;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(116, 98, 243, 0.08);
+    box-shadow: 0 0 15px rgba(116, 98, 243, 0.35);
     pointer-events: none;
     transform: translate(-50%, -50%);
     transition:
-        width 0.3s,
-        height 0.3s,
-        background 0.3s,
-        border 0.3s;
+        transform 0.2s ease,
+        border 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        width 0.2s ease,
+        height 0.2s ease;
     z-index: 9999;
-    backdrop-filter: blur(2px);
     display: none;
+}
+
+.cursor-light::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    opacity: 0.6;
 }
 
 @media (min-width: 1024px) {
@@ -1181,11 +1218,15 @@ section:nth-of-type(2) {
     }
 }
 
-.cursor-light-hover {
-    width: 60px;
-    height: 60px;
-    background: rgba(99, 102, 241, 0.1);
-    border-color: rgba(99, 102, 241, 0.6);
+.cursor-light-hover,
+.cursor-light-active {
+    border-color: #e647b3;
+    box-shadow: 0 0 18px rgba(230, 71, 179, 0.45);
+    background: rgba(230, 71, 179, 0.08);
+}
+
+.cursor-light-active {
+    transform: translate(-50%, -50%) scale(0.92);
 }
 
 .welcome-logo-icon {
@@ -1318,7 +1359,7 @@ section:nth-of-type(2) {
 
 .track-bar-fill {
     height: 100%;
-    background-color: #FFB800;
+    background-color: #ffb800;
     border-radius: 999px;
     position: relative;
     display: flex;
@@ -1328,8 +1369,8 @@ section:nth-of-type(2) {
 .track-handle {
     width: 20px;
     height: 20px;
-    background-color: #FFB800;
-    border: 3px solid #0B0F19;
+    background-color: #ffb800;
+    border: 3px solid #0b0f19;
     border-radius: 50%;
     position: absolute;
     right: -6px;
@@ -1346,7 +1387,7 @@ section:nth-of-type(2) {
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
-    color: #8B5CF6;
+    color: #8b5cf6;
 }
 
 /* Video Modal Styles */
@@ -1443,7 +1484,54 @@ section:nth-of-type(2) {
 
 .modal-enter-active .video-modal-container,
 .modal-leave-active .video-modal-container {
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
+}
+
+.timeline-steps {
+    position: relative;
+}
+
+.timeline-line {
+    position: absolute;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    left: 1.25rem;
+    width: 2px;
+    background: linear-gradient(180deg, #6366f1 0%, rgba(99, 102, 241, 0) 100%);
+}
+
+.timeline-step {
+    position: relative;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -27px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #6366f1;
+    background: #111827;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+.timeline-dot::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 999px;
+    background: #6366f1;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.timeline-step.timeline-active .timeline-dot::after {
+    transform: scale(1);
+    opacity: 1;
 }
 
 .modal-enter-from .video-modal-container,
