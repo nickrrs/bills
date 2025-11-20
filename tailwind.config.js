@@ -72,6 +72,29 @@ export default {
     				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
     				border: 'hsl(var(--sidebar-border))',
     				ring: 'hsl(var(--sidebar-ring))'
+    			},
+    			sys: {
+    				bg: '#0B0F19',
+    				card: '#131722',
+    				border: '#2D3748',
+    				purple: '#820ad1',
+    				green: '#05c46b',
+    				red: '#ff4d4d',
+    				text: '#94A3B8'
+    			},
+    			real: {
+    				bg: '#09090b',
+    				card: '#111113',
+    				greenCard: '#044e2e',
+    				greenText: '#22c55e',
+    				redText: '#ef4444',
+    				iconPink: '#db2777',
+    				iconPinkBg: '#500724',
+    				iconGreen: '#65a30d',
+    				iconGreenBg: '#14532d',
+    				trackYellow: '#FFB800',
+    				nuPurple: '#820AD1',
+    				blueVault: '#0ea5e9'
     			}
     		}
     	}
