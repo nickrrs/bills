@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use App\Services\CategoryService;
 use Inertia\Inertia;
 use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\BulkDeleteCategoryRequest;
 
 class CategoryController extends Controller
 {
@@ -69,5 +70,18 @@ class CategoryController extends Controller
 
         $this->categoryService->deleteCategory($category);
         return response()->json(['message' => 'Category deleted successfully']);
+    }
+
+    public function apiBulkDestroy(BulkDeleteCategoryRequest $request): JsonResponse
+    {
+        $deletedCount = $this->categoryService->bulkDeleteCategories(
+            $request->input('ids'),
+            $request->user()->id
+        );
+
+        return response()->json([
+            'message' => 'Categories deleted successfully',
+            'deleted_count' => $deletedCount,
+        ]);
     }
 }

@@ -23,6 +23,7 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:30',
+            'slug' => 'required|string|max:255|unique:categories,slug',
             'icon' => 'required|string',
             'color' => 'required|string',
             'type' => 'required|in:expense,recept',
@@ -34,6 +35,9 @@ class StoreCategoryRequest extends FormRequest
         return [
             'name.required' => 'o nome da categoria é obrigatório',
             'name.max' => 'o nome da categoria não pode ter mais de 50 caracteres',
+            'slug.required' => 'o slug da categoria é obrigatório',
+            'slug.max' => 'o slug da categoria não pode ter mais de 255 caracteres',
+            'slug.unique' => 'já existe uma categoria com este nome. por favor, escolha outro nome.',
             'icon.required' => 'o ícone da categoria é obrigatório',
             'color.required' => 'a cor da categoria é obrigatória',
             'type.required' => 'o tipo da categoria é obrigatório',

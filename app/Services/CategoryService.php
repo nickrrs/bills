@@ -50,4 +50,11 @@ class CategoryService
     {
         $category->delete();
     }
+
+    public function bulkDeleteCategories(array $ids, int $userId)
+    {
+        return Category::whereIn('id', $ids)
+            ->where('user_id', $userId)
+            ->delete();
+    }
 }
