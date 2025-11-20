@@ -1,12 +1,12 @@
 <template>
     <InertiaHead title="Categorias" />
     <MainLayout :no-sub-nav="true">
-        <div class="w-full h-full px-8 py-8">
-            <div class="w-full flex items-center justify-between mb-4">
+        <div class="h-full w-full px-8 py-8">
+            <div class="mb-4 flex w-full items-center justify-between">
                 <div class="flex flex-col gap-1">
-                    <div class="flex flex-inline items-center gap-2">
-                        <h1 class="text-white text-3xl font-bold">categorias</h1>
-                        <span class="text-xs font-semibold bg-white/10 text-gray-300 px-2 py-1 rounded-md">
+                    <div class="flex-inline flex items-center gap-2">
+                        <h1 class="text-3xl font-bold text-white">categorias</h1>
+                        <span class="rounded-md bg-white/10 px-2 py-1 text-xs font-semibold text-gray-300">
                             {{ pagination?.total ?? categories.length }} Total
                         </span>
                     </div>
@@ -15,20 +15,20 @@
                 <div class="flex flex-row items-center gap-2">
                     <!-- Campo de busca -->
                     <div class="relative max-w-md">
-                        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 !h-5 !w-5 text-[#767676]" />
+                        <Search class="absolute left-3 top-1/2 !h-5 !w-5 -translate-y-1/2 transform text-[#767676]" />
                         <input
                             v-model="searchQuery"
                             type="text"
                             placeholder="buscar categoria..."
-                            class="w-full pl-10 pr-4 py-2.5 bg-[#131316] border border-[#2F2F2F] rounded-md text-white text-sm placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent transition-all"
+                            class="w-full rounded-md border border-[#2F2F2F] bg-[#131316] py-2.5 pl-10 pr-4 text-sm text-white placeholder-[#767676] transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#3800D8]"
                             @input="handleSearchInput"
                         />
                         <button
                             v-if="searchQuery"
                             @click="clearSearch"
-                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#767676] hover:text-white transition-colors"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 transform text-[#767676] transition-colors hover:text-white"
                         >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
@@ -36,23 +36,25 @@
                     <button
                         v-if="!isSelectionMode"
                         @click="toggleSelectionMode"
-                        class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
+                        class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
                         title="selecionar múltiplas categorias (Ctrl + Espaço)"
                     >
                         <Target class="!h-4 !w-4" />
                         <span>selecionar</span>
-                        <span class="text-[11px] uppercase text-[#8c8c8c] border border-[#2F2F2F] rounded px-1 py-0.5 hidden lg:inline-flex">Ctrl + Espaço</span>
+                        <span class="hidden rounded border border-[#2F2F2F] px-1 py-0.5 text-[11px] uppercase text-[#8c8c8c] lg:inline-flex"
+                            >Ctrl + Espaço</span
+                        >
                     </button>
                     <button
                         v-else
                         @click="exitSelectionMode"
-                        class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
+                        class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
                     >
                         cancelar seleção
                     </button>
                     <button
                         @click="openModal"
-                        class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
+                        class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
                     >
                         <Plus class="!h-4 !w-4" />
                         nova categoria
@@ -61,41 +63,31 @@
             </div>
 
             <!-- Tabs -->
-            <div class="flex gap-2 mb-6 border-b border-[#2F2F2F]">
+            <div class="mb-6 flex gap-2 border-b border-[#2F2F2F]">
                 <button
                     @click="activeTab = 'expense'"
                     :class="[
-                        'px-4 py-2 text-sm font-medium transition-colors relative',
-                        activeTab === 'expense'
-                            ? 'text-white'
-                            : 'text-[#767676] hover:text-white'
+                        'relative px-4 py-2 text-sm font-medium transition-colors',
+                        activeTab === 'expense' ? 'text-white' : 'text-[#767676] hover:text-white',
                     ]"
                 >
                     Despesas
-                    <span
-                        v-if="activeTab === 'expense'"
-                        class="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500"
-                    ></span>
+                    <span v-if="activeTab === 'expense'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500"></span>
                 </button>
                 <button
                     @click="activeTab = 'recept'"
                     :class="[
-                        'px-4 py-2 text-sm font-medium transition-colors relative',
-                        activeTab === 'recept'
-                            ? 'text-white'
-                            : 'text-[#767676] hover:text-white'
+                        'relative px-4 py-2 text-sm font-medium transition-colors',
+                        activeTab === 'recept' ? 'text-white' : 'text-[#767676] hover:text-white',
                     ]"
                 >
                     Receitas
-                    <span
-                        v-if="activeTab === 'recept'"
-                        class="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500"
-                    ></span>
+                    <span v-if="activeTab === 'recept'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500"></span>
                 </button>
             </div>
 
             <!-- Grid de Categorias -->
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-4">
+            <div class="grid grid-cols-1 gap-6 pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 <template v-if="loading">
                     <CategoryCardSkeleton v-for="n in skeletonCount" :key="`category-skeleton-${n}`" />
                 </template>
@@ -103,23 +95,21 @@
                     <div
                         v-for="category in filteredCategories"
                         :key="category.id"
-                        class="relative bg-[#131316] border border-[#2F2F2F] rounded-xl p-6 transition-all duration-300 group"
+                        class="group relative rounded-xl border border-[#2F2F2F] bg-[#131316] p-6 transition-all duration-300 hover:border-[#525151]"
                         :class="{
-                            'ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] cursor-pointer': isSelectionMode && selectedIds.includes(category.id),
+                            'cursor-pointer ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316]':
+                                isSelectionMode && selectedIds.includes(category.id),
                             'cursor-pointer': isSelectionMode && !selectedIds.includes(category.id),
-                            'hover:-translate-y-1': !isSelectionMode
+                            'hover:-translate-y-1': !isSelectionMode,
                         }"
                         @click="isSelectionMode ? toggleCategorySelection(category.id) : null"
                     >
                         <!-- Botões de ação -->
-                        <div
-                            v-if="!isSelectionMode"
-                            class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
+                        <div v-if="!isSelectionMode" class="absolute right-3 top-3 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
                             <button
                                 @click.stop
                                 @click="handleEditCategory(category.id)"
-                                class="p-1.5 rounded-md bg-[#1E1E1E] border border-[#2F2F2F] text-[#767676] hover:text-white hover:border-[#3800D8] transition-colors"
+                                class="rounded-md border border-[#2F2F2F] bg-[#1E1E1E] p-1.5 text-[#767676] transition-colors hover:border-[#3800D8] hover:text-white"
                                 title="Editar"
                             >
                                 <Pencil class="h-4 w-4" />
@@ -127,7 +117,7 @@
                             <button
                                 @click.stop
                                 @click="handleDeleteCategory(category.id)"
-                                class="p-1.5 rounded-md bg-[#1E1E1E] border border-[#2F2F2F] text-[#767676] hover:text-red-400 hover:border-red-500 transition-colors"
+                                class="rounded-md border border-[#2F2F2F] bg-[#1E1E1E] p-1.5 text-[#767676] transition-colors hover:border-red-500 hover:text-red-400"
                                 title="Excluir"
                             >
                                 <Trash2 class="h-4 w-4" />
@@ -136,7 +126,7 @@
 
                         <!-- Ícone -->
                         <div
-                            class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 relative"
+                            class="relative mb-4 flex h-12 w-12 items-center justify-center rounded-xl"
                             :style="{ backgroundColor: category.color + '20' }"
                         >
                             <component
@@ -145,19 +135,15 @@
                                 class="h-6 w-6"
                                 :style="{ color: category.color }"
                             />
-                            <ShoppingBag
-                                v-else
-                                class="h-6 w-6"
-                                :style="{ color: category.color }"
-                            />
+                            <ShoppingBag v-else class="h-6 w-6" :style="{ color: category.color }" />
                             <div
                                 v-if="isSelectionMode"
-                                class="absolute -top-2 -left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
-                                :class="selectedIds.includes(category.id) ? 'bg-[#6965f2] border-[#6965f2]' : 'bg-[#131316]/80 border-white/30'"
+                                class="absolute -left-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all"
+                                :class="selectedIds.includes(category.id) ? 'border-[#6965f2] bg-[#6965f2]' : 'border-white/30 bg-[#131316]/80'"
                             >
                                 <svg
                                     v-if="selectedIds.includes(category.id)"
-                                    class="w-3 h-3 text-white"
+                                    class="h-3 w-3 text-white"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -168,31 +154,29 @@
                         </div>
 
                         <!-- Nome -->
-                        <div class="flex items-center justify-between gap-3 mb-1">
-                            <h3 class="text-lg font-bold text-white mb-0 truncate" :title="category.name">
+                        <div class="mb-1 flex items-center justify-between gap-3">
+                            <h3 class="mb-0 truncate text-lg font-bold text-white" :title="category.name">
                                 {{ category.name }}
                             </h3>
-                            <span class="font-semibold whitespace-nowrap mb-1" :style="{ color: category.color }">
-                                R$ 850,20
-                            </span>
+                            <span class="mb-1 whitespace-nowrap font-semibold" :style="{ color: category.color }"> R$ 0,00 </span>
                         </div>
 
                         <!-- Informações (simuladas) -->
                         <div class="space-y-2">
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-[#767676] text-xs">12 transações este mês</span>
+                                <span class="text-xs text-[#767676]">12 transações este mês</span>
                             </div>
                             <div class="mt-3">
-                                <div class="flex items-center justify-between text-xs mb-1">
+                                <div class="mb-1 flex items-center justify-between text-xs">
                                     <span class="text-[#767676]">impacto no orçamento</span>
-                                    <span class="text-white">25%</span>
+                                    <span class="text-white">0%</span>
                                 </div>
-                                <div class="w-full h-2 bg-[#1E1E1E] rounded-full overflow-hidden">
+                                <div class="h-2 w-full overflow-hidden rounded-full bg-[#1E1E1E]">
                                     <div
                                         class="h-full rounded-full transition-all"
                                         :style="{
-                                            width: '25%',
-                                            backgroundColor: category.color
+                                            width: '0%',
+                                            backgroundColor: category.color,
                                         }"
                                     ></div>
                                 </div>
@@ -212,7 +196,7 @@
                 <button
                     class="flex h-full min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/10 text-gray-400 transition-all hover:border-indigo-500/50 hover:bg-white/5 hover:text-white"
                     :class="{
-                        'opacity-50 cursor-not-allowed': loading
+                        'cursor-not-allowed opacity-50': loading,
                     }"
                     type="button"
                     :disabled="loading"
@@ -255,7 +239,7 @@
                                 'flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm font-medium transition-colors',
                                 page === pagination.current_page
                                     ? 'border-indigo-500 bg-indigo-500/20 text-indigo-400'
-                                    : 'border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131]'
+                                    : 'border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131]',
                             ]"
                         >
                             {{ page }}
@@ -275,28 +259,28 @@
 
         <!-- Modal de Criação -->
         <UiDialog v-model:open="isModalOpen">
-            <DraggableDialogContent class="w-full max-w-6xl max-h-[80vh] overflow-y-auto">
+            <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-white text-lg font-semibold">criar nova categoria</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-white">criar nova categoria</DialogTitle>
                     <DialogDescription class="sr-only">preencha os dados para criar uma nova categoria</DialogDescription>
                 </template>
-                <CreateCategoryForm :reset-form="shouldResetForm" @success="handleCategoryCreated" @cancel="closeModal" @reset-complete="handleResetComplete" />
+                <CreateCategoryForm
+                    :reset-form="shouldResetForm"
+                    @success="handleCategoryCreated"
+                    @cancel="closeModal"
+                    @reset-complete="handleResetComplete"
+                />
             </DraggableDialogContent>
         </UiDialog>
 
         <!-- Modal de Edição -->
         <UiDialog v-model:open="isEditDialogOpen">
-            <DraggableDialogContent class="w-full max-w-6xl max-h-[80vh] overflow-y-auto">
+            <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-white text-lg font-semibold">editar categoria</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-white">editar categoria</DialogTitle>
                     <DialogDescription class="sr-only">edite os dados da categoria</DialogDescription>
                 </template>
-                <CreateCategoryForm
-                    v-if="categoryToEdit"
-                    :category="categoryToEdit"
-                    @success="handleCategoryUpdated"
-                    @cancel="closeEditModal"
-                />
+                <CreateCategoryForm v-if="categoryToEdit" :category="categoryToEdit" @success="handleCategoryUpdated" @cancel="closeEditModal" />
             </DraggableDialogContent>
         </UiDialog>
 
@@ -304,25 +288,23 @@
         <UiDialog v-model:open="isDeleteDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-white text-lg font-semibold">confirmar exclusão</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-white">confirmar exclusão</DialogTitle>
                     <DialogDescription class="sr-only">confirme a exclusão da categoria</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-[#B6B6B6] text-sm">
-                        tem certeza que deseja excluir esta categoria? esta ação não pode ser desfeita.
-                    </p>
+                    <p class="text-sm text-[#B6B6B6]">tem certeza que deseja excluir esta categoria? esta ação não pode ser desfeita.</p>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
                             variant="outline"
                             @click="isDeleteDialogOpen = false"
-                            class="border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131] p-2 rounded-md cursor-pointer"
+                            class="cursor-pointer rounded-md border-[#2F2F2F] bg-[#1E1E1E] p-2 text-white hover:bg-[#313131]"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             variant="destructive"
                             @click="confirmDelete"
-                            class="bg-red-600 text-white hover:bg-red-700 p-2 rounded-md cursor-pointer"
+                            class="cursor-pointer rounded-md bg-red-600 p-2 text-white hover:bg-red-700"
                         >
                             excluir
                         </UiButton>
@@ -335,26 +317,26 @@
         <UiDialog v-model:open="isBulkDeleteDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-white text-lg font-semibold">confirmar exclusão em lote</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-white">confirmar exclusão em lote</DialogTitle>
                     <DialogDescription class="sr-only">confirme a exclusão das categorias selecionadas</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-[#B6B6B6] text-sm">
-                        tem certeza que deseja excluir {{ selectedIds.length }}
-                        {{ selectedIds.length === 1 ? 'categoria' : 'categorias' }}? esta ação não pode ser desfeita.
+                    <p class="text-sm text-[#B6B6B6]">
+                        tem certeza que deseja excluir {{ selectedIds.length }} {{ selectedIds.length === 1 ? 'categoria' : 'categorias' }}? esta ação
+                        não pode ser desfeita.
                     </p>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
                             variant="outline"
                             @click="isBulkDeleteDialogOpen = false"
-                            class="border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131] p-2 rounded-md cursor-pointer"
+                            class="cursor-pointer rounded-md border-[#2F2F2F] bg-[#1E1E1E] p-2 text-white hover:bg-[#313131]"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             variant="destructive"
                             @click="confirmBulkDeleteAction"
-                            class="bg-red-600 text-white hover:bg-red-700 p-2 rounded-md cursor-pointer"
+                            class="cursor-pointer rounded-md bg-red-600 p-2 text-white hover:bg-red-700"
                         >
                             excluir {{ selectedIds.length }}
                         </UiButton>
@@ -373,33 +355,23 @@
         >
             <div
                 v-if="isSelectionMode && selectedIds.length > 0"
-                class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-[#1E1E1E] border border-[#2F2F2F] rounded-lg shadow-2xl px-6 py-4 flex items-center gap-4"
+                class="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 transform items-center gap-4 rounded-lg border border-[#2F2F2F] bg-[#1E1E1E] px-6 py-4 shadow-2xl"
             >
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-[#6965f2] flex items-center justify-center">
-                        <span class="text-white text-sm font-semibold">{{ selectedIds.length }}</span>
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#6965f2]">
+                        <span class="text-sm font-semibold text-white">{{ selectedIds.length }}</span>
                     </div>
-                    <span class="text-white text-sm font-medium">
+                    <span class="text-sm font-medium text-white">
                         {{ selectedIds.length === 1 ? 'categoria selecionada' : 'categorias selecionadas' }}
                     </span>
                 </div>
                 <div class="h-6 w-px bg-[#2F2F2F]"></div>
-                <button
-                    @click="selectAllCategories"
-                    class="text-sm text-[#B6B6B6] hover:text-white transition-colors"
-                >
-                    selecionar todas
-                </button>
-                <button
-                    @click="clearSelection"
-                    class="text-sm text-[#B6B6B6] hover:text-white transition-colors"
-                >
-                    limpar seleção
-                </button>
+                <button @click="selectAllCategories" class="text-sm text-[#B6B6B6] transition-colors hover:text-white">selecionar todas</button>
+                <button @click="clearSelection" class="text-sm text-[#B6B6B6] transition-colors hover:text-white">limpar seleção</button>
                 <div class="h-6 w-px bg-[#2F2F2F]"></div>
                 <button
                     @click="confirmBulkDelete"
-                    class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                    class="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
                 >
                     <Trash2 class="!h-4 !w-4" />
                     excluir ({{ selectedIds.length }})
@@ -410,32 +382,55 @@
 </template>
 
 <script lang="ts">
-import type { Component } from 'vue';
+import CategoryCardSkeleton from '@/components/categories/CategoryCardSkeleton.vue';
+import CreateCategoryForm from '@/components/categories/CreateCategoryForm.vue';
+import { Button as UiButton } from '@/components/ui/button';
+import { DialogDescription, DialogTitle, Dialog as UiDialog } from '@/components/ui/dialog';
+import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
+import { useToast } from '@/components/ui/toast';
 import MainLayout from '@/layouts/MainLayout.vue';
+import selectionModeMixin from '@/mixins/selectionModeMixin';
+import { apiBulkDelete, apiDelete, apiGet } from '@/utils/api';
 import { Head as InertiaHead } from '@inertiajs/vue3';
 import {
-    Plus,
-    Search,
-    Pencil,
-    Trash2,
+    Award,
+    BookOpen,
+    Building2,
+    Bus,
+    Camera,
+    Car,
     ChevronLeft,
     ChevronRight,
+    Clock,
+    Coffee,
+    Dumbbell,
+    Film,
+    Gamepad2,
+    Gift,
+    GraduationCap,
+    Heart,
+    Home,
+    Music,
+    Palette,
+    PawPrint,
+    Pencil,
+    Plane,
+    Plus,
+    Search,
+    Settings,
     ShoppingBag,
+    ShoppingCart,
+    Stethoscope,
     Target,
+    Trash2,
+    TreePine,
+    Trophy,
+    UtensilsCrossed,
+    Wallet,
+    Wifi,
+    Zap,
 } from 'lucide-vue-next';
-import {
-    Dialog as UiDialog,
-    DialogTitle,
-    DialogDescription,
-} from '@/components/ui/dialog';
-import { Button as UiButton } from '@/components/ui/button';
-import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
-import CreateCategoryForm from '@/components/categories/CreateCategoryForm.vue';
-import CategoryCardSkeleton from '@/components/categories/CategoryCardSkeleton.vue';
-import { apiDelete, apiGet } from '@/utils/api';
-import { useToast } from '@/components/ui/toast';
-import * as icons from 'lucide-vue-next';
-import selectionModeMixin from '@/mixins/selectionModeMixin';
+import type { Component } from 'vue';
 
 interface Category {
     id: number;
@@ -503,10 +498,10 @@ export default {
     computed: {
         categoryToEdit(): Category | null {
             if (!this.categoryToEditId) return null;
-            return this.categories.find(c => c.id === this.categoryToEditId) || null;
+            return this.categories.find((c) => c.id === this.categoryToEditId) || null;
         },
         filteredCategories(): Category[] {
-            return this.categories.filter(category => category.type === this.activeTab);
+            return this.categories.filter((category) => category.type === this.activeTab);
         },
         skeletonCount(): number {
             return Math.min(this.perPage, 8);
@@ -679,7 +674,39 @@ export default {
         },
         getIconComponent(iconName: string | null): Component | null {
             if (!iconName) return null;
-            return (icons as unknown as Record<string, Component>)[iconName] || null;
+            // Objeto com os ícones disponíveis para acesso dinâmico
+            const availableIcons: Record<string, Component> = {
+                ShoppingBag,
+                ShoppingCart,
+                Coffee,
+                UtensilsCrossed,
+                Building2,
+                Home,
+                Wifi,
+                Zap,
+                Gift,
+                Heart,
+                Wallet,
+                GraduationCap,
+                Plane,
+                Bus,
+                Car,
+                Music,
+                Film,
+                Stethoscope,
+                PawPrint,
+                Clock,
+                Gamepad2,
+                Dumbbell,
+                BookOpen,
+                Camera,
+                Palette,
+                Trophy,
+                Award,
+                TreePine,
+                Settings,
+            };
+            return availableIcons[iconName] || null;
         },
         toggleCategorySelection(categoryId: number) {
             this.toggleSelectionItem(categoryId);
@@ -694,43 +721,31 @@ export default {
         async confirmBulkDeleteAction() {
             this.isBulkDeleteDialogOpen = false;
             const idsToDelete = [...this.selectedIds];
+
+            if (idsToDelete.length === 0) return;
+
             try {
-                let successCount = 0;
-                let errorCount = 0;
+                const response = await apiBulkDelete('/api/categories/bulk', idsToDelete);
 
-                for (const categoryId of idsToDelete) {
-                    try {
-                        const response = await apiDelete(`/api/categories/${categoryId}`);
-                        if (response.ok) {
-                            successCount++;
-                        } else {
-                            errorCount++;
-                        }
-                    } catch {
-                        errorCount++;
-                    }
-                }
+                if (response.ok) {
+                    const result = await response.json();
+                    const deletedCount = result.deleted_count || idsToDelete.length;
 
-                if (successCount > 0) {
                     this.toast({
-                        title: successCount === idsToDelete.length ? 'categorias deletadas' : 'exclusão parcial',
-                        description: errorCount > 0
-                            ? `${successCount} categoria(s) deletada(s). ${errorCount} falha(s).`
-                            : `${successCount} categoria(s) deletada(s) com sucesso.`,
-                        variant: successCount === idsToDelete.length ? 'default' : 'destructive',
+                        title: 'categorias deletadas',
+                        description: `${deletedCount} categoria(s) deletada(s) com sucesso.`,
+                        variant: 'default',
                     });
-                }
 
-                if (errorCount > 0 && successCount === 0) {
+                    this.exitSelectionMode();
+                    await this.loadCategories(this.currentPage);
+                } else {
                     this.toast({
                         title: 'erro ao deletar categorias',
                         description: 'não foi possível deletar as categorias selecionadas.',
                         variant: 'destructive',
                     });
                 }
-
-                this.exitSelectionMode();
-                await this.loadCategories(this.currentPage);
             } catch (error) {
                 console.error('Error deleting categories:', error);
                 this.toast({
@@ -741,7 +756,7 @@ export default {
             }
         },
         getSelectionIds() {
-            return this.filteredCategories.map(category => category.id);
+            return this.filteredCategories.map((category) => category.id);
         },
     },
 };
