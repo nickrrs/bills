@@ -625,12 +625,12 @@ export default {
             return pages;
         },
         async handleCategoryCreated() {
-            await this.loadCategories(this.currentPage);
             this.closeModal();
+            await this.loadCategories(this.currentPage);
         },
         async handleCategoryUpdated() {
-            await this.loadCategories(this.currentPage);
             this.closeEditModal();
+            await this.loadCategories(this.currentPage);
         },
         openModal() {
             this.isModalOpen = true;
