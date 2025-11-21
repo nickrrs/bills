@@ -2,63 +2,52 @@
     <InertiaHead title="Subcategorias" />
     <MainLayout :no-sub-nav="true">
         <div class="h-full w-full px-8 py-8">
-            <div class="mb-4 flex w-full items-center justify-between">
-                <div class="flex flex-col gap-1">
-                    <div class="flex-inline flex items-center gap-2">
-                        <h1 class="text-3xl font-bold text-white">subcategorias</h1>
-                        <span class="rounded-md bg-white/10 px-2 py-1 text-xs font-semibold text-gray-300"> {{ totalSubcategories }} Total </span>
-                    </div>
-                    <span class="text-sm text-[#B6B6B6]">gerencie a subclassificação de suas categorias.</span>
-                </div>
-                <div class="flex flex-row items-center gap-2">
-                    <div class="relative max-w-md">
-                        <Search class="absolute left-3 top-1/2 !h-5 !w-5 -translate-y-1/2 transform text-[#767676]" />
-                        <input
+            <PageHeader title="subcategorias" description="gerencie a subclassificação de suas categorias.">
+                <template #badge>
+                    <span class="rounded-md bg-white/10 px-2 py-1 text-xs font-semibold text-gray-300">
+                        {{ totalSubcategories }} Total
+                    </span>
+                </template>
+                <template #actions>
+                    <div class="flex flex-col gap-3 md:flex-row md:items-center">
+                        <SearchInput
                             v-model="searchQuery"
-                            type="text"
                             placeholder="buscar subcategoria..."
-                            class="w-full rounded-md border border-[#2F2F2F] bg-[#131316] py-2.5 pl-10 pr-4 text-sm text-white placeholder-[#767676] transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#3800D8]"
-                            @input="handleSearchInput"
+                            :debounce="400"
+                            wrapper-class="w-full md:w-64"
+                            @search="handleSearch"
                         />
-                        <button
-                            v-if="searchQuery"
-                            @click="clearSearch"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 transform text-[#767676] transition-colors hover:text-white"
-                        >
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button
+                                v-if="!isSelectionMode"
+                                @click="toggleSelectionMode"
+                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                title="selecionar múltiplas subcategorias (Ctrl + Espaço)"
+                            >
+                                <Target class="!h-4 !w-4" />
+                                <span>selecionar</span>
+                                <span class="hidden rounded border border-[#2F2F2F] px-1 py-0.5 text-[11px] uppercase text-[#8c8c8c] lg:inline-flex">
+                                    Ctrl + Espaço
+                                </span>
+                            </button>
+                            <button
+                                v-else
+                                @click="exitSelectionMode"
+                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                            >
+                                cancelar seleção
+                            </button>
+                            <button
+                                @click="openModal"
+                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                            >
+                                <Plus class="!h-4 !w-4" />
+                                nova subcategoria
+                            </button>
+                        </div>
                     </div>
-                    <button
-                        v-if="!isSelectionMode"
-                        @click="toggleSelectionMode"
-                        class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
-                        title="selecionar múltiplas subcategorias (Ctrl + Espaço)"
-                    >
-                        <Target class="!h-4 !w-4" />
-                        <span>selecionar</span>
-                        <span class="hidden rounded border border-[#2F2F2F] px-1 py-0.5 text-[11px] uppercase text-[#8c8c8c] lg:inline-flex"
-                            >Ctrl + Espaço</span
-                        >
-                    </button>
-                    <button
-                        v-else
-                        @click="exitSelectionMode"
-                        class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
-                    >
-                        cancelar seleção
-                    </button>
-                    <button
-                        @click="openModal"
-                        class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
-                    >
-                        <Plus class="!h-4 !w-4" />
-                        nova subcategoria
-                    </button>
-                </div>
-            </div>
-            <!-- Grid Content -->
+                </template>
+            </PageHeader>
             <div class="grid grid-cols-1 items-start gap-6 pb-4 md:grid-cols-2 lg:grid-cols-3">
                 <!-- Skeleton para cards de categoria (quando categorias estão carregando) -->
                 <template v-if="loadingCategories && categories.length === 0">
@@ -303,52 +292,16 @@
                     <p class="text-sm text-gray-500">clique em "nova subcategoria" para criar sua primeira subcategoria.</p>
                 </div>
             </div>
-            <!-- Paginação -->
-            <div v-if="pagination && pagination.last_page > 1" class="mt-6 flex items-center justify-between">
-                <div class="flex items-center gap-2 text-sm text-[#B6B6B6]">
-                    <span>mostrando</span>
-                    <span class="mx-1 font-medium text-white">{{ pagination.from || 0 }}</span>
-                    <span>até</span>
-                    <span class="mx-1 font-medium text-white">{{ pagination.to || 0 }}</span>
-                    <span>de</span>
-                    <span class="mx-1 font-medium text-white">{{ pagination.total }}</span>
-                    <span>{{ pagination.total === 1 ? 'categoria' : 'categorias' }}</span>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <button
-                        @click="goToPage(pagination.current_page - 1)"
-                        :disabled="pagination.current_page === 1"
-                        class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
-                    >
-                        <ChevronLeft class="h-4 w-4" />
-                    </button>
-
-                    <div class="flex items-center gap-1">
-                        <button
-                            v-for="page in getPageNumbers()"
-                            :key="page"
-                            @click="goToPage(page)"
-                            :class="[
-                                'flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm font-medium transition-colors',
-                                page === pagination.current_page
-                                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-400'
-                                    : 'border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131]',
-                            ]"
-                        >
-                            {{ page }}
-                        </button>
-                    </div>
-
-                    <button
-                        @click="goToPage(pagination.current_page + 1)"
-                        :disabled="pagination.current_page === pagination.last_page"
-                        class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
-                    >
-                        <ChevronRight class="h-4 w-4" />
-                    </button>
-                </div>
-            </div>
+            <PaginationControls
+                v-if="pagination"
+                :current="pagination.current_page"
+                :last="pagination.last_page"
+                :from="pagination.from"
+                :to="pagination.to"
+                :total="pagination.total"
+                :entity-label="pagination.total === 1 ? 'categoria' : 'categorias'"
+                @change="goToPage"
+            />
         </div>
 
         <!-- Modal de Criação -->
@@ -445,30 +398,15 @@
             </DraggableDialogContent>
         </UiDialog>
 
-        <Transition
-            enter-active-class="transition-all duration-300 ease-out"
-            enter-from-class="opacity-0 translate-y-4"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition-all duration-200 ease-in"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 translate-y-4"
+        <SelectionToolbar
+            :visible="isSelectionMode"
+            :count="selectedIds.length"
+            singular-label="subcategoria selecionada"
+            plural-label="subcategorias selecionadas"
+            @select-all="selectAllSubcategories"
+            @clear="clearSelection"
         >
-            <div
-                v-if="isSelectionMode && selectedIds.length > 0"
-                class="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 transform items-center gap-4 rounded-lg border border-[#2F2F2F] bg-[#1E1E1E] px-6 py-4 shadow-2xl"
-            >
-                <div class="flex items-center gap-2">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#6965f2]">
-                        <span class="text-sm font-semibold text-white">{{ selectedIds.length }}</span>
-                    </div>
-                    <span class="text-sm font-medium text-white">
-                        {{ selectedIds.length === 1 ? 'subcategoria selecionada' : 'subcategorias selecionadas' }}
-                    </span>
-                </div>
-                <div class="h-6 w-px bg-[#2F2F2F]"></div>
-                <button @click="selectAllSubcategories" class="text-sm text-[#B6B6B6] transition-colors hover:text-white">selecionar todas</button>
-                <button @click="clearSelection" class="text-sm text-[#B6B6B6] transition-colors hover:text-white">limpar seleção</button>
-                <div class="h-6 w-px bg-[#2F2F2F]"></div>
+            <template #actions>
                 <button
                     @click="confirmBulkDelete"
                     class="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
@@ -476,12 +414,16 @@
                     <Trash2 class="!h-4 !w-4" />
                     excluir ({{ selectedIds.length }})
                 </button>
-            </div>
-        </Transition>
+            </template>
+        </SelectionToolbar>
     </MainLayout>
 </template>
 
 <script lang="ts">
+import SelectionToolbar from '@/components/common/SelectionToolbar.vue';
+import PageHeader from '@/components/common/PageHeader.vue';
+import PaginationControls from '@/components/common/PaginationControls.vue';
+import SearchInput from '@/components/common/SearchInput.vue';
 import CreateSubcategoryForm from '@/components/subcategories/CreateSubcategoryForm.vue';
 import SubcategoryCardSkeleton from '@/components/subcategories/SubcategoryCardSkeleton.vue';
 import CategoryCardSkeleton from '@/components/subcategories/CategoryCardSkeleton.vue';
@@ -500,8 +442,6 @@ import {
     Bus,
     Camera,
     Car,
-    ChevronLeft,
-    ChevronRight,
     Clock,
     Coffee,
     Dumbbell,
@@ -567,6 +507,10 @@ export default {
     name: 'Subcategories',
     mixins: [selectionModeMixin],
     components: {
+        PageHeader,
+        SearchInput,
+        PaginationControls,
+        SelectionToolbar,
         MainLayout,
         InertiaHead,
         Search,
@@ -585,8 +529,6 @@ export default {
         CreateSubcategoryForm,
         SubcategoryCardSkeleton,
         CategoryCardSkeleton,
-        ChevronLeft,
-        ChevronRight,
     },
     setup() {
         const { toast } = useToast();
@@ -605,7 +547,6 @@ export default {
             loadingCategories: true,
             shouldResetForm: false,
             searchQuery: '',
-            searchTimeout: null as ReturnType<typeof setTimeout> | null,
             preselectedCategoryId: null as number | null,
             currentPage: 1,
             groupsPerPage: 3,
@@ -690,9 +631,6 @@ export default {
         this.loadCategories();
     },
     beforeUnmount() {
-        if (this.searchTimeout) {
-            clearTimeout(this.searchTimeout);
-        }
     },
     methods: {
         async loadSubcategories(page?: number) {
@@ -751,26 +689,6 @@ export default {
                 from: totalGroups > 0 ? start + 1 : null,
                 to: totalGroups > 0 ? end : null,
             };
-        },
-        getPageNumbers(): number[] {
-            if (!this.pagination) return [];
-
-            const current = this.pagination.current_page;
-            const last = this.pagination.last_page;
-            const pages: number[] = [];
-
-            let start = Math.max(1, current - 2);
-            const end = Math.min(last, start + 4);
-
-            if (end - start < 4) {
-                start = Math.max(1, end - 4);
-            }
-
-            for (let i = start; i <= end; i++) {
-                pages.push(i);
-            }
-
-            return pages;
         },
         async loadCategories() {
             try {
@@ -857,15 +775,9 @@ export default {
                 this.subcategoryToDeleteId = null;
             }
         },
-        handleSearchInput() {
-            if (this.searchTimeout) {
-                clearTimeout(this.searchTimeout);
-            }
-
-            this.searchTimeout = setTimeout(() => {
-                this.currentPage = 1;
-                this.loadSubcategories(1);
-            }, 500);
+        handleSearch() {
+            this.currentPage = 1;
+            this.loadSubcategories(1);
         },
         handleCategorySearchInput(categoryId: number, query: string) {
             this.categorySearchQueries = {
@@ -906,11 +818,6 @@ export default {
                     [categoryId]: nextPage,
                 };
             }
-        },
-        clearSearch() {
-            this.searchQuery = '';
-            this.currentPage = 1;
-            this.loadSubcategories(1);
         },
         getIconComponent(iconName: string | null): Component | null {
             if (!iconName) return null;

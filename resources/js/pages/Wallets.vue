@@ -2,71 +2,55 @@
     <InertiaHead title="wallets" />
     <MainLayout :no-sub-nav="true">
         <div class="h-full w-full px-8 py-8">
-            <div class="mb-4 flex w-full items-center justify-between">
-                <div class="flex flex-col gap-1">
-                    <h1 class="text-3xl font-bold text-white">minhas carteiras</h1>
-                    <span class="text-sm text-[#B6B6B6]">crie e personalize suas carteiras para suas necessidades</span>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <span v-if="!isRefreshing" class="text-sm text-[#B6B6B6]">informações atualizadas a cada 45 segundos</span>
-                        <div v-if="isRefreshing" class="flex items-center gap-2 text-[#6965f2]">
-                            <LoaderCircle class="!h-4 !w-4 animate-spin" />
-                            <span class="text-xs">atualizando...</span>
+            <PageHeader title="minhas carteiras" description="crie e personalize suas carteiras para suas necessidades">
+                <template #actions>
+                    <div class="flex flex-col gap-3 md:flex-row md:items-center">
+                        <div class="flex items-center gap-2">
+                            <span v-if="!isRefreshing" class="text-sm text-[#B6B6B6]">informações atualizadas a cada 45 segundos</span>
+                            <div v-else class="flex items-center gap-2 text-[#6965f2]">
+                                <LoaderCircle class="!h-4 !w-4 animate-spin" />
+                                <span class="text-xs">atualizando...</span>
+                            </div>
+                        </div>
+                        <SearchInput
+                            v-model="searchQuery"
+                            placeholder="buscar carteiras por nome..."
+                            :debounce="400"
+                            wrapper-class="w-full md:w-64"
+                            @search="handleSearch"
+                        />
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button
+                                v-if="!isSelectionMode"
+                                @click="toggleSelectionMode"
+                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                title="selecionar múltiplas carteiras (Ctrl + Espaço)"
+                            >
+                                <Target class="!h-4 !w-4" />
+                                <span>selecionar</span>
+                                <span class="hidden rounded border border-[#2F2F2F] px-1 py-0.5 text-[11px] uppercase text-[#8c8c8c] lg:inline-flex">
+                                    Ctrl + Espaço
+                                </span>
+                            </button>
+                            <button
+                                v-else
+                                @click="exitSelectionMode"
+                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                            >
+                                <span class="text-sm">cancelar seleção</span>
+                            </button>
+                            <button
+                                v-if="!isSelectionMode"
+                                @click="openModal"
+                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                            >
+                                <Plus class="!h-4 !w-4" />
+                                nova carteira
+                            </button>
                         </div>
                     </div>
-                    <button
-                        v-if="!isSelectionMode"
-                        @click="toggleSelectionMode"
-                        class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
-                        title="selecionar múltiplas carteiras (Ctrl + Espaço)"
-                    >
-                        <Target class="!h-4 !w-4" />
-                        <span>selecionar</span>
-                        <span class="hidden rounded border border-[#2F2F2F] px-1 py-0.5 text-[11px] uppercase text-[#8c8c8c] lg:inline-flex"
-                            >Ctrl + Espaço</span
-                        >
-                    </button>
-                    <button
-                        v-else
-                        @click="exitSelectionMode"
-                        class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
-                    >
-                        <span class="text-sm">cancelar seleção</span>
-                    </button>
-                    <button
-                        v-if="!isSelectionMode"
-                        @click="openModal"
-                        class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
-                    >
-                        <Plus class="!h-4 !w-4" />
-                        nova carteira
-                    </button>
-                </div>
-            </div>
-
-            <!-- Campo de busca -->
-            <div class="mb-6">
-                <div class="relative max-w-md">
-                    <Search class="absolute left-3 top-1/2 !h-5 !w-5 -translate-y-1/2 transform text-[#767676]" />
-                    <input
-                        v-model="searchQuery"
-                        type="text"
-                        placeholder="buscar carteiras por nome..."
-                        class="w-full rounded-md border border-[#2F2F2F] bg-[#131316] py-2.5 pl-10 pr-4 text-sm text-white placeholder-[#767676] transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#3800D8]"
-                        @input="handleSearchInput"
-                    />
-                    <button
-                        v-if="searchQuery"
-                        @click="clearSearch"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 transform text-[#767676] transition-colors hover:text-white"
-                    >
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+                </template>
+            </PageHeader>
 
             <div
                 class="mb-10 flex items-center justify-between rounded-[20px] border-2 border-[#252c3e] bg-gradient-to-r from-[#1e1b4b] to-[#0f172a] p-8"
@@ -339,51 +323,16 @@
                 </button>
             </div>
 
-            <div v-if="pagination && pagination.last_page > 1" class="mt-8 flex items-center justify-between">
-                <div class="text-sm text-gray-400">
-                    <span>mostrando</span>
-                    <span class="mx-1 font-medium text-white">{{ pagination.from ?? 0 }}</span>
-                    <span>até</span>
-                    <span class="mx-1 font-medium text-white">{{ pagination.to ?? 0 }}</span>
-                    <span>de</span>
-                    <span class="mx-1 font-medium text-white">{{ pagination.total }}</span>
-                    <span>carteiras</span>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <button
-                        @click="goToPage(pagination.current_page - 1)"
-                        :disabled="pagination.current_page === 1"
-                        class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
-                    >
-                        <ChevronLeft class="h-4 w-4" />
-                    </button>
-
-                    <div class="flex items-center gap-1">
-                        <button
-                            v-for="page in getPageNumbers()"
-                            :key="page"
-                            @click="goToPage(page)"
-                            :class="[
-                                'flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm font-medium transition-colors',
-                                page === pagination.current_page
-                                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-400'
-                                    : 'border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131]',
-                            ]"
-                        >
-                            {{ page }}
-                        </button>
-                    </div>
-
-                    <button
-                        @click="goToPage(pagination.current_page + 1)"
-                        :disabled="pagination.current_page === pagination.last_page"
-                        class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
-                    >
-                        <ChevronRight class="h-4 w-4" />
-                    </button>
-                </div>
-            </div>
+            <PaginationControls
+                v-if="pagination"
+                :current="pagination.current_page"
+                :last="pagination.last_page"
+                :from="pagination.from"
+                :to="pagination.to"
+                :total="pagination.total"
+                entity-label="carteiras"
+                @change="goToPage"
+            />
         </div>
 
         <UiDialog v-model:open="isModalOpen">
@@ -517,30 +466,15 @@
             </DraggableDialogContent>
         </UiDialog>
 
-        <Transition
-            enter-active-class="transition-all duration-300 ease-out"
-            enter-from-class="opacity-0 translate-y-4"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition-all duration-200 ease-in"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 translate-y-4"
+        <SelectionToolbar
+            :visible="isSelectionMode"
+            :count="selectedIds.length"
+            singular-label="carteira selecionada"
+            plural-label="carteiras selecionadas"
+            @select-all="selectAllWallets"
+            @clear="clearSelection"
         >
-            <div
-                v-if="isSelectionMode && selectedIds.length > 0"
-                class="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 transform items-center gap-4 rounded-lg border border-[#2F2F2F] bg-[#1E1E1E] px-6 py-4 shadow-2xl"
-            >
-                <div class="flex items-center gap-2">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#6965f2]">
-                        <span class="text-sm font-semibold text-white">{{ selectedIds.length }}</span>
-                    </div>
-                    <span class="text-sm font-medium text-white">
-                        {{ selectedIds.length === 1 ? 'carteira selecionada' : 'carteiras selecionadas' }}
-                    </span>
-                </div>
-                <div class="h-6 w-px bg-[#2F2F2F]"></div>
-                <button @click="selectAllWallets" class="text-sm text-[#B6B6B6] transition-colors hover:text-white">selecionar todas</button>
-                <button @click="clearSelection" class="text-sm text-[#B6B6B6] transition-colors hover:text-white">limpar seleção</button>
-                <div class="h-6 w-px bg-[#2F2F2F]"></div>
+            <template #actions>
                 <button
                     @click="confirmBulkDelete"
                     class="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
@@ -548,11 +482,15 @@
                     <Trash2 class="!h-4 !w-4" />
                     excluir ({{ selectedIds.length }})
                 </button>
-            </div>
-        </Transition>
+            </template>
+        </SelectionToolbar>
     </MainLayout>
 </template>
 <script lang="ts">
+import PageHeader from '@/components/common/PageHeader.vue';
+import PaginationControls from '@/components/common/PaginationControls.vue';
+import SelectionToolbar from '@/components/common/SelectionToolbar.vue';
+import SearchInput from '@/components/common/SearchInput.vue';
 import { Button as UiButton } from '@/components/ui/button';
 import { DialogDescription, DialogTitle, Dialog as UiDialog } from '@/components/ui/dialog';
 import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
@@ -569,10 +507,9 @@ import MainLayout from '@/layouts/MainLayout.vue';
 import selectionModeMixin from '@/mixins/selectionModeMixin';
 import type { Wallet } from '@/types';
 import { apiBulkDelete, apiDelete, apiGet, apiPut } from '@/utils/api';
+import { formatCurrencyValue, formatDate } from '@/utils/formatters';
 import { Head as InertiaHead } from '@inertiajs/vue3';
 import {
-    ChevronLeft,
-    ChevronRight,
     CreditCard,
     DollarSign,
     HelpCircle,
@@ -580,7 +517,6 @@ import {
     MoreHorizontal,
     PiggyBank,
     Plus,
-    Search,
     Send,
     Settings2,
     Star,
@@ -656,7 +592,10 @@ export default {
     name: 'Wallets',
     mixins: [selectionModeMixin],
     components: {
-        MainLayout,
+        PageHeader,
+        PaginationControls,
+        SearchInput,
+        SelectionToolbar,
         InertiaHead,
         Plus,
         LoaderCircle,
@@ -673,17 +612,15 @@ export default {
         MoreHorizontal,
         CreditCard,
         Target,
-        ChevronLeft,
-        ChevronRight,
         Star,
         Trash2,
-        Search,
         HelpCircle,
         TooltipProvider,
         Tooltip,
         TooltipTrigger,
         TooltipContent,
         WalletCardSkeleton,
+        MainLayout,
     },
     data() {
         return {
@@ -720,7 +657,6 @@ export default {
             walletDefaultChangedListener: null as (() => void) | null,
             isBulkDeleteDialogOpen: false,
             searchQuery: '',
-            searchTimeout: null as ReturnType<typeof setTimeout> | null,
         };
     },
     computed: {
@@ -806,9 +742,6 @@ export default {
         if (this.walletDefaultChangedListener) {
             window.removeEventListener('wallet-default-changed', this.walletDefaultChangedListener);
         }
-        if (this.searchTimeout) {
-            clearTimeout(this.searchTimeout);
-        }
     },
     setup() {
         const { toast } = useToast();
@@ -829,7 +762,7 @@ export default {
                     url += `&search=${encodeURIComponent(this.searchQuery.trim())}`;
                 }
 
-                await new Promise((resolve) => setTimeout(resolve, 3000));
+                // await new Promise((resolve) => setTimeout(resolve, 3000));
                 const response = await apiGet(url);
 
                 if (!response.ok) {
@@ -897,26 +830,6 @@ export default {
                 this.loadWallets(page);
             }
         },
-        getPageNumbers(): number[] {
-            if (!this.pagination) return [];
-
-            const current = this.pagination.current_page;
-            const last = this.pagination.last_page;
-            const pages: number[] = [];
-
-            let start = Math.max(1, current - 2);
-            const end = Math.min(last, start + 4);
-
-            if (end - start < 4) {
-                start = Math.max(1, end - 4);
-            }
-
-            for (let i = start; i <= end; i++) {
-                pages.push(i);
-            }
-
-            return pages;
-        },
         async handleWalletCreated() {
             this.closeModal();
             await this.loadWallets(this.currentPage);
@@ -943,25 +856,8 @@ export default {
             this.isEditDialogOpen = false;
             this.walletToEditId = null;
         },
-        formatCurrency(value: number): string {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-            }).format(value);
-        },
-        formatCurrencyValue(value: number): string {
-            return new Intl.NumberFormat('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            }).format(value);
-        },
-        formatDate(dateString: string): string {
-            return new Intl.DateTimeFormat('pt-BR', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-            }).format(new Date(dateString));
-        },
+        formatCurrencyValue,
+        formatDate,
         calculatePercentageChange(): number {
             return 12;
         },
@@ -1236,18 +1132,7 @@ export default {
         onSelectionModeExit() {
             this.resetAllCardsToFront();
         },
-        handleSearchInput() {
-            if (this.searchTimeout) {
-                clearTimeout(this.searchTimeout);
-            }
-
-            this.searchTimeout = setTimeout(() => {
-                this.currentPage = 1;
-                this.loadWallets(1);
-            }, 500);
-        },
-        clearSearch() {
-            this.searchQuery = '';
+        handleSearch() {
             this.currentPage = 1;
             this.loadWallets(1);
         },

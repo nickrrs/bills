@@ -225,6 +225,7 @@
 </template>
 
 <script lang="ts">
+import { formatCurrencyValue } from '@/utils/formatters';
 import { LoaderCircle, CreditCard, Wallet2, ShieldCheck, Smartphone, Banknote, PiggyBank, TrendingUp } from 'lucide-vue-next';
 import type { Component } from 'vue';
 import { apiPost, apiPut } from '@/utils/api';
@@ -392,49 +393,7 @@ export default {
         },
     },
     methods: {
-        formatCurrency(value: number): string {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-            }).format(value);
-        },
-        formatCurrencyValue(value: number | string): string {
-            let numValue: number;
-            let valueStr: string;
-
-            if (typeof value === 'string') {
-                valueStr = value.replace(',', '.');
-                if (valueStr.length > 15 && /^\d+(\.\d*)?$/.test(valueStr)) {
-                    const parts = valueStr.split('.');
-                    const integerPart = parts[0];
-                    const decimalPart = parts[1] || '00';
-                    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                    const formattedDecimal = decimalPart.padEnd(2, '0').substring(0, 2);
-                    return `${formattedInteger},${formattedDecimal}`;
-                }
-                numValue = parseFloat(valueStr) || 0;
-            } else {
-                numValue = value || 0;
-            }
-
-            if (numValue >= 1e15 || isNaN(numValue)) {
-                const str = numValue.toString();
-                if (str.includes('e+') || str.includes('E+')) {
-                    return str;
-                }
-                const parts = str.split('.');
-                const integerPart = parts[0];
-                const decimalPart = parts[1] || '00';
-                const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                const formattedDecimal = decimalPart.padEnd(2, '0').substring(0, 2);
-                return `${formattedInteger},${formattedDecimal}`;
-            }
-
-            return new Intl.NumberFormat('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            }).format(numValue);
-        },
+        formatCurrencyValue,
         formatBalanceInput(value: number | string): string {
             if (value === null || value === undefined || value === '' || value === 0) {
                 return '';
