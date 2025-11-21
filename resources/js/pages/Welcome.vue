@@ -194,9 +194,7 @@
                                         </div>
                                         <div>
                                             <div class="mb-2 flex items-start gap-3">
-                                                <div
-                                                    class="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-400/20 text-xs text-cyan-400"
-                                                >
+                                                <div class="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-400/20 text-xs text-cyan-400">
                                                     <Utensils class="h-4 w-4" />
                                                 </div>
                                                 <div class="flex-1">
@@ -243,7 +241,7 @@
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="truncate text-[11px] font-medium text-white">supermercado semanal</div>
-                                            <div class="text-[10px] flex flex-row gap-1">
+                                            <div class="flex flex-row gap-1 text-[10px]">
                                                 <span class="text-gray-500">casa</span>
                                                 <span class="text-gray-500"> > </span>
                                                 <span class="text-blue-400">supermercado</span>
@@ -297,13 +295,17 @@
                             <div class="timeline-step reveal-on-scroll">
                                 <div class="timeline-dot"></div>
                                 <h3 class="mb-2 text-xl font-bold text-white">2. Classifique</h3>
-                                <p class="text-sm text-gray-400">Use <strong>categorias</strong> e <strong>subcategorias</strong> personalizadas para saber exatamente para onde vai cada centavo.</p>
+                                <p class="text-sm text-gray-400">
+                                    Use <strong>categorias</strong> e <strong>subcategorias</strong> personalizadas para saber exatamente para onde
+                                    vai cada centavo.
+                                </p>
                             </div>
                             <div class="timeline-step reveal-on-scroll">
                                 <div class="timeline-dot"></div>
                                 <h3 class="mb-2 text-xl font-bold text-white">3. Planeje e Projete</h3>
                                 <p class="text-sm text-gray-400">
-                                    Visualize relatórios de <strong>tendências</strong> e <strong>projeções futuras</strong> baseadas no seu comportamento.
+                                    Visualize relatórios de <strong>tendências</strong> e <strong>projeções futuras</strong> baseadas no seu
+                                    comportamento.
                                 </p>
                             </div>
                         </div>
@@ -561,7 +563,7 @@
                             Controle de Limites.
                         </h2>
                         <p class="mb-6 text-lg leading-relaxed text-gray-400">
-                            Crie cartões fictícios para espelhar seus cartões reais (Nubank, XP, Inter) dentro do sistema.
+                            Crie cartões virtuais para espelhar seus cartões reais (Nubank, XP, Inter) dentro do sistema.
                         </p>
                         <div class="space-y-6">
                             <div class="flex gap-4">
@@ -721,7 +723,7 @@
                                 <span
                                     class="flex items-center gap-1 rounded border border-indigo-500/30 bg-indigo-500/20 px-2 py-1 text-[10px] text-indigo-300"
                                 >
-                                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-400"></span> AI Live
+                                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-400 uppercase"></span> Observando
                                 </span>
                             </div>
                             <!-- Chart Area -->
@@ -949,7 +951,10 @@
 
         <footer class="relative z-10 border-t border-white/5 bg-[#050505] py-12 text-center">
             <div class="container mx-auto px-6">
-                <div class="text-xs text-gray-600">&copy; 2025 bills. Made by <a href="https://x.com/leondicielo" target="_blank" class="text-white hover:text-[#8b5cf6]">@leondicielo</a></div>
+                <div class="text-xs text-gray-600">
+                    &copy; 2025 bills. Made by
+                    <a href="https://x.com/leondicielo" target="_blank" class="text-white hover:text-[#8b5cf6]">@leondicielo</a>
+                </div>
             </div>
         </footer>
 
@@ -979,7 +984,24 @@
 import BillsLogo from '@/components/assets/BillsLogo.vue';
 import HeroOrb from '@/components/assets/HeroOrb.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { ArrowDownRight, ArrowUpRight, Car, ChartBar, CircleCheck, Coffee, CreditCard, DollarSign, Home, Lock, MoreHorizontal, PiggyBank, Plane, ShoppingCart, Target, Utensils } from 'lucide-vue-next';
+import {
+    ArrowDownRight,
+    ArrowUpRight,
+    Car,
+    ChartBar,
+    CircleCheck,
+    Coffee,
+    CreditCard,
+    DollarSign,
+    Home,
+    Lock,
+    MoreHorizontal,
+    PiggyBank,
+    Plane,
+    ShoppingCart,
+    Target,
+    Utensils,
+} from 'lucide-vue-next';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 let cursorLight: HTMLElement | null = null;
@@ -1526,7 +1548,9 @@ section:nth-of-type(2) {
     background: #6366f1;
     transform: scale(0);
     opacity: 0;
-    transition: transform 0.35s ease, opacity 0.35s ease;
+    transition:
+        transform 0.35s ease,
+        opacity 0.35s ease;
 }
 
 .timeline-step.timeline-active .timeline-dot::after {
