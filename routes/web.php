@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,6 +18,7 @@ Route::get('wallets', [WalletController::class, 'index'])->middleware(['auth', '
 Route::get('wallets/create', [WalletController::class, 'create'])->middleware(['auth', 'verified'])->name('wallets.create');
 Route::post('wallets', [WalletController::class, 'store'])->middleware(['auth', 'verified'])->name('wallets.store');
 Route::get('categories', [CategoryController::class, 'index'])->middleware(['auth', 'verified'])->name('categories');
+Route::get('subcategories', [SubcategoryController::class, 'index'])->middleware(['auth', 'verified'])->name('subcategories');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
