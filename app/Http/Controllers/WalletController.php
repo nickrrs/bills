@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWalletRequest;
 use App\Http\Requests\UpdateWalletRequest;
+use App\Http\Requests\BulkDeleteWalletRequest;
 use App\Models\Wallet;
 use App\Services\WalletService;
 use Illuminate\Http\JsonResponse;
@@ -84,5 +85,18 @@ class WalletController extends Controller
 
         $this->walletService->deleteWallet($wallet);
         return response()->json(['message' => 'Wallet deleted successfully']);
+    }
+
+    public function apiBulkDestroy(BulkDeleteWalletRequest $request): JsonResponse
+    {
+        $deletedCount = $this->walletService->bulkDeleteWallets(
+            $request->input('ids'),
+            $request->user()->id
+        );
+
+        return response()->json([
+            'message' => 'Wallets deleted successfully',
+            'deleted_count' => $deletedCount,
+        ]);
     }
 }
