@@ -102,13 +102,13 @@ export default {
                     separatorBefore: false,
                 },
                 {
-                    route: 'dashboard',
+                    route: 'categories',
                     icon: Layers,
                     label: 'categorias financeiras',
                     separatorBefore: false,
                 },
                 {
-                    route: 'dashboard',
+                    route: 'subcategories',
                     icon: Layers2,
                     label: 'subcategorias financeiras',
                     separatorBefore: false,
