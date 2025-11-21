@@ -197,12 +197,17 @@
 </template>
 
 <script lang="ts">
-import { LoaderCircle, ShoppingBag } from 'lucide-vue-next';
+import { LoaderCircle } from 'lucide-vue-next';
 import type { Component } from 'vue';
 import { apiPost, apiPut } from '@/utils/api';
 import { useToast } from '@/components/ui/toast';
 import CategoryIconSelector from './CategoryIconSelector.vue';
-import * as icons from 'lucide-vue-next';
+// Importar apenas os ícones que podem ser usados dinamicamente
+import {
+    ShoppingBag, ShoppingCart, Coffee, UtensilsCrossed, Building2, Home, Wifi, Zap, Gift, Heart, Wallet,
+    GraduationCap, Plane, Bus, Car, Music, Film, Stethoscope, PawPrint, Clock, Gamepad2, Dumbbell,
+    BookOpen, Camera, Palette, Trophy, Award, TreePine, Settings
+} from 'lucide-vue-next';
 
 interface ColorOption {
     value: string;
@@ -255,10 +260,18 @@ export default {
         };
     },
     computed: {
+        availableIcons(): Record<string, Component> {
+            // Objeto com os ícones disponíveis para acesso dinâmico
+            return {
+                ShoppingBag, ShoppingCart, Coffee, UtensilsCrossed, Building2, Home, Wifi, Zap, Gift, Heart, Wallet,
+                GraduationCap, Plane, Bus, Car, Music, Film, Stethoscope, PawPrint, Clock, Gamepad2, Dumbbell,
+                BookOpen, Camera, Palette, Trophy, Award, TreePine, Settings
+            };
+        },
         selectedIconComponent(): Component | null {
             if (!this.formData.icon) return null;
             const iconName = this.formData.icon;
-            return (icons as unknown as Record<string, Component>)[iconName] || null;
+            return this.availableIcons[iconName] || null;
         },
         previewColor(): string {
             return this.formData.color || '#ec4899';
@@ -314,8 +327,14 @@ export default {
             try {
                 const isEditing = !!this.category;
 
+                const slug = this.formData.name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)/g, '');
+
                 const data = {
                     name: this.formData.name,
+                    slug: slug,
                     icon: this.formData.icon || null,
                     color: this.formData.color,
                     type: this.formData.type,
