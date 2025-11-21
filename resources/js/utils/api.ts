@@ -91,3 +91,18 @@ export async function apiDelete(url: string, options: ApiRequestOptions = {}): P
     return apiRequest(url, { ...options, method: 'DELETE' });
 }
 
+/**
+ * Bulk DELETE request helper
+ */
+export async function apiBulkDelete(url: string, ids: number[], options: ApiRequestOptions = {}): Promise<Response> {
+    return apiRequest(url, {
+        ...options,
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+        },
+        body: JSON.stringify({ ids }),
+    });
+}
+
