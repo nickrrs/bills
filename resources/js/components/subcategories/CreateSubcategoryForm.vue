@@ -614,6 +614,13 @@ export default {
                         }
                     } else {
                         this.emptyCategories = false;
+
+                        if (this.formData.category_id && !this.subcategory) {
+                            const category = this.categories.find(c => c.id === this.formData.category_id);
+                            if (category) {
+                                this.formData.color = category.color.toLowerCase();
+                            }
+                        }
                     }
                 }
             } catch (error) {
