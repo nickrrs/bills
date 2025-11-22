@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->boolean('active')->default(true);
+            $table->boolean('preferred')->default(false);
             $table->string('icon')->nullable();
             $table->string('color')->nullable();
             $table->timestamps();

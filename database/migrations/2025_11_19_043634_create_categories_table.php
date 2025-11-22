@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('icon');
             $table->string('color');
             $table->string('type');
+            $table->boolean('active')->default(true);
+            $table->boolean('preferred')->default(false);
             $table->timestamps();
         });
     }
