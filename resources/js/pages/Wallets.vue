@@ -762,7 +762,6 @@ export default {
                     url += `&search=${encodeURIComponent(this.searchQuery.trim())}`;
                 }
 
-                // await new Promise((resolve) => setTimeout(resolve, 3000));
                 const response = await apiGet(url);
 
                 if (!response.ok) {

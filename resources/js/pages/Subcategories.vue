@@ -693,7 +693,7 @@ export default {
         async loadCategories() {
             try {
                 this.loadingCategories = true;
-                await new Promise((resolve) => setTimeout(resolve, 3000));
+
                 const response = await apiGet('/api/categories?per_page=5');
                 if (response.ok) {
                     const data = await response.json();
