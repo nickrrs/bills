@@ -15,7 +15,6 @@ class Subcategory extends Model
         'category_id',
         'icon',
         'color',
-        'type',
     ];
 
     public function category()
