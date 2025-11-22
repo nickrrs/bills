@@ -34,7 +34,7 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name.required' => 'o nome da categoria é obrigatório',
-            'name.max' => 'o nome da categoria não pode ter mais de 50 caracteres',
+            'name.max' => 'o nome da categoria não pode ter mais de 30 caracteres',
             'slug.required' => 'o slug da categoria é obrigatório',
             'slug.max' => 'o slug da categoria não pode ter mais de 255 caracteres',
             'slug.unique' => 'já existe uma categoria com este nome. por favor, escolha outro nome.',
