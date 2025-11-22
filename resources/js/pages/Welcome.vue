@@ -30,7 +30,33 @@
                     <div class="reveal-on-scroll text-left">
                         <h1 class="font-display mb-6 text-6xl font-bold leading-tight tracking-tight text-white md:text-7xl">
                             Controle o presente,<br />
-                            <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">projete seu futuro.</span>
+                            <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                                <span class="group relative inline-grid cursor-pointer overflow-hidden align-bottom pb-1">
+                                    <span class="col-start-1 row-start-1 flex pb-1" aria-hidden="true">
+                                        <span
+                                            v-for="(char, index) in word1.split('')"
+                                            :key="'w1-'+index"
+                                            class="inline-block transition-transform"
+                                            :class="[transitionTiming, 'group-hover:translate-y-full']"
+                                            :style="{ transitionDelay: (index * 30) + 'ms' }"
+                                        >
+                                            {{ char === ' ' ? '\u00A0' : char }}
+                                        </span>
+                                    </span>
+
+                                    <span class="col-start-1 row-start-1 flex pb-1">
+                                        <span
+                                            v-for="(char, index) in word2.split('')"
+                                            :key="'w2-'+index"
+                                            class="inline-block -translate-y-full transition-transform"
+                                            :class="[transitionTiming, 'group-hover:translate-y-0']"
+                                            :style="{ transitionDelay: (index * 30) + 'ms' }"
+                                        >
+                                            {{ char === ' ' ? '\u00A0' : char }}
+                                        </span>
+                                    </span>
+                                </span>
+                            </span>
                         </h1>
                         <p class="mb-10 max-w-lg text-xl font-light leading-relaxed text-gray-400">
                             Tenha clareza sobre como você gasta seu dinheiro e ferramentas poderosas para planejar onde você quer chegar.
@@ -563,7 +589,7 @@
                             Controle de Limites.
                         </h2>
                         <p class="mb-6 text-lg leading-relaxed text-gray-400">
-                            Crie cartões virtuais para espelhar seus cartões reais (Nubank, XP, Inter) dentro do sistema.
+                            Crie cartões virtuais para espelhar seus cartões reais dentro do sistema.
                         </p>
                         <div class="space-y-6">
                             <div class="flex gap-4">
@@ -586,9 +612,9 @@
                                     <ChartBar class="h-6 w-6 text-real-nuPurple" />
                                 </div>
                                 <div>
-                                    <h4 class="mb-1 font-bold text-white">Status de Fatura</h4>
+                                    <h4 class="mb-1 font-bold text-white">Acompanhamento Detalhado</h4>
                                     <p class="text-sm text-gray-500">
-                                        Marque faturas como "Aberta" ou "Fechada" e acompanhe o consumo do limite em tempo real.
+                                        Acompanhe o consumo do limite de gastos, parcelas de compras, transações e muito mais.
                                     </p>
                                 </div>
                             </div>
@@ -1003,6 +1029,10 @@ import {
     Utensils,
 } from 'lucide-vue-next';
 import { onMounted, onUnmounted, ref } from 'vue';
+
+const word1 = 'organize suas finanças';
+const word2 = 'e controle seu futuro.';
+const transitionTiming = 'ease-[cubic-bezier(0.25,1,0.5,1)] duration-700';
 
 let cursorLight: HTMLElement | null = null;
 let observer: IntersectionObserver | null = null;
