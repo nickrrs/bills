@@ -49,7 +49,6 @@ class SubcategoryController extends Controller
     public function apiUpdate(Request $request, Subcategory $subcategory): JsonResponse
     {
         $data = $request->all();
-        $data['user_id'] = $request->user()->id;
         $subcategory = $this->subcategoryService->updateSubcategory($subcategory, $data);
         return response()->json($subcategory);
     }
