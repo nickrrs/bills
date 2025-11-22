@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->dropIndex('user_id');
+            $table->dropIndex('categories_user_id_index');
         });
     }
 };
