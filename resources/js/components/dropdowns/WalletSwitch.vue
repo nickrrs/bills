@@ -90,7 +90,7 @@
                     @click="handleAddWallet"
                 >
                     <Plus class="!h-4 !w-4" />
-                    add wallet
+                    adicionar carteira
                 </DropdownMenuItem>
             </DropdownMenuGroup>
         </DropdownMenuContent>
@@ -217,12 +217,6 @@ export default {
         }
     },
     watch: {
-        isOpen(newValue) {
-            if (newValue && !this.selectedWalletId) {
-                // Quando o dropdown abre e não há seleção, buscar a wallet padrão
-                this.findAndSelectDefaultWallet();
-            }
-        },
         isDrawerOpen(newValue) {
             if (newValue) {
                 // Garantir que o boolean está em false quando o drawer abre
@@ -241,6 +235,10 @@ export default {
                 const targetPage = page ?? this.currentPage;
 
                 let url = `/api/wallets?page=${targetPage}&per_page=${this.perPage}`;
+                // Se não há seleção, ordenar por is_default para garantir que a padrão venha primeiro
+                if (!this.selectedWalletId) {
+                    url += `&order_by=is_default&order_direction=desc`;
+                }
                 if (this.searchQuery.trim()) {
                     url += `&search=${encodeURIComponent(this.searchQuery.trim())}`;
                 }
@@ -263,15 +261,14 @@ export default {
                 };
                 this.currentPage = data.current_page;
 
-                // Se não há seleção, buscar wallet padrão
+                // Se não há seleção, buscar wallet padrão na lista retornada
                 if (!this.selectedWalletId) {
                     const defaultWallet = this.wallets.find(w => this.isWalletDefault(w));
                     if (defaultWallet) {
                         this.selectedWalletId = defaultWallet.id;
                         this.selectedWalletName = defaultWallet.name;
-                    } else {
-                        await this.findAndSelectDefaultWallet();
                     }
+                    // Não precisa chamar findAndSelectDefaultWallet() aqui porque já ordenamos por is_default
                 } else {
                     // Atualizar nome se a wallet selecionada estiver na lista
                     const selectedWallet = this.wallets.find(w => w.id === this.selectedWalletId);
@@ -296,7 +293,7 @@ export default {
         },
         async findAndSelectDefaultWallet() {
             try {
-                const response = await apiGet('/api/wallets?per_page=100&order_by=is_default&order_direction=desc');
+                const response = await apiGet('/api/wallets?per_page=5&order_by=is_default&order_direction=desc');
                 if (response.ok) {
                     const data = await response.json();
                     const defaultWallet = data.data?.find((w: Wallet) => this.isWalletDefault(w));
