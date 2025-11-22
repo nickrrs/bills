@@ -49,23 +49,19 @@
                 </template>
             </PageHeader>
             <div class="grid grid-cols-1 items-start gap-6 pb-4 md:grid-cols-2 lg:grid-cols-3">
-                <!-- Skeleton para cards de categoria (quando categorias estão carregando) -->
                 <template v-if="loadingCategories && categories.length === 0">
                     <CategoryCardSkeleton v-for="n in 3" :key="`category-skeleton-${n}`" />
                 </template>
-                <!-- Cards reais com skeleton de subcategorias (quando categorias já carregaram mas subcategorias estão carregando) -->
-                <template v-else-if="!loadingCategories && loading && allSubcategories.length === 0 && categories.length > 0">
+                <template v-else-if="!loadingCategories && loading && categories.length > 0">
                     <div
                         v-for="category in categories"
                         :key="`category-loading-${category.id}`"
                         class="h-full w-full rounded-[20px] border border-[#2F2F2F] bg-[#181818] transition-all duration-300"
                     >
-                        <!-- Card Header Content -->
                         <div
                             class="flex flex-row items-center justify-between space-x-3 rounded-t-[20px] border-b border-[#2F2F2F] bg-gradient-to-b from-[#FFFFFF08] to-transparent p-[20px]"
                         >
                             <div class="flex flex-row items-center space-x-3">
-                                <!-- Icone da categoria -->
                                 <div
                                     class="flex h-10 w-10 items-center justify-center rounded-md"
                                     :style="{ backgroundColor: category.color + '20' }"
@@ -85,7 +81,6 @@
                             </div>
                             <span class="mb-1 whitespace-nowrap font-semibold" :style="{ color: category.color }">R$ 0,00</span>
                         </div>
-                        <!-- Campo de busca dentro do card -->
                         <div class="border-b border-[#2F2F2F] p-3">
                             <div class="relative">
                                 <Search class="absolute left-3 top-1/2 !h-4 !w-4 -translate-y-1/2 transform text-[#767676]" />
@@ -97,7 +92,6 @@
                                 />
                             </div>
                         </div>
-                        <!-- Lista de subcategorias skeleton -->
                         <div class="flex flex-col p-[8px] gap-1">
                             <div
                                 v-for="n in 3"
@@ -119,19 +113,16 @@
                         </div>
                     </div>
                 </template>
-                <!-- Cards reais com dados -->
-                <template v-else-if="groupedCategories.length > 0 || allSubcategories.length > 0">
+                <template v-else-if="groupedCategories.length > 0">
                     <div
                         v-for="categoryGroup in groupedCategories"
                         :key="categoryGroup.category.id"
                         class="h-full w-full rounded-[20px] border border-[#2F2F2F] bg-[#181818] transition-all duration-300 hover:-translate-y-1 hover:border-[#525151]"
                     >
-                        <!-- Card Header Content -->
                         <div
                             class="flex flex-row items-center justify-between space-x-3 rounded-t-[20px] border-b border-[#2F2F2F] bg-gradient-to-b from-[#FFFFFF08] to-transparent p-[20px]"
                         >
                             <div class="flex flex-row items-center space-x-3">
-                                <!-- Icone da categoria -->
                                 <div
                                     class="flex h-10 w-10 items-center justify-center rounded-md"
                                     :style="{ backgroundColor: categoryGroup.category.color + '20' }"
@@ -154,7 +145,6 @@
                             </div>
                             <span class="mb-1 whitespace-nowrap font-semibold" :style="{ color: categoryGroup.category.color }">R$ 0,00</span>
                         </div>
-                        <!-- Campo de busca dentro do card -->
                         <div class="border-b border-[#2F2F2F] p-3">
                             <div class="relative">
                                 <Search class="absolute left-3 top-1/2 !h-4 !w-4 -translate-y-1/2 transform text-[#767676]" />
@@ -176,9 +166,7 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- Lista de subcategorias -->
                         <div class="flex flex-col gap-1 p-[8px]">
-                            <!-- Subcategoria -->
                             <div
                                 v-for="subcategory in categoryGroup.subcategories"
                                 :key="subcategory.id"
@@ -190,7 +178,6 @@
                                 }"
                                 @click="isSelectionMode ? toggleSubcategorySelection(subcategory.id) : null"
                             >
-                                <!-- Checkbox de seleção -->
                                 <div
                                     v-if="isSelectionMode"
                                     class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 transition-all"
@@ -206,7 +193,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                                     </svg>
                                 </div>
-                                <!-- Icone da subcategoria -->
                                 <div
                                     class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
                                     :style="{ backgroundColor: subcategory.color + '20' }"
@@ -241,7 +227,6 @@
                                         <Trash2 class="!h-[14px] !w-[14px]" />
                                     </button>
                                 </div>
-                                <!-- Barra de Distribuição -->
                                 <div class="absolute bottom-0 left-0 right-[12px] h-[2px] overflow-hidden rounded-[2px] bg-[#ffffff21]">
                                     <div
                                         class="h-full rounded-[2px]"
@@ -491,6 +476,7 @@ interface Category {
     icon: string | null;
     color: string;
     type: 'expense' | 'recept';
+    subcategories?: Subcategory[];
 }
 
 interface CategoryGroup {
@@ -553,7 +539,6 @@ export default {
             perCategoryPageSize: 4,
             categorySearchQueries: {} as Record<number, string>,
             categoryPagination: {} as Record<number, number>,
-            allSubcategories: [] as Subcategory[],
             pagination: null as {
                 total: number;
                 per_page: number;
@@ -567,45 +552,33 @@ export default {
     computed: {
         subcategoryToEdit(): Subcategory | null {
             if (!this.subcategoryToEditId) return null;
-            return this.allSubcategories.find((s) => s.id === this.subcategoryToEditId) || null;
+            for (const category of this.categories) {
+                if (category.subcategories) {
+                    const subcategory = category.subcategories.find((s) => s.id === this.subcategoryToEditId);
+                    if (subcategory) return subcategory;
+                }
+            }
+            return null;
         },
         allGroupedCategories(): CategoryGroup[] {
-            const groups: Record<number, { category: Category; subcategories: Subcategory[] }> = {};
-
-            // Primeiro, criar grupos para todas as categorias que têm subcategorias
-            this.allSubcategories.forEach((subcategory) => {
-                const categoryId = subcategory.category_id;
-                if (!groups[categoryId]) {
-                    const category = this.categories.find((c) => c.id === categoryId);
-                    if (category) {
-                        groups[categoryId] = {
-                            category,
-                            subcategories: [],
-                        };
-                    }
-                }
-                if (groups[categoryId]) {
-                    groups[categoryId].subcategories.push(subcategory);
-                }
-            });
-
-            return Object.values(groups).map((group) => {
-                const searchQuery = this.categorySearchQueries[group.category.id] || '';
+            return this.categories.map((category) => {
+                const subcategories = category.subcategories || [];
+                const searchQuery = this.categorySearchQueries[category.id] || '';
                 const filtered = searchQuery.trim()
-                    ? group.subcategories.filter((subcategory) =>
+                    ? subcategories.filter((subcategory) =>
                         subcategory.name.toLowerCase().includes(searchQuery.toLowerCase())
                     )
-                    : group.subcategories;
+                    : subcategories;
 
                 const totalSubcategories = filtered.length;
                 const totalPages = Math.max(1, Math.ceil(totalSubcategories / this.perCategoryPageSize));
-                const requestedPage = this.categoryPagination[group.category.id] ?? 1;
+                const requestedPage = this.categoryPagination[category.id] ?? 1;
                 const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
                 const start = (currentPage - 1) * this.perCategoryPageSize;
                 const paginatedSubcategories = filtered.slice(start, start + this.perCategoryPageSize);
 
                 return {
-                    category: group.category,
+                    category,
                     subcategories: paginatedSubcategories,
                     totalSubcategories,
                     pagination: {
@@ -616,50 +589,52 @@ export default {
             });
         },
         groupedCategories(): CategoryGroup[] {
-            // Paginar os grupos de categoria
-            const allGroups = this.allGroupedCategories;
-            const start = (this.currentPage - 1) * this.groupsPerPage;
-            const end = start + this.groupsPerPage;
-            return allGroups.slice(start, end);
+            return this.allGroupedCategories;
         },
         totalSubcategories(): number {
-            return this.allSubcategories.length;
+            return this.categories.reduce((total, category) => {
+                return total + (category.subcategories?.length || 0);
+            }, 0);
         },
     },
     mounted() {
-        this.loadSubcategories(1);
-        this.loadCategories();
+        this.loadCategoriesWithSubcategories(1);
     },
     beforeUnmount() {
     },
     methods: {
-        async loadSubcategories(page?: number) {
+        async loadCategoriesWithSubcategories(page?: number) {
             try {
                 this.loading = true;
+                this.loadingCategories = true;
 
-                // Buscar todas as subcategorias (sem paginação do backend)
-                let url = `/api/subcategories?per_page=1000`;
+                let url = `/api/categories?per_page=${this.groupsPerPage}&order_direction=asc&page=${page || 1}&with_subcategories=true`;
                 if (this.searchQuery.trim()) {
-                    url += `&search=${encodeURIComponent(this.searchQuery.trim())}`;
+                    url += `&subcategory_search=${encodeURIComponent(this.searchQuery.trim())}`;
                 }
 
                 const response = await apiGet(url);
 
                 if (!response.ok) {
-                    throw new Error('Failed to load subcategories');
+                    throw new Error('Failed to load categories with subcategories');
                 }
 
                 const data = await response.json();
-                this.allSubcategories = data.data || [];
+                this.categories = data.data || [];
                 this.categoryPagination = {};
 
-                // Aguardar próximo tick para garantir que o computed seja atualizado
-                await this.$nextTick();
+                this.pagination = {
+                    total: data.total || 0,
+                    per_page: data.per_page || this.groupsPerPage,
+                    current_page: data.current_page || 1,
+                    last_page: data.last_page || 1,
+                    from: data.from || null,
+                    to: data.to || null,
+                };
 
-                // Calcular paginação baseada em grupos de categoria
-                this.updatePaginationInfo(page ?? 1);
+                this.currentPage = data.current_page || 1;
             } catch (error) {
-                console.error('Error loading subcategories:', error);
+                console.error('Error loading categories with subcategories:', error);
                 this.toast({
                     title: 'erro ao carregar subcategorias',
                     description: 'não foi possível carregar as subcategorias. tente novamente.',
@@ -667,43 +642,11 @@ export default {
                 });
             } finally {
                 this.loading = false;
+                this.loadingCategories = false;
             }
         },
         goToPage(page: number) {
-            this.updatePaginationInfo(page);
-        },
-        updatePaginationInfo(targetPage?: number) {
-            const totalGroups = this.allGroupedCategories.length;
-            const totalPages = Math.max(1, Math.ceil(totalGroups / this.groupsPerPage));
-            const page = targetPage ? Math.min(Math.max(targetPage, 1), totalPages) : Math.min(Math.max(this.currentPage, 1), totalPages);
-            const start = (page - 1) * this.groupsPerPage;
-            const end = Math.min(start + this.groupsPerPage, totalGroups);
-
-            this.currentPage = page;
-
-            this.pagination = {
-                total: totalGroups,
-                per_page: this.groupsPerPage,
-                current_page: page,
-                last_page: totalPages,
-                from: totalGroups > 0 ? start + 1 : null,
-                to: totalGroups > 0 ? end : null,
-            };
-        },
-        async loadCategories() {
-            try {
-                this.loadingCategories = true;
-
-                const response = await apiGet('/api/categories?per_page=5');
-                if (response.ok) {
-                    const data = await response.json();
-                    this.categories = data.data || [];
-                }
-            } catch (error) {
-                console.error('Error loading categories:', error);
-            } finally {
-                this.loadingCategories = false;
-            }
+            this.loadCategoriesWithSubcategories(page);
         },
         async deleteSubcategory(subcategoryId: number) {
             try {
@@ -720,7 +663,7 @@ export default {
                     variant: 'default',
                 });
 
-                await this.loadSubcategories(this.currentPage);
+                await this.loadCategoriesWithSubcategories(this.currentPage);
             } catch (error: any) {
                 console.error('Error deleting subcategory:', error);
                 this.toast({
@@ -732,11 +675,11 @@ export default {
         },
         async handleSubcategoryCreated() {
             this.closeModal();
-            await this.loadSubcategories(this.currentPage);
+            await this.loadCategoriesWithSubcategories(this.currentPage);
         },
         async handleSubcategoryUpdated() {
             this.closeEditModal();
-            await this.loadSubcategories(this.currentPage);
+            await this.loadCategoriesWithSubcategories(this.currentPage);
         },
         openModal() {
             this.preselectedCategoryId = null;
@@ -777,7 +720,7 @@ export default {
         },
         handleSearch() {
             this.currentPage = 1;
-            this.loadSubcategories(1);
+            this.loadCategoriesWithSubcategories(1);
         },
         handleCategorySearchInput(categoryId: number, query: string) {
             this.categorySearchQueries = {
@@ -788,9 +731,6 @@ export default {
                 ...this.categoryPagination,
                 [categoryId]: 1,
             };
-            this.$nextTick(() => {
-                this.updatePaginationInfo();
-            });
         },
         clearCategorySearch(categoryId: number) {
             const queries = { ...this.categorySearchQueries };
@@ -800,9 +740,6 @@ export default {
                 ...this.categoryPagination,
                 [categoryId]: 1,
             };
-            this.$nextTick(() => {
-                this.updatePaginationInfo();
-            });
         },
         changeCategoryPage(categoryId: number, direction: 'next' | 'prev') {
             const group = this.allGroupedCategories.find((g) => g.category.id === categoryId);
@@ -821,7 +758,6 @@ export default {
         },
         getIconComponent(iconName: string | null): Component | null {
             if (!iconName) return null;
-            // Objeto com os ícones disponíveis para acesso dinâmico
             const availableIcons: Record<string, Component> = {
                 ShoppingBag,
                 ShoppingCart,
@@ -892,7 +828,7 @@ export default {
                     });
 
                     this.exitSelectionMode();
-                    await this.loadSubcategories(this.currentPage);
+                    await this.loadCategoriesWithSubcategories(this.currentPage);
                 } else {
                     this.toast({
                         title: 'erro ao deletar subcategorias',
@@ -910,7 +846,16 @@ export default {
             }
         },
         getSelectionIds() {
-            return this.allSubcategories.map((subcategory) => subcategory.id);
+            // Coletar IDs de todas as subcategorias de todas as categorias
+            const ids: number[] = [];
+            this.categories.forEach((category) => {
+                if (category.subcategories) {
+                    category.subcategories.forEach((subcategory) => {
+                        ids.push(subcategory.id);
+                    });
+                }
+            });
+            return ids;
         },
     },
 };
