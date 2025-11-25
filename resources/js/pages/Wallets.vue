@@ -20,6 +20,11 @@
                             @search="handleSearch"
                         />
                         <div class="flex flex-wrap items-center gap-2">
+                            <ViewToggle
+                                v-model:view="viewMode"
+                                grid-label="grade"
+                                table-label="tabela"
+                            />
                             <button
                                 v-if="!isSelectionMode"
                                 @click="toggleSelectionMode"
@@ -120,7 +125,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div v-if="viewMode === 'grid'" class="grid grid-cols-1 gap-8 pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 <template v-if="loading">
                     <WalletCardSkeleton v-for="n in 3" :key="`skeleton-${n}`" />
                 </template>
@@ -233,7 +238,7 @@
                                             class="group relative flex cursor-help items-center space-x-2 text-white/70 transition-colors hover:text-white"
                                         >
                                             <Target class="h-4 w-4" />
-                                            <span class="text-xs font-medium">Detalhes</span>
+                                            <span class="text-xs font-medium">detalhes</span>
                                             <div
                                                 class="track-tooltip pointer-events-none invisible absolute bottom-[calc(100%+8px)] right-0 z-20 w-[180px] max-w-[calc(100vw-2rem)] rounded-lg border border-white/10 bg-black/90 p-2 opacity-0 shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all duration-200"
                                             >
@@ -323,6 +328,33 @@
                     </div>
                     <span class="text-sm font-medium">adicionar carteira</span>
                 </button>
+            </div>
+
+            <!-- Tabela de Carteiras -->
+            <div v-else-if="viewMode === 'table'" class="pb-4">
+                <template v-if="loading">
+                    <div class="rounded-lg border border-border bg-card p-8">
+                        <div class="flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="h-8 w-8 animate-spin rounded-full border-2 border-accent-primary border-t-transparent mx-auto mb-4"></div>
+                                <p class="text-muted-foreground">carregando carteiras...</p>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template v-else>
+                    <WalletsTable
+                        :wallets="wallets"
+                        :is-selection-mode="isSelectionMode"
+                        :selected-ids="selectedIds"
+                        :all-selected="selectedIds.length > 0 && selectedIds.length === wallets.length"
+                        @edit="handleEditWallet"
+                        @delete="handleDeleteWallet"
+                        @manage-balance="handleManageBalance"
+                        @toggle-selection="toggleWalletSelection"
+                        @toggle-all="selectedIds.length === wallets.length ? clearSelection() : selectAllWallets()"
+                    />
+                </template>
             </div>
 
             <PaginationControls
@@ -502,6 +534,7 @@ import PageHeader from '@/components/common/PageHeader.vue';
 import PaginationControls from '@/components/common/PaginationControls.vue';
 import SelectionToolbar from '@/components/common/SelectionToolbar.vue';
 import SearchInput from '@/components/common/SearchInput.vue';
+import ViewToggle from '@/components/common/ViewToggle.vue';
 import { Button as UiButton } from '@/components/ui/button';
 import { DialogDescription, DialogTitle, Dialog as UiDialog } from '@/components/ui/dialog';
 import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
@@ -514,6 +547,7 @@ import CreateWalletForm from '@/components/wallets/CreateWalletForm.vue';
 import WalletActionsBack, { type WalletBackAction } from '@/components/wallets/WalletActionsBack.vue';
 import WalletCardSkeleton from '@/components/wallets/WalletCardSkeleton.vue';
 import WalletFlipCard from '@/components/wallets/WalletFlipCard.vue';
+import WalletsTable from '@/components/wallets/WalletsTable.vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import selectionModeMixin from '@/mixins/selectionModeMixin';
 import type { Wallet } from '@/types';
@@ -610,6 +644,7 @@ export default {
         PaginationControls,
         SearchInput,
         SelectionToolbar,
+        ViewToggle,
         InertiaHead,
         Plus,
         LoaderCircle,
@@ -634,6 +669,7 @@ export default {
         TooltipTrigger,
         TooltipContent,
         WalletCardSkeleton,
+        WalletsTable,
         MainLayout,
     },
     data() {
@@ -671,6 +707,7 @@ export default {
             walletDefaultChangedListener: null as (() => void) | null,
             isBulkDeleteDialogOpen: false,
             searchQuery: '',
+            viewMode: 'grid' as 'grid' | 'table',
         };
     },
     computed: {

@@ -18,6 +18,11 @@
                             @search="handleSearch"
                         />
                         <div class="flex flex-wrap items-center gap-2">
+                            <ViewToggle
+                                v-model:view="viewMode"
+                                grid-label="grade"
+                                table-label="tabela"
+                            />
                             <button
                                 v-if="!isSelectionMode"
                                 @click="toggleSelectionMode"
@@ -48,7 +53,7 @@
                     </div>
                 </template>
             </PageHeader>
-            <div class="grid grid-cols-1 items-start gap-6 pb-4 md:grid-cols-2 lg:grid-cols-3">
+            <div v-if="viewMode === 'grid'" class="grid grid-cols-1 items-start gap-6 pb-4 md:grid-cols-2 lg:grid-cols-3">
                 <template v-if="loadingCategories && categories.length === 0">
                     <CategoryCardSkeleton v-for="n in 3" :key="`category-skeleton-${n}`" />
                 </template>
@@ -277,6 +282,33 @@
                     <p class="text-sm text-muted-foreground">clique em "nova subcategoria" para criar sua primeira subcategoria.</p>
                 </div>
             </div>
+
+            <!-- Tabela de Subcategorias -->
+            <div v-else-if="viewMode === 'table'" class="pb-4">
+                <template v-if="loading">
+                    <div class="rounded-lg border border-border bg-card p-8">
+                        <div class="flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="h-8 w-8 animate-spin rounded-full border-2 border-accent-primary border-t-transparent mx-auto mb-4"></div>
+                                <p class="text-muted-foreground">carregando subcategorias...</p>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template v-else>
+                    <SubcategoriesTable
+                        :grouped-categories="groupedCategories"
+                        :is-selection-mode="isSelectionMode"
+                        :selected-ids="selectedIds"
+                        :all-selected="selectedIds.length > 0 && selectedIds.length === getSelectionIds().length"
+                        @edit="handleEditSubcategory"
+                        @delete="handleDeleteSubcategory"
+                        @toggle-selection="toggleSubcategorySelection"
+                        @toggle-all="selectedIds.length === getSelectionIds().length ? clearSelection() : selectAllSubcategories()"
+                    />
+                </template>
+            </div>
+
             <PaginationControls
                 v-if="pagination"
                 :current="pagination.current_page"
@@ -409,8 +441,10 @@ import SelectionToolbar from '@/components/common/SelectionToolbar.vue';
 import PageHeader from '@/components/common/PageHeader.vue';
 import PaginationControls from '@/components/common/PaginationControls.vue';
 import SearchInput from '@/components/common/SearchInput.vue';
+import ViewToggle from '@/components/common/ViewToggle.vue';
 import CreateSubcategoryForm from '@/components/subcategories/CreateSubcategoryForm.vue';
 import CategoryCardSkeleton from '@/components/subcategories/CategoryCardSkeleton.vue';
+import SubcategoriesTable from '@/components/subcategories/SubcategoriesTable.vue';
 import { Button as UiButton } from '@/components/ui/button';
 import { DialogDescription, DialogTitle, Dialog as UiDialog } from '@/components/ui/dialog';
 import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
@@ -496,6 +530,7 @@ export default {
         SearchInput,
         PaginationControls,
         SelectionToolbar,
+        ViewToggle,
         MainLayout,
         InertiaHead,
         Search,
@@ -513,6 +548,7 @@ export default {
         DraggableDialogContent,
         CreateSubcategoryForm,
         CategoryCardSkeleton,
+        SubcategoriesTable,
     },
     setup() {
         const { toast } = useToast();
@@ -545,6 +581,7 @@ export default {
                 from: number | null;
                 to: number | null;
             } | null,
+            viewMode: 'grid' as 'grid' | 'table',
         };
     },
     computed: {

@@ -18,6 +18,11 @@
                             @search="handleSearch"
                         />
                         <div class="flex flex-wrap items-center gap-2">
+                            <ViewToggle
+                                v-model:view="viewMode"
+                                grid-label="grade"
+                                table-label="tabela"
+                            />
                             <button
                                 v-if="!isSelectionMode"
                                 @click="toggleSelectionMode"
@@ -74,7 +79,7 @@
             </div>
 
             <!-- Grid de Categorias -->
-            <div class="grid grid-cols-1 gap-6 pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div v-if="viewMode === 'grid'" class="grid grid-cols-1 gap-6 pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 <template v-if="loading">
                     <CategoryCardSkeleton v-for="n in skeletonCount" :key="`category-skeleton-${n}`" />
                 </template>
@@ -199,6 +204,32 @@
                     </div>
                     <span class="text-sm font-medium">adicionar categoria</span>
                 </button>
+            </div>
+
+            <!-- Tabela de Categorias -->
+            <div v-else-if="viewMode === 'table'" class="pb-4">
+                <template v-if="loading">
+                    <div class="rounded-lg border border-border bg-card p-8">
+                        <div class="flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="h-8 w-8 animate-spin rounded-full border-2 border-accent-primary border-t-transparent mx-auto mb-4"></div>
+                                <p class="text-muted-foreground">carregando categorias...</p>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template v-else>
+                    <CategoriesTable
+                        :categories="filteredCategories"
+                        :is-selection-mode="isSelectionMode"
+                        :selected-ids="selectedIds"
+                        :all-selected="selectedIds.length > 0 && selectedIds.length === filteredCategories.length"
+                        @edit="handleEditCategory"
+                        @delete="handleDeleteCategory"
+                        @toggle-selection="toggleCategorySelection"
+                        @toggle-all="selectedIds.length === filteredCategories.length ? clearSelection() : selectAllCategories()"
+                    />
+                </template>
             </div>
 
             <PaginationControls
@@ -330,8 +361,10 @@ import SelectionToolbar from '@/components/common/SelectionToolbar.vue';
 import PageHeader from '@/components/common/PageHeader.vue';
 import PaginationControls from '@/components/common/PaginationControls.vue';
 import SearchInput from '@/components/common/SearchInput.vue';
+import ViewToggle from '@/components/common/ViewToggle.vue';
 import CategoryCardSkeleton from '@/components/categories/CategoryCardSkeleton.vue';
 import CreateCategoryForm from '@/components/categories/CreateCategoryForm.vue';
+import CategoriesTable from '@/components/categories/CategoriesTable.vue';
 import { Button as UiButton } from '@/components/ui/button';
 import { DialogDescription, DialogTitle, Dialog as UiDialog } from '@/components/ui/dialog';
 import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
@@ -398,6 +431,7 @@ export default {
         SearchInput,
         PaginationControls,
         SelectionToolbar,
+        ViewToggle,
         MainLayout,
         InertiaHead,
         Plus,
@@ -412,6 +446,7 @@ export default {
         DraggableDialogContent,
         CreateCategoryForm,
         CategoryCardSkeleton,
+        CategoriesTable,
     },
     setup() {
         const { toast } = useToast();
@@ -484,6 +519,7 @@ export default {
             perPage: 10,
             activeTab: 'expense' as 'expense' | 'recept',
             searchQuery: '',
+            viewMode: 'grid' as 'grid' | 'table',
         };
     },
     computed: {
