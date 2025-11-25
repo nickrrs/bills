@@ -316,7 +316,7 @@
                     @click="openModal"
                 >
                     <div
-                        class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 bg-white/5 transition-colors wallet-add-icon"
+                        class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 dark:bg-white/5 light:bg-black/5 transition-colors wallet-add-icon"
                         :style="walletAddIconStyle"
                     >
                         <Plus class="h-8 w-8" />
