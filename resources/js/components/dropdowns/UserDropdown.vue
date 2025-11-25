@@ -2,7 +2,7 @@
     <DropdownMenu>
         <DropdownMenuTrigger>
             <div class="border border-border rounded-full">
-                <img src="https://github.com/shadcn.png" alt="profile" class="!w-[32px] !h-[32px] rounded-full cursor-pointer">
+                <img src="https://pbs.twimg.com/profile_images/1825710839157932032/nUQcwp-4_400x400.jpg" alt="profile" class="!w-[32px] !h-[32px] rounded-full cursor-pointer">
             </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent :align="'end'" class="w-56 bg-popover border-border !rounded-md">
