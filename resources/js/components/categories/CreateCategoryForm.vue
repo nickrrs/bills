@@ -105,7 +105,7 @@
         <div class="lg:w-80 flex-shrink-0">
             <div class="sticky top-4">
                 <h3 class="text-sm font-medium text-white mb-1">preview em tempo real</h3>
-                <p class="text-xs dark:text-[#767676] light:text-black mb-4">é assim que a categoria vai aparecer</p>
+                <p class="text-xs dark:text-[#767676] light:text-black mb-4">é assim que a categoria vai parecer</p>
 
                 <!-- Card Preview -->
                 <div class="w-full rounded-2xl dark:bg-[#131316] light:bg-white border dark:border-[#2F2F2F] light:border-border p-8 relative overflow-hidden mb-6">

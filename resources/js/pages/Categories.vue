@@ -182,15 +182,19 @@
 
                 <!-- Card de Criar Nova -->
                 <button
-                    class="flex h-full min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-border text-muted-foreground transition-all hover:border-accent-primary/50 hover:bg-accent/50 hover:text-foreground"
+                    class="wallet-add-button flex h-[260px] flex-col items-center justify-center rounded-3xl border-2 border-dashed dark:border-white/10 light:border-border dark:text-gray-400 transition-all hover:bg-white/5 dark:hover:text-white light:hover:text-[#6e6e6e]"
                     :class="{
                         'cursor-not-allowed opacity-50': loading,
                     }"
+                    :style="hoverBorderStyle"
                     type="button"
                     :disabled="loading"
                     @click="openModal"
                 >
-                    <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-border bg-muted transition-colors">
+                    <div
+                        class="wallet-add-icon mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 dark:bg-white/5 light:bg-black/5 transition-colors"
+                        :style="walletAddIconStyle"
+                    >
                         <Plus class="h-8 w-8" />
                     </div>
                     <span class="text-sm font-medium">adicionar categoria</span>
@@ -334,7 +338,9 @@ import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogConten
 import { useToast } from '@/components/ui/toast';
 import MainLayout from '@/layouts/MainLayout.vue';
 import selectionModeMixin from '@/mixins/selectionModeMixin';
+import { useUserSettings } from '@/composables/useUserSettings';
 import { apiBulkDelete, apiDelete, apiGet } from '@/utils/api';
+import { getAccentPrimaryWithOpacity } from '@/utils/colors';
 import { Head as InertiaHead } from '@inertiajs/vue3';
 import {
     Award,
@@ -371,7 +377,7 @@ import {
     Wifi,
     Zap,
 } from 'lucide-vue-next';
-import type { Component } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, type Component } from 'vue';
 
 interface Category {
     id: number;
@@ -409,7 +415,51 @@ export default {
     },
     setup() {
         const { toast } = useToast();
-        return { toast };
+        const { settings } = useUserSettings();
+        const colorUpdateKey = ref(0);
+
+        const hoverBorderStyle = computed(() => {
+            void settings.accent_color;
+            void document.documentElement.classList.contains('dark');
+            void colorUpdateKey.value;
+
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim();
+
+            if (!accentColor || accentColor === '#6366f1') {
+                return {
+                    '--hover-border-color': getAccentPrimaryWithOpacity(0.5, 'rgba(99, 102, 241, 0.5)'),
+                };
+            }
+
+            return {
+                '--hover-border-color': getAccentPrimaryWithOpacity(1),
+            };
+        });
+
+        const walletAddIconStyle = computed(() => {
+            void settings.accent_color;
+            void colorUpdateKey.value;
+            return {
+                '--hover-icon-bg': getAccentPrimaryWithOpacity(0.2),
+            };
+        });
+
+        const handleAccentColorChange = () => {
+            colorUpdateKey.value++;
+        };
+
+        onMounted(() => {
+            window.addEventListener('accent-color-changed', handleAccentColorChange);
+            setTimeout(() => {
+                colorUpdateKey.value++;
+            }, 100);
+        });
+
+        onBeforeUnmount(() => {
+            window.removeEventListener('accent-color-changed', handleAccentColorChange);
+        });
+
+        return { toast, hoverBorderStyle, walletAddIconStyle };
     },
     data() {
         return {
@@ -666,3 +716,12 @@ export default {
     },
 };
 </script>
+<style scoped>
+.wallet-add-button:hover {
+    border-color: var(--hover-border-color) !important;
+}
+
+.wallet-add-icon:hover {
+    background-color: var(--hover-icon-bg) !important;
+}
+</style>
