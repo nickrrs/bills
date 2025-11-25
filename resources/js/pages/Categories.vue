@@ -1,5 +1,5 @@
 <template>
-    <InertiaHead title="Categorias" />
+    <InertiaHead title="categorias" />
     <MainLayout :no-sub-nav="true">
         <div class="h-full w-full px-8 py-8">
             <PageHeader title="categorias" description="gerencie como suas transações são classificadas.">
