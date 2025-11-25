@@ -45,7 +45,12 @@
                     :style="selectedIcon === icon.name ? selectedIconStyle : {}"
                     :title="icon.label"
                 >
-                    <component :is="icon.component" class="h-5 w-5" :class="selectedIcon === icon.name ? 'text-white' : 'text-muted-foreground'" />
+                    <component
+                        :is="icon.component"
+                        class="h-5 w-5"
+                        :style="selectedIcon === icon.name ? { color: selectedIconColor } : undefined"
+                        :class="selectedIcon === icon.name ? '' : 'text-muted-foreground'"
+                    />
                 </button>
             </div>
         </div>
@@ -107,9 +112,13 @@ export default {
             type: String,
             default: null,
         },
+        selectedColor: {
+            type: String,
+            default: '#6366f1',
+        },
     },
     emits: ['update:modelValue'],
-    setup() {
+    setup(props) {
         // Computed para o estilo do ícone selecionado
         const selectedIconStyle = computed(() => {
             return {
@@ -117,8 +126,11 @@ export default {
             };
         });
 
+        const selectedIconColor = computed(() => props.selectedColor || '#6366f1');
+
         return {
             selectedIconStyle,
+            selectedIconColor,
         };
     },
     data() {

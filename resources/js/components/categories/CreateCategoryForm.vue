@@ -51,7 +51,7 @@
                 </div>
 
                 <!-- Seletor de Ícones -->
-                <CategoryIconSelector v-model="formData.icon" />
+                <CategoryIconSelector v-model="formData.icon" :selected-color="formData.color" />
 
                 <!-- Escolha uma Cor -->
                 <div class="flex flex-col gap-2">
