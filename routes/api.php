@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\SubcategoryController;
+use App\Http\Controllers\Settings\SettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -38,4 +39,11 @@ Route::middleware(['web', 'auth:web'])->group(function () {
     Route::delete('/subcategories/bulk', [SubcategoryController::class, 'apiBulkDestroy'])->name('api.subcategories.bulk.destroy');
     Route::put('/subcategories/{subcategory}', [SubcategoryController::class, 'apiUpdate'])->name('api.subcategories.update');
     Route::delete('/subcategories/{subcategory}', [SubcategoryController::class, 'apiDestroy'])->name('api.subcategories.destroy');
+
+    /*
+    * Settings API
+    *****************************/
+
+    Route::get('/settings', [SettingsController::class, 'apiIndex'])->name('api.settings.index');
+    Route::post('/settings', [SettingsController::class, 'apiStore'])->name('api.settings.store');
 });

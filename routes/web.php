@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,8 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('settings', [SettingsController::class, 'index'])->middleware(['auth', 'verified'])->name('settings');
 
 Route::get('wallets', [WalletController::class, 'index'])->middleware(['auth', 'verified'])->name('wallets');
 Route::get('wallets/create', [WalletController::class, 'create'])->middleware(['auth', 'verified'])->name('wallets.create');

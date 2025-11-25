@@ -84,7 +84,7 @@ export default {
                     separatorBefore: true,
                 },
                 {
-                    route: 'dashboard',
+                    route: 'settings',
                     icon: Settings,
                     label: 'configurações',
                     separatorBefore: false,

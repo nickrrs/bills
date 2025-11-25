@@ -62,6 +62,9 @@ createInertiaApp({
         // Atualiza o token na primeira carga
         updateCsrfToken((props.initialPage.props as any)?.csrf_token);
 
+        const initialSettings = (props.initialPage.props as any)?.settings;
+        initializeTheme(initialSettings?.theme);
+
         const app = createApp({
             render: () => [
                 h(App, props),
@@ -76,6 +79,3 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
-
-// This will set light / dark mode on page load...
-initializeTheme();
