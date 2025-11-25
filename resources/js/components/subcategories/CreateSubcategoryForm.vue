@@ -3,21 +3,21 @@
         <!-- === ESQUERDA: O Construtor === -->
         <div class="lg:col-span-7 space-y-8">
             <!-- 1. Seleção da Categoria Pai -->
-            <div class="bg-[#181818] border border-white/10 rounded-2xl p-6">
-                <h2 class="text-lg font-semibold text-white mb-4">1. a qual categoria ela pertence?</h2>
-                <p class="text-sm text-gray-400 mb-4">selecione a categoria principal para vincular esta subcategoria.</p>
+            <div class="bg-card border border-border rounded-2xl p-6">
+                <h2 class="text-lg font-semibold text-foreground mb-4">1. a qual categoria ela pertence?</h2>
+                <p class="text-sm text-muted-foreground mb-4">selecione a categoria principal para vincular esta subcategoria.</p>
 
                 <!-- Mensagem quando não há categorias -->
                 <div
                     v-if="emptyCategories && !loadingCategories"
-                    class="flex flex-col items-center justify-center p-8 border border-dashed border-white/10 rounded-xl text-center"
+                    class="flex flex-col items-center justify-center p-8 border border-dashed border-border rounded-xl text-center"
                 >
-                    <Folder class="w-12 h-12 text-gray-500 mb-4" />
-                    <p class="text-base font-medium text-white mb-2">nenhuma categoria encontrada</p>
-                    <p class="text-sm text-gray-400 mb-4">você precisa criar pelo menos uma categoria antes de criar uma subcategoria.</p>
+                    <Folder class="w-12 h-12 text-muted-foreground mb-4" />
+                    <p class="text-base font-medium text-foreground mb-2">nenhuma categoria encontrada</p>
+                    <p class="text-sm text-muted-foreground mb-4">você precisa criar pelo menos uma categoria antes de criar uma subcategoria.</p>
                     <InertiaLink
                         href="/categories"
-                        class="px-4 py-2 bg-[#6366f1] hover:bg-[#4f46e5] text-white font-semibold rounded-xl transition-colors inline-flex items-center gap-2"
+                        class="px-4 py-2 bg-accent-primary hover:bg-accent-primary/90 text-white font-semibold rounded-xl transition-colors inline-flex items-center gap-2"
                     >
                         <Plus class="w-4 h-4" />
                         criar categoria
@@ -28,18 +28,18 @@
                 <template v-else>
                     <!-- Campo de Busca -->
                     <div class="relative mb-4">
-                        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 !h-4 !w-4 text-[#767676]" />
+                        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 !h-4 !w-4 text-muted-foreground" />
                         <input
                             v-model="categorySearchQuery"
                             type="text"
                             placeholder="buscar categoria..."
-                            class="w-full pl-10 pr-4 py-2.5 bg-[#161616] border border-white/10 rounded-xl text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:border-[#6366f1] transition-all"
+                            class="w-full pl-10 pr-4 py-2.5 bg-input border border-border rounded-xl text-foreground text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-accent-primary transition-all"
                             @input="handleCategorySearchInput"
                         />
                         <button
                             v-if="categorySearchQuery"
                             @click="clearCategorySearch"
-                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#767676] hover:text-white transition-colors"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -63,7 +63,7 @@
                                 'flex items-center p-3 rounded-xl transition-all duration-200',
                                 formData.category_id === category.id
                                     ? 'bg-opacity-15 border-2 shadow-[0_0_0_2px]'
-                                    : 'bg-[#161616] border border-white/10 hover:bg-[#1a1a1a]'
+                                    : 'bg-input border border-border hover:bg-accent'
                             ]"
                             :style="formData.category_id === category.id ? {
                                 backgroundColor: `rgba(${hexToRgb(category.color)}, 0.15)`,
@@ -85,41 +85,41 @@
                                     class="w-5 h-5"
                                 />
                             </div>
-                            <span class="font-medium text-white truncate">{{ category.name }}</span>
+                            <span class="font-medium text-foreground truncate">{{ category.name }}</span>
                         </button>
                     </div>
 
                     <!-- Mensagem quando busca não retorna resultados -->
                     <div
                         v-else-if="categorySearchQuery"
-                        class="flex flex-col items-center justify-center p-6 border border-dashed border-white/10 rounded-xl text-center"
+                        class="flex flex-col items-center justify-center p-6 border border-dashed border-border rounded-xl text-center"
                     >
-                        <Search class="w-8 h-8 text-gray-500 mb-2" />
-                        <p class="text-sm text-gray-400">nenhuma categoria encontrada para "{{ categorySearchQuery }}"</p>
+                        <Search class="w-8 h-8 text-muted-foreground mb-2" />
+                        <p class="text-sm text-muted-foreground">nenhuma categoria encontrada para "{{ categorySearchQuery }}"</p>
                     </div>
 
                     <!-- Paginação -->
-                    <div v-if="categoryPagination && categoryPagination.last_page > 1" class="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-                        <div class="text-xs text-gray-400">
+                    <div v-if="categoryPagination && categoryPagination.last_page > 1" class="flex items-center justify-between mt-4 pt-4 border-t border-border">
+                        <div class="text-xs text-muted-foreground">
                             <span>mostrando</span>
-                            <span class="mx-1 font-medium text-white">{{ categoryPagination.from ?? 0 }}</span>
+                            <span class="mx-1 font-medium text-foreground">{{ categoryPagination.from ?? 0 }}</span>
                             <span>até</span>
-                            <span class="mx-1 font-medium text-white">{{ categoryPagination.to ?? 0 }}</span>
+                            <span class="mx-1 font-medium text-foreground">{{ categoryPagination.to ?? 0 }}</span>
                             <span>de</span>
-                            <span class="mx-1 font-medium text-white">{{ categoryPagination.total }}</span>
+                            <span class="mx-1 font-medium text-foreground">{{ categoryPagination.total }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <button
                                 @click="goToCategoryPage(categoryPagination.current_page - 1)"
                                 :disabled="categoryPagination.current_page === 1"
-                                class="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-[#161616] text-white transition-colors hover:bg-[#1a1a1a] disabled:cursor-not-allowed disabled:opacity-50"
+                                class="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-input text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <ChevronLeft class="h-4 w-4" />
                             </button>
                             <button
                                 @click="goToCategoryPage(categoryPagination.current_page + 1)"
                                 :disabled="categoryPagination.current_page === categoryPagination.last_page"
-                                class="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-[#161616] text-white transition-colors hover:bg-[#1a1a1a] disabled:cursor-not-allowed disabled:opacity-50"
+                                class="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-input text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <ChevronRight class="h-4 w-4" />
                             </button>
@@ -129,29 +129,29 @@
             </div>
 
             <!-- 2. Informações da Subcategoria -->
-            <div class="bg-[#181818] border border-white/10 rounded-2xl p-6" :class="{ 'opacity-50 pointer-events-none': emptyCategories }">
-                <h2 class="text-lg font-semibold text-white mb-6">2. detalhes da subcategoria</h2>
+            <div class="bg-card border border-border rounded-2xl p-6" :class="{ 'opacity-30 pointer-events-none': emptyCategories }">
+                <h2 class="text-lg font-semibold text-foreground mb-6">2. detalhes da subcategoria</h2>
                 <div class="space-y-6">
                     <!-- Nome -->
                     <div>
                         <div class="flex flex-row items-baseline gap-1 mb-2">
-                            <label class="text-sm font-medium text-gray-400">nome</label>
-                            <span class="text-red-400 text-sm leading-none">*</span>
+                            <label class="text-sm font-medium text-muted-foreground">nome</label>
+                            <span class="text-destructive text-sm leading-none">*</span>
                         </div>
                         <input
                             v-model="formData.name"
                             type="text"
                             maxlength="30"
                             placeholder="ex: ifood, uber, assinaturas..."
-                            class="w-full px-4 py-3 bg-[#161616] border border-white/10 rounded-xl text-lg font-medium text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:border-[#6366f1] transition-all"
+                            class="w-full px-4 py-3 bg-input border border-border rounded-xl text-lg font-medium text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-accent-primary transition-all"
                         />
                     </div>
 
                     <!-- Ícone -->
                     <div>
                         <div class="flex flex-row items-baseline gap-1 mb-2">
-                            <label class="text-sm font-medium text-gray-400">ícone</label>
-                            <span class="text-red-400 text-sm leading-none">*</span>
+                            <label class="text-sm font-medium text-muted-foreground">ícone</label>
+                            <span class="text-destructive text-sm leading-none">*</span>
                         </div>
                         <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
                             <button
@@ -160,17 +160,18 @@
                                 type="button"
                                 @click="setIcon(icon.name)"
                                 :class="[
-                                    'w-full aspect-square rounded-lg border-2 transition-all hover:scale-105 bg-[#0E0E10] flex items-center justify-center',
+                                    'w-full aspect-square rounded-lg border-2 transition-all hover:scale-105 bg-input flex items-center justify-center',
                                     formData.icon === icon.name
-                                        ? 'border-[#6965f2] ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] bg-[#6965f2]/20'
-                                        : 'border-[#2F2F2F] hover:border-[#3800D8]'
+                                        ? 'border-accent-primary ring-2 ring-accent-primary ring-offset-2 ring-offset-card subcategory-icon-selected'
+                                        : 'border-border hover:border-accent-primary'
                                 ]"
+                                :style="formData.icon === icon.name ? selectedIconStyle : {}"
                                 :title="icon.label"
                             >
                                 <component
                                     :is="icon.component"
                                     class="h-5 w-5"
-                                    :style="formData.icon === icon.name ? { color: previewColor } : { color: '#767676' }"
+                                    :style="formData.icon === icon.name ? { color: previewColor } : { color: 'var(--muted-foreground)' }"
                                 />
                             </button>
                         </div>
@@ -178,7 +179,7 @@
 
                     <!-- Cor -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-4">cor</label>
+                        <label class="block text-sm font-medium text-muted-foreground mb-4">cor</label>
                         <div class="flex flex-wrap gap-4">
                             <button
                                 v-for="colorOption in colorOptions"
@@ -188,18 +189,18 @@
                                 :class="[
                                     'w-9 h-9 rounded-full transition-all duration-200 relative',
                                     formData.color.toLowerCase() === colorOption.value.toLowerCase()
-                                        ? 'scale-120 border-2 shadow-[0_0_0_4px_rgba(255,255,255,0.1)]'
+                                        ? 'scale-120 border-2 shadow-[0_0_0_4px_rgba(0,0,0,0.1)] dark:shadow-[0_0_0_4px_rgba(255,255,255,0.1)]'
                                         : 'border-2 border-transparent hover:scale-110'
                                 ]"
                                 :style="{
                                     backgroundColor: colorOption.value,
-                                    borderColor: formData.color.toLowerCase() === colorOption.value.toLowerCase() ? 'white' : 'transparent'
+                                    borderColor: formData.color.toLowerCase() === colorOption.value.toLowerCase() ? 'var(--foreground)' : 'transparent'
                                 }"
                                 :title="colorOption.label"
                             >
                             </button>
                         </div>
-                        <p class="text-xs text-gray-400 mt-3">por padrão, sugerimos a mesma cor da categoria pai.</p>
+                        <p class="text-xs text-muted-foreground mt-3">por padrão, sugerimos a mesma cor da categoria pai.</p>
                     </div>
                 </div>
             </div>
@@ -207,12 +208,12 @@
 
         <!-- === DIREITA: O Preview (Sticky) === -->
         <div class="lg:col-span-5 sticky top-6">
-            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Preview Hierárquico</h3>
+            <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Preview Hierárquico</h3>
 
             <!-- Card de Preview da Relação -->
-            <div class="bg-[#181818] border border-white/10 rounded-2xl p-8 mb-6 relative overflow-hidden">
+            <div class="bg-card border border-border rounded-2xl p-8 mb-6 relative overflow-hidden">
                 <!-- Linha de Conexão Decorativa -->
-                <div class="absolute left-6 top-10 bottom-10 w-0.5 bg-white/10 z-0"></div>
+                <div class="absolute left-6 top-10 bottom-10 w-0.5 bg-border z-0"></div>
 
                 <div class="space-y-6 relative z-10">
                     <!-- Pai (Estático/Selecionado) -->
@@ -224,8 +225,8 @@
                                 backgroundColor: `rgba(${hexToRgb(selectedCategory.color)}, 0.2)`,
                                 color: selectedCategory.color
                             } : {
-                                backgroundColor: '#2a2a2a',
-                                color: '#9ca3af'
+                                backgroundColor: 'var(--muted)',
+                                color: 'var(--muted-foreground)'
                             }"
                         >
                             <component
@@ -239,15 +240,15 @@
                             />
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">Categoria Principal</p>
-                            <h3 class="text-xl font-semibold text-white truncate" :title="selectedCategory ? selectedCategory.name : 'selecione...'">
+                            <p class="text-xs text-muted-foreground uppercase font-bold tracking-wide">Categoria Principal</p>
+                            <h3 class="text-xl font-semibold text-foreground truncate" :title="selectedCategory ? selectedCategory.name : 'selecione...'">
                                 {{ selectedCategory ? selectedCategory.name : 'selecione...' }}
                             </h3>
                         </div>
                     </div>
 
                     <!-- Conector Curvo -->
-                    <div class="absolute left-6 top-1/2 w-5 h-8 border-b-2 border-l-2 border-white/10 rounded-bl-xl z-0" style="transform: translateY(-50%);"></div>
+                    <div class="absolute left-6 top-1/2 w-5 h-8 border-b-2 border-l-2 border-border rounded-bl-xl z-0" style="transform: translateY(-50%);"></div>
 
                     <!-- Filho (Sendo Criado) -->
                     <div class="flex items-center pl-12">
@@ -271,8 +272,8 @@
                             />
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">Nova Subcategoria</p>
-                            <h2 class="text-2xl font-bold text-white truncate" :title="formData.name || 'nome...'">
+                            <p class="text-xs text-muted-foreground uppercase font-bold tracking-wide">Nova Subcategoria</p>
+                            <h2 class="text-2xl font-bold text-foreground truncate" :title="formData.name || 'nome...'">
                                 {{ formData.name || 'nome...' }}
                             </h2>
                         </div>
@@ -281,9 +282,9 @@
             </div>
 
             <!-- Preview Contextual: Lista de Transações -->
-            <div class="bg-[#181818] border border-white/10 rounded-2xl overflow-hidden mb-6">
-                <div class="p-4 bg-[#181818] border-b border-white/5">
-                    <p class="text-xs text-gray-500">como aparece em transações</p>
+            <div class="bg-card border border-border rounded-2xl overflow-hidden mb-6">
+                <div class="p-4 bg-card border-b border-border">
+                    <p class="text-xs text-muted-foreground">como aparece em transações</p>
                 </div>
                 <div class="flex items-center p-4">
                     <div
@@ -305,15 +306,15 @@
                         />
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="font-medium text-white">compra recente</p>
-                        <p class="text-xs text-gray-400 flex items-center">
+                        <p class="font-medium text-foreground">compra recente</p>
+                        <p class="text-xs text-muted-foreground flex items-center">
                             <span>{{ selectedCategory ? selectedCategory.name : 'categoria' }}</span>
                             <ChevronRight class="w-3 h-3 mx-1" />
                             <span :style="{ color: previewColor }">{{ formData.name || 'subcategoria' }}</span>
                         </p>
                     </div>
                     <div class="text-right">
-                        <p class="font-semibold text-white text-sm">R$ 0,00</p>
+                        <p class="font-semibold text-foreground text-sm">R$ 0,00</p>
                     </div>
                 </div>
             </div>
@@ -323,18 +324,18 @@
                 <button
                     type="button"
                     @click="$emit('cancel')"
-                    class="flex-1 bg-transparent border border-white/10 hover:bg-white/5 text-gray-300 font-semibold py-3 rounded-xl transition-colors"
+                    class="flex-1 bg-transparent border border-border hover:bg-accent text-muted-foreground hover:text-foreground font-semibold py-3 rounded-xl transition-colors"
                 >
-                    Cancelar
+                    cancelar
                 </button>
                 <button
                     type="button"
                     @click="handleSubmit"
                     :disabled="loading || !formData.name || !formData.category_id || emptyCategories"
-                    class="flex-1 bg-[#6366f1] hover:bg-[#4f46e5] text-white font-semibold py-3 rounded-xl shadow-lg shadow-indigo-900/20 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                    class="flex-1 bg-accent-primary hover:bg-accent-primary/90 text-white font-semibold py-3 rounded-xl shadow-lg shadow-indigo-900/20 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
                 >
                     <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />
-                    {{ subcategory ? 'Atualizar Subcategoria' : 'Salvar Subcategoria' }}
+                    {{ subcategory ? 'atualizar subcategoria' : 'criar subcategoria' }}
                 </button>
             </div>
         </div>
@@ -342,6 +343,7 @@
 </template>
 
 <script lang="ts">
+import { computed } from 'vue';
 import { LoaderCircle, ShoppingBag, Star, Wallet, Coffee, Trash2, Bus, Gamepad2, Music, Gift, Briefcase, Send, Wifi, Zap, Folder, ChevronRight, ChevronLeft, UtensilsCrossed, Home, Heart, GraduationCap, Car, Film, Smartphone, Baby, Dumbbell, PawPrint, Search, Plus } from 'lucide-vue-next';
 import type { Component } from 'vue';
 import { apiPost, apiPut } from '@/utils/api';
@@ -349,6 +351,7 @@ import { useToast } from '@/components/ui/toast';
 import { apiGet } from '@/utils/api';
 import { Link as InertiaLink } from '@inertiajs/vue3';
 import CategorySelectionSkeleton from '@/components/subcategories/CategorySelectionSkeleton.vue';
+import { getAccentPrimaryWithOpacity } from '@/utils/colors';
 
 interface ColorOption {
     value: string;
@@ -407,7 +410,15 @@ export default {
     emits: ['success', 'cancel', 'reset-complete'],
     setup() {
         const { toast } = useToast();
-        return { toast };
+
+        // Computed para o estilo do ícone selecionado
+        const selectedIconStyle = computed(() => {
+            return {
+                backgroundColor: getAccentPrimaryWithOpacity(0.2),
+            };
+        });
+
+        return { toast, selectedIconStyle };
     },
     props: {
         resetForm: {

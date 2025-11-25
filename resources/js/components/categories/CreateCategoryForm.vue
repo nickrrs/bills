@@ -5,7 +5,7 @@
             <div class="flex flex-col gap-4">
                 <!-- Tipo de Categoria -->
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">tipo de categoria</label>
+                    <label class="text-sm font-medium text-foreground">tipo de categoria</label>
                     <div class="flex gap-2">
                         <button
                             type="button"
@@ -14,7 +14,7 @@
                                 'flex-1 px-4 py-3 rounded-lg font-medium transition-all',
                                 formData.type === 'expense'
                                     ? 'bg-red-500 text-white'
-                                    : 'bg-[#0E0E10] border border-[#2F2F2F] text-[#767676] hover:border-[#3800D8] hover:text-white'
+                                    : 'bg-card border border-border text-muted-foreground hover:border-accent-primary hover:text-foreground'
                             ]"
                         >
                             despesa
@@ -26,7 +26,7 @@
                                 'flex-1 px-4 py-3 rounded-lg font-medium transition-all',
                                 formData.type === 'recept'
                                     ? 'bg-green-500 text-white'
-                                    : 'bg-[#0E0E10] border border-[#2F2F2F] text-[#767676] hover:border-[#3800D8] hover:text-white'
+                                    : 'bg-card border border-border text-muted-foreground hover:border-accent-primary hover:text-foreground'
                             ]"
                         >
                             receita
@@ -37,7 +37,7 @@
                 <!-- Nome da Categoria -->
                 <div class="flex flex-col gap-2">
                     <div class="flex flex-row items-baseline gap-1">
-                        <label class="text-sm font-medium text-white">nome da categoria</label>
+                        <label class="text-sm font-medium text-foreground">nome da categoria</label>
                         <span class="text-red-400 text-sm leading-none">*</span>
                     </div>
                     <input
@@ -46,7 +46,7 @@
                         type="text"
                         maxlength="30"
                         placeholder="ex: viagens, streaming..."
-                        class="w-full px-3 py-2 bg-[#0E0E10] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
+                        class="w-full px-3 py-2 bg-card border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent"
                     />
                 </div>
 
@@ -55,7 +55,7 @@
 
                 <!-- Escolha uma Cor -->
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">escolha uma cor</label>
+                    <label class="text-sm font-medium text-foreground">escolha uma cor</label>
                     <div class="flex gap-2 flex-wrap">
                         <button
                             v-for="colorOption in colorOptions"
@@ -65,14 +65,14 @@
                             :class="[
                                 'w-10 h-10 rounded-full border-2 transition-all hover:scale-110',
                                 formData.color === colorOption.value
-                                    ? 'border-white ring-2 ring-[#3800D8] ring-offset-2 ring-offset-[#131316]'
-                                    : 'border-[#2F2F2F] hover:border-[#3800D8]'
+                                    ? 'border-foreground ring-2 ring-accent-primary ring-offset-2 ring-offset-card'
+                                    : 'border-border hover:border-accent-primary'
                             ]"
                             :style="{ backgroundColor: colorOption.value }"
                             :title="colorOption.label"
                         >
                             <div v-if="formData.color === colorOption.value" class="w-full h-full flex items-center justify-center">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
@@ -81,11 +81,11 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#2F2F2F]">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <button
                     type="button"
                     @click="$emit('cancel')"
-                    class="px-4 py-2 text-sm font-medium text-[#B6B6B6] hover:text-white transition-colors"
+                    class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
                     cancelar
                 </button>
@@ -93,7 +93,7 @@
                     type="button"
                     @click="handleSubmit"
                     :disabled="loading || !formData.name"
-                    class="px-4 py-2 text-sm font-medium bg-[#6965f2] text-white rounded-md hover:bg-[#3800D8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    class="px-4 py-2 text-sm font-medium bg-accent-primary text-white rounded-md hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                     <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />
                     {{ category ? 'atualizar categoria' : 'criar categoria' }}
@@ -105,10 +105,10 @@
         <div class="lg:w-80 flex-shrink-0">
             <div class="sticky top-4">
                 <h3 class="text-sm font-medium text-white mb-1">preview em tempo real</h3>
-                <p class="text-xs text-[#767676] mb-4">é assim que a categoria vai aparecer</p>
+                <p class="text-xs dark:text-[#767676] light:text-black mb-4">é assim que a categoria vai aparecer</p>
 
                 <!-- Card Preview -->
-                <div class="w-full rounded-2xl bg-[#131316] border border-[#2F2F2F] p-8 relative overflow-hidden mb-6">
+                <div class="w-full rounded-2xl dark:bg-[#131316] light:bg-white border dark:border-[#2F2F2F] light:border-border p-8 relative overflow-hidden mb-6">
                     <!-- Background Glow -->
                     <div
                         class="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-10 transition-colors duration-500"
@@ -137,10 +137,10 @@
                         </div>
 
                         <!-- Nome -->
-                        <h2 class="text-3xl font-bold text-white mb-1 w-full" :class="formData.name ? 'text-ellipsis overflow-hidden whitespace-nowrap' : ''" :title="formData.name || 'nome da categoria'">
+                        <h2 class="text-3xl font-bold text-foreground mb-1 w-full" :class="formData.name ? 'text-ellipsis overflow-hidden whitespace-nowrap' : ''" :title="formData.name || 'nome da categoria'">
                             {{ formData.name || 'nome da categoria' }}
                         </h2>
-                        <span class="text-sm text-gray-400 bg-white/5 px-3 py-1 rounded-full">
+                        <span class="text-sm dark:text-gray-400 light:text-black bg-white/5 px-3 py-1 rounded-full">
                             {{ formData.type === 'expense' ? 'despesa' : 'receita' }}
                         </span>
                     </div>
@@ -148,8 +148,8 @@
 
                 <!-- Visualização na Timeline -->
                 <div class="mb-6">
-                    <h4 class="text-xs font-medium text-white mb-3">visualização na timeline</h4>
-                    <div class="bg-[#131316] border border-[#2F2F2F] rounded-lg p-3 flex items-center gap-3">
+                    <h4 class="text-xs font-medium text-foreground mb-3">visualização na timeline</h4>
+                    <div class="bg-card border border-border rounded-lg p-3 flex items-center gap-3">
                         <div
                             class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                             :style="{ backgroundColor: previewColor + '20' }"
@@ -163,7 +163,7 @@
                             <ShoppingBag v-else class="h-4 w-4" :style="{ color: previewColor }" />
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm text-white font-medium">amazon.com</p>
+                            <p class="text-sm text-foreground font-medium">amazon.com</p>
                             <p class="text-xs text-[#767676]" :title="formData.name || 'nome da categoria'">
                                 {{ formData.name || 'nome da categoria' }}
                             </p>
@@ -180,15 +180,15 @@
                 <!-- Visualização em Relatórios -->
                 <div>
                     <h4 class="text-xs font-medium text-white mb-3">visualização em relatórios</h4>
-                    <div class="bg-[#131316] border border-[#2F2F2F] rounded-lg p-3 flex items-center gap-3">
+                    <div class="dark:bg-[#131316] light:bg-white border dark:border-[#2F2F2F] light:border-border rounded-lg p-3 flex items-center gap-3">
                         <div
                             class="w-3 h-3 rounded-full flex-shrink-0"
                             :style="{ backgroundColor: previewColor }"
                         ></div>
-                        <p class="text-sm text-white flex-1" :title="formData.name || 'nome da categoria'">
+                        <p class="text-sm dark:text-white light:text-black flex-1" :title="formData.name || 'nome da categoria'">
                             {{ formData.name || 'nome da categoria' }}
                         </p>
-                        <span class="text-sm text-[#767676]">15%</span>
+                        <span class="text-sm dark:text-[#767676] light:text-black">15%</span>
                     </div>
                 </div>
             </div>

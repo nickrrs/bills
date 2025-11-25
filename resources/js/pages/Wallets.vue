@@ -6,7 +6,7 @@
                 <template #actions>
                     <div class="flex flex-col gap-3 md:flex-row md:items-center">
                         <div class="flex items-center gap-2">
-                            <span v-if="!isRefreshing" class="text-sm text-[#B6B6B6]">informações atualizadas a cada 45 segundos</span>
+                            <span v-if="!isRefreshing" class="text-sm light:text-[#6e6e6e] dark:text-[#B6B6B6]">informações atualizadas a cada 45 segundos</span>
                             <div v-else class="flex items-center gap-2 text-[#6965f2]">
                                 <LoaderCircle class="!h-4 !w-4 animate-spin" />
                                 <span class="text-xs">atualizando...</span>
@@ -23,26 +23,26 @@
                             <button
                                 v-if="!isSelectionMode"
                                 @click="toggleSelectionMode"
-                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
                                 title="selecionar múltiplas carteiras (Ctrl + Espaço)"
                             >
                                 <Target class="!h-4 !w-4" />
                                 <span>selecionar</span>
-                                <span class="hidden rounded border border-[#2F2F2F] px-1 py-0.5 text-[11px] uppercase text-[#8c8c8c] lg:inline-flex">
+                                <span class="hidden rounded border border-border px-1 py-0.5 text-[11px] uppercase text-muted-foreground lg:inline-flex">
                                     Ctrl + Espaço
                                 </span>
                             </button>
                             <button
                                 v-else
                                 @click="exitSelectionMode"
-                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
                             >
                                 <span class="text-sm">cancelar seleção</span>
                             </button>
                             <button
                                 v-if="!isSelectionMode"
                                 @click="openModal"
-                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
                             >
                                 <Plus class="!h-4 !w-4" />
                                 nova carteira
@@ -53,18 +53,18 @@
             </PageHeader>
 
             <div
-                class="mb-10 flex items-center justify-between rounded-[20px] border-2 border-[#252c3e] bg-gradient-to-r from-[#1e1b4b] to-[#0f172a] p-8"
+                class="mb-10 flex items-center justify-between rounded-[20px] border-2 light:border-[#e2e8f0] dark:border-[#252c3e] bg-gradient-to-r dark:from-[#1e1b4b] light:from-[#fcfcfc] light:via-[#a8a4d1] dark:to-[#0f172a] light:to-[#201b5a] p-8"
             >
                 <div>
                     <div class="flex flex-row items-baseline gap-1">
-                        <p class="mb-2 text-sm font-semibold uppercase tracking-wider text-indigo-300">Patrimônio Total</p>
+                        <p class="mb-2 text-sm font-semibold uppercase tracking-wider dark:text-indigo-300 light:text-indigo-600">Patrimônio Total</p>
                         <TooltipProvider :delay-duration="200">
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <HelpCircle class="!h-4 !w-4 text-indigo-300" />
+                                    <HelpCircle class="!h-4 !w-4 dark:text-indigo-300 light:text-indigo-600" />
                                 </TooltipTrigger>
                                 <TooltipContent side="right">
-                                    <p class="text-sm text-white">
+                                    <p class="text-sm text-foreground">
                                         o patrimônio total não considera os valores armazenados na caixinha de reserva, ou destinados para seus
                                         objetivos.
                                     </p>
@@ -96,14 +96,14 @@
                     <div class="mt-3 flex items-center space-x-4">
                         <span
                             v-if="calculatePercentageChange() > 0"
-                            class="flex items-center rounded bg-emerald-400/10 px-2 py-1 text-sm font-medium text-emerald-400"
+                            class="flex items-center rounded dark:bg-emerald-400/10 light:bg-emerald-400/40 px-2 py-1 text-sm font-medium dark:text-emerald-400 light:text-emerald-600"
                         >
                             <TrendingUp class="mr-1 !h-4 !w-4" /> {{ calculatePercentageChange() }}% este mês
                         </span>
                         <span v-else class="flex items-center rounded bg-red-400/10 px-2 py-1 text-sm font-medium text-red-400">
                             <TrendingDown class="mr-1 !h-4 !w-4" /> {{ calculatePercentageChange() }}% este mês
                         </span>
-                        <span class="text-sm text-gray-400">disponível em {{ pagination?.total ?? wallets.length }} carteiras</span>
+                        <span class="text-sm dark:text-gray-400 light:text-[#080808]">disponível em {{ pagination?.total ?? wallets.length }} carteiras</span>
                     </div>
                 </div>
                 <div class="hidden opacity-50 md:block">
@@ -120,7 +120,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 pb-20 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div class="grid grid-cols-1 gap-8 pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 <template v-if="loading">
                     <WalletCardSkeleton v-for="n in 3" :key="`skeleton-${n}`" />
                 </template>
@@ -130,7 +130,7 @@
                         :key="wallet.id"
                         class="relative"
                         :class="{
-                            'rounded-3xl ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316]':
+                            'rounded-3xl ring-2 ring-accent-primary ring-offset-2 dark:ring-offset-[#131316] light:ring-offset-[#fcfcfc]':
                                 isSelectionMode && selectedIds.includes(wallet.id),
                         }"
                     >
@@ -139,7 +139,7 @@
                                 :class="[
                                     'flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 transition-all',
                                     selectedIds.includes(wallet.id)
-                                        ? 'border-[#6965f2] bg-[#6965f2]'
+                                        ? 'border-accent-primary bg-accent-primary'
                                         : 'border-white/30 bg-[#131316]/80 backdrop-blur-sm hover:border-white/50',
                                 ]"
                             >
@@ -239,7 +239,7 @@
                                             >
                                                 <div class="mb-1 flex items-center justify-between border-b border-white/10 pb-2">
                                                     <span class="text-[10px] font-bold text-white">Criada em</span>
-                                                    <span class="text-[10px] text-indigo-400">{{ formatDate(wallet.created_at) }}</span>
+                                                    <span class="text-[10px] text-accent-primary">{{ formatDate(wallet.created_at) }}</span>
                                                 </div>
                                                 <div class="tooltip-scroll-container relative mt-2 max-h-12 overflow-hidden">
                                                     <div class="tooltip-scroll-content flex flex-col">
@@ -252,19 +252,19 @@
                                                         <div class="flex min-h-4 items-center">
                                                             <div class="flex w-full items-center justify-between">
                                                                 <span class="text-[10px] text-gray-400">Transações</span>
-                                                                <span class="text-[10px] text-indigo-400">0</span>
+                                                                <span class="text-[10px] text-accent-primary">0</span>
                                                             </div>
                                                         </div>
                                                         <div class="flex min-h-4 items-center">
                                                             <div class="flex w-full items-center justify-between">
                                                                 <span class="text-[10px] text-gray-400">Transferências</span>
-                                                                <span class="text-[10px] text-indigo-400">0</span>
+                                                                <span class="text-[10px] text-accent-primary">0</span>
                                                             </div>
                                                         </div>
                                                         <div class="flex min-h-4 items-center">
                                                             <div class="flex w-full items-center justify-between">
                                                                 <span class="text-[10px] text-gray-400">Cartões</span>
-                                                                <span class="text-[10px] text-indigo-400">0</span>
+                                                                <span class="text-[10px] text-accent-primary">0</span>
                                                             </div>
                                                         </div>
                                                         <div class="flex min-h-4 items-center">
@@ -306,16 +306,18 @@
                 </div>
 
                 <button
-                    class="flex h-[260px] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/10 text-gray-400 transition-all hover:border-indigo-500/50 hover:bg-white/5 hover:text-white"
+                    class="wallet-add-button flex h-[260px] flex-col items-center justify-center rounded-3xl border-2 border-dashed dark:border-white/10 light:border-border dark:text-gray-400 transition-all hover:bg-white/5 dark:hover:text-white light:hover:text-[#6e6e6e]"
                     :class="{
                         'cursor-not-allowed opacity-50': loading,
                     }"
+                    :style="hoverBorderStyle"
                     type="button"
                     :disabled="loading"
                     @click="openModal"
                 >
                     <div
-                        class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 bg-white/5 transition-colors group-hover:bg-indigo-500/20"
+                        class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 bg-white/5 transition-colors wallet-add-icon"
+                        :style="walletAddIconStyle"
                     >
                         <Plus class="h-8 w-8" />
                     </div>
@@ -338,7 +340,7 @@
         <UiDialog v-model:open="isModalOpen">
             <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">criar nova carteira</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">criar nova carteira</DialogTitle>
                     <DialogDescription class="sr-only">preencha os dados para criar uma nova carteira</DialogDescription>
                 </template>
                 <CreateWalletForm
@@ -353,7 +355,7 @@
         <UiDialog v-model:open="isEditDialogOpen">
             <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">editar carteira</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">editar carteira</DialogTitle>
                     <DialogDescription class="sr-only">edite os dados da carteira</DialogDescription>
                 </template>
                 <CreateWalletForm v-if="walletToEdit" :wallet="walletToEdit" @success="handleWalletUpdated" @cancel="closeEditModal" />
@@ -363,41 +365,41 @@
         <UiDialog v-model:open="isManageBalanceDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">gerenciar saldo</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">gerenciar saldo</DialogTitle>
                     <DialogDescription class="sr-only">atualize o saldo da carteira</DialogDescription>
                 </template>
                 <div v-if="walletToManageBalance" class="flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-white">carteira</label>
-                        <p class="text-sm text-[#B6B6B6]">{{ walletToManageBalance.name }}</p>
+                        <label class="text-sm font-medium text-foreground">carteira</label>
+                        <p class="text-sm text-muted-foreground">{{ walletToManageBalance.name }}</p>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-white">saldo atual</label>
-                        <p class="text-2xl font-bold text-white">R$ {{ formatCurrencyValue(walletToManageBalance.balance ?? 0) }}</p>
+                        <label class="text-sm font-medium text-foreground">saldo atual</label>
+                        <p class="text-2xl font-bold text-foreground">R$ {{ formatCurrencyValue(walletToManageBalance.balance ?? 0) }}</p>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-white">novo saldo</label>
+                        <label class="text-sm font-medium text-foreground">novo saldo</label>
                         <input
                             :value="newBalance"
                             type="text"
                             @input="handleBalanceInput"
                             placeholder="0,00"
-                            class="w-full rounded-md border border-[#2F2F2F] bg-[#131316] px-3 py-2 text-right text-lg font-semibold text-white placeholder-[#767676] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#3800D8]"
+                            class="w-full rounded-md border border-border bg-input px-3 py-2 text-right text-lg font-semibold text-foreground placeholder-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-accent-primary"
                         />
-                        <span class="text-xs text-[#767676]">digite o novo valor do saldo</span>
+                        <span class="text-xs text-muted-foreground">digite o novo valor do saldo</span>
                     </div>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
                             variant="outline"
                             @click="closeManageBalanceDialog"
-                            class="cursor-pointer rounded-md border-[#2F2F2F] bg-[#1E1E1E] p-2 text-white hover:bg-[#313131]"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             @click="updateBalance"
                             :disabled="isUpdatingBalance"
-                            class="cursor-pointer rounded-md bg-indigo-600 p-2 text-white hover:bg-indigo-700 disabled:opacity-50"
+                            class="cursor-pointer rounded-md bg-accent-primary p-2 text-white hover:bg-accent-primary/90 disabled:opacity-50"
                         >
                             <LoaderCircle v-if="isUpdatingBalance" class="mr-2 !h-4 !w-4 animate-spin" />
                             {{ isUpdatingBalance ? 'atualizando...' : 'atualizar' }}
@@ -410,23 +412,23 @@
         <UiDialog v-model:open="isDeleteDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">confirmar exclusão</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">confirmar exclusão</DialogTitle>
                     <DialogDescription class="sr-only">confirme a exclusão da carteira</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-sm text-[#B6B6B6]">tem certeza que deseja excluir esta carteira? esta ação não pode ser desfeita.</p>
+                    <p class="text-sm text-muted-foreground">tem certeza que deseja excluir esta carteira? esta ação não pode ser desfeita.</p>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
                             variant="outline"
                             @click="isDeleteDialogOpen = false"
-                            class="cursor-pointer rounded-md border-[#2F2F2F] bg-[#1E1E1E] p-2 text-white hover:bg-[#313131]"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             variant="destructive"
                             @click="confirmDelete"
-                            class="cursor-pointer rounded-md bg-red-600 p-2 text-white hover:bg-red-700"
+                            class="cursor-pointer rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
                         >
                             excluir
                         </UiButton>
@@ -438,11 +440,11 @@
         <UiDialog v-model:open="isBulkDeleteDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">confirmar exclusão em lote</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">confirmar exclusão em lote</DialogTitle>
                     <DialogDescription class="sr-only">confirme a exclusão das carteiras selecionadas</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-sm text-[#B6B6B6]">
+                    <p class="text-sm text-muted-foreground">
                         tem certeza que deseja excluir {{ selectedIds.length }} {{ selectedIds.length === 1 ? 'carteira' : 'carteiras' }}? esta ação
                         não pode ser desfeita.
                     </p>
@@ -450,14 +452,14 @@
                         <UiButton
                             variant="outline"
                             @click="isBulkDeleteDialogOpen = false"
-                            class="cursor-pointer rounded-md border-[#2F2F2F] bg-[#1E1E1E] p-2 text-white hover:bg-[#313131]"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             variant="destructive"
                             @click="confirmBulkDeleteAction"
-                            class="cursor-pointer rounded-md bg-red-600 p-2 text-white hover:bg-red-700"
+                            class="cursor-pointer rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
                         >
                             excluir {{ selectedIds.length }}
                         </UiButton>
@@ -486,6 +488,15 @@
         </SelectionToolbar>
     </MainLayout>
 </template>
+<style scoped>
+.wallet-add-button:hover {
+    border-color: var(--hover-border-color) !important;
+}
+
+.wallet-add-icon:hover {
+    background-color: var(--hover-icon-bg) !important;
+}
+</style>
 <script lang="ts">
 import PageHeader from '@/components/common/PageHeader.vue';
 import PaginationControls from '@/components/common/PaginationControls.vue';
@@ -508,6 +519,8 @@ import selectionModeMixin from '@/mixins/selectionModeMixin';
 import type { Wallet } from '@/types';
 import { apiBulkDelete, apiDelete, apiGet, apiPut } from '@/utils/api';
 import { formatCurrencyValue, formatDate } from '@/utils/formatters';
+import { getAccentPrimaryWithOpacity } from '@/utils/colors';
+import { useUserSettings } from '@/composables/useUserSettings';
 import { Head as InertiaHead } from '@inertiajs/vue3';
 import {
     CreditCard,
@@ -527,6 +540,7 @@ import {
     Wallet2,
 } from 'lucide-vue-next';
 import type { Component } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 
 interface WalletTheme {
     gradient: string;
@@ -673,7 +687,7 @@ export default {
         },
         balanceAnimationClass() {
             if (!this.isAnimating) {
-                return 'text-white';
+                return 'dark:text-white light:text-black';
             }
 
             if (this.balanceChangeDirection === 'up') {
@@ -682,7 +696,7 @@ export default {
                 return 'text-red-400 balance-pulse-down';
             }
 
-            return 'text-white';
+            return 'dark:text-white light:text-black';
         },
         needsTotalBalanceScrollAnimation(): boolean {
             const formattedValue = this.formatCurrencyValue(this.totalBalance);
@@ -745,7 +759,63 @@ export default {
     },
     setup() {
         const { toast } = useToast();
-        return { toast };
+        const { settings } = useUserSettings();
+
+        // Ref para forçar atualização do computed
+        const colorUpdateKey = ref(0);
+
+        // Computed reativo que observa mudanças na cor de destaque
+        const hoverBorderStyle = computed(() => {
+            // Força recálculo observando settings.accent_color, tema e colorUpdateKey
+            void settings.accent_color;
+            void document.documentElement.classList.contains('dark');
+            void colorUpdateKey.value; // Força dependência reativa
+
+            // Garante que a cor esteja disponível antes de usar
+            const accentColor = getComputedStyle(document.documentElement)
+                .getPropertyValue('--accent-primary')
+                .trim();
+
+            // Se a cor não estiver disponível ainda, usa fallback
+            if (!accentColor || accentColor === '#6366f1') {
+                return {
+                    '--hover-border-color': getAccentPrimaryWithOpacity(0.5, 'rgba(99, 102, 241, 0.5)'),
+                };
+            }
+
+            return {
+                '--hover-border-color': getAccentPrimaryWithOpacity(1),
+            };
+        });
+
+        // Computed para o estilo do ícone do botão adicionar carteira
+        const walletAddIconStyle = computed(() => {
+            void settings.accent_color;
+            void colorUpdateKey.value;
+            return {
+                '--hover-icon-bg': getAccentPrimaryWithOpacity(0.2),
+            };
+        });
+
+        // Listener para evento de mudança de cor
+        const handleAccentColorChange = () => {
+            colorUpdateKey.value++;
+        };
+
+        onMounted(() => {
+            window.addEventListener('accent-color-changed', handleAccentColorChange);
+            // Força atualização inicial após montagem
+            // Pequeno delay para garantir que as cores foram aplicadas
+            setTimeout(() => {
+                colorUpdateKey.value++;
+            }, 100);
+        });
+
+        onBeforeUnmount(() => {
+            window.removeEventListener('accent-color-changed', handleAccentColorChange);
+        });
+
+        return { toast, hoverBorderStyle, walletAddIconStyle };
     },
     methods: {
         async fetchWallets(page?: number, showFullLoading: boolean = false) {

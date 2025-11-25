@@ -4,7 +4,7 @@
         <div class="h-full w-full px-8 py-8">
             <PageHeader title="categorias" description="gerencie como suas transações são classificadas.">
                 <template #badge>
-                    <span class="rounded-md bg-white/10 px-2 py-1 text-xs font-semibold text-gray-300">
+                    <span class="rounded-md bg-muted px-2 py-1 text-xs font-semibold text-muted-foreground">
                         {{ pagination?.total ?? categories.length }} Total
                     </span>
                 </template>
@@ -21,25 +21,25 @@
                             <button
                                 v-if="!isSelectionMode"
                                 @click="toggleSelectionMode"
-                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
                                 title="selecionar múltiplas categorias (Ctrl + Espaço)"
                             >
                                 <Target class="!h-4 !w-4" />
                                 <span>selecionar</span>
-                                <span class="hidden rounded border border-[#2F2F2F] px-1 py-0.5 text-[11px] uppercase text-[#8c8c8c] lg:inline-flex">
+                                <span class="hidden rounded border border-border px-1 py-0.5 text-[11px] uppercase text-muted-foreground lg:inline-flex">
                                     Ctrl + Espaço
                                 </span>
                             </button>
                             <button
                                 v-else
                                 @click="exitSelectionMode"
-                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
                             >
                                 cancelar seleção
                             </button>
                             <button
                                 @click="openModal"
-                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
                             >
                                 <Plus class="!h-4 !w-4" />
                                 nova categoria
@@ -50,12 +50,12 @@
             </PageHeader>
 
             <!-- Tabs -->
-            <div class="mb-6 flex gap-2 border-b border-[#2F2F2F]">
+            <div class="mb-6 flex gap-2 border-b border-border">
                 <button
                     @click="activeTab = 'expense'"
                     :class="[
                         'relative px-4 py-2 text-sm font-medium transition-colors',
-                        activeTab === 'expense' ? 'text-white' : 'text-[#767676] hover:text-white',
+                        activeTab === 'expense' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
                     ]"
                 >
                     Despesas
@@ -65,7 +65,7 @@
                     @click="activeTab = 'recept'"
                     :class="[
                         'relative px-4 py-2 text-sm font-medium transition-colors',
-                        activeTab === 'recept' ? 'text-white' : 'text-[#767676] hover:text-white',
+                        activeTab === 'recept' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
                     ]"
                 >
                     Receitas
@@ -82,9 +82,9 @@
                     <div
                         v-for="category in filteredCategories"
                         :key="category.id"
-                        class="group relative rounded-xl border border-[#2F2F2F] bg-[#131316] p-6 transition-all duration-300 hover:border-[#525151]"
+                        class="group relative rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:border-accent"
                         :class="{
-                            'cursor-pointer ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316]':
+                            'cursor-pointer ring-2 ring-accent-primary ring-offset-2 ring-offset-card':
                                 isSelectionMode && selectedIds.includes(category.id),
                             'cursor-pointer': isSelectionMode && !selectedIds.includes(category.id),
                             'hover:-translate-y-1': !isSelectionMode,
@@ -96,7 +96,7 @@
                             <button
                                 @click.stop
                                 @click="handleEditCategory(category.id)"
-                                class="rounded-md border border-[#2F2F2F] bg-[#1E1E1E] p-1.5 text-[#767676] transition-colors hover:border-[#3800D8] hover:text-white"
+                                class="rounded-md border border-border bg-card p-1.5 text-muted-foreground transition-colors hover:border-accent-primary hover:text-foreground"
                                 title="Editar"
                             >
                                 <Pencil class="h-4 w-4" />
@@ -104,7 +104,7 @@
                             <button
                                 @click.stop
                                 @click="handleDeleteCategory(category.id)"
-                                class="rounded-md border border-[#2F2F2F] bg-[#1E1E1E] p-1.5 text-[#767676] transition-colors hover:border-red-500 hover:text-red-400"
+                                class="rounded-md border border-border bg-card p-1.5 text-muted-foreground transition-colors hover:border-destructive hover:text-destructive"
                                 title="Excluir"
                             >
                                 <Trash2 class="h-4 w-4" />
@@ -126,7 +126,7 @@
                             <div
                                 v-if="isSelectionMode"
                                 class="absolute -left-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all"
-                                :class="selectedIds.includes(category.id) ? 'border-[#6965f2] bg-[#6965f2]' : 'border-white/30 bg-[#131316]/80'"
+                                :class="selectedIds.includes(category.id) ? 'border-accent-primary bg-accent-primary' : 'border-border bg-card/80'"
                             >
                                 <svg
                                     v-if="selectedIds.includes(category.id)"
@@ -142,7 +142,7 @@
 
                         <!-- Nome -->
                         <div class="mb-1 flex items-center justify-between gap-3">
-                            <h3 class="mb-0 truncate text-lg font-bold text-white" :title="category.name">
+                            <h3 class="mb-0 truncate text-lg font-bold text-foreground" :title="category.name">
                                 {{ category.name }}
                             </h3>
                             <span class="mb-1 whitespace-nowrap font-semibold" :style="{ color: category.color }"> R$ 0,00 </span>
@@ -151,14 +151,14 @@
                         <!-- Informações (simuladas) -->
                         <div class="space-y-2">
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-xs text-[#767676]">12 transações este mês</span>
+                                <span class="text-xs text-muted-foreground">12 transações este mês</span>
                             </div>
                             <div class="mt-3">
                                 <div class="mb-1 flex items-center justify-between text-xs">
-                                    <span class="text-[#767676]">impacto no orçamento</span>
-                                    <span class="text-white">0%</span>
+                                    <span class="text-muted-foreground">impacto no orçamento</span>
+                                    <span class="text-foreground">0%</span>
                                 </div>
-                                <div class="h-2 w-full overflow-hidden rounded-full bg-[#1E1E1E]">
+                                <div class="h-2 w-full overflow-hidden rounded-full bg-muted">
                                     <div
                                         class="h-full rounded-full transition-all"
                                         :style="{
@@ -173,15 +173,15 @@
                 </template>
                 <div
                     v-else
-                    class="col-span-full flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 p-10 text-center text-gray-400"
+                    class="col-span-full flex flex-col items-center justify-center rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground"
                 >
                     <p class="text-base font-medium">nenhuma categoria encontrada!</p>
-                    <p class="text-sm text-gray-500">clique abaixo para criar sua primeira categoria.</p>
+                    <p class="text-sm text-muted-foreground">clique abaixo para criar sua primeira categoria.</p>
                 </div>
 
                 <!-- Card de Criar Nova -->
                 <button
-                    class="flex h-full min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/10 text-gray-400 transition-all hover:border-indigo-500/50 hover:bg-white/5 hover:text-white"
+                    class="flex h-full min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-border text-muted-foreground transition-all hover:border-accent-primary/50 hover:bg-accent/50 hover:text-foreground"
                     :class="{
                         'cursor-not-allowed opacity-50': loading,
                     }"
@@ -189,7 +189,7 @@
                     :disabled="loading"
                     @click="openModal"
                 >
-                    <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 bg-white/5 transition-colors">
+                    <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-border bg-muted transition-colors">
                         <Plus class="h-8 w-8" />
                     </div>
                     <span class="text-sm font-medium">adicionar categoria</span>
@@ -212,7 +212,7 @@
         <UiDialog v-model:open="isModalOpen">
             <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">criar nova categoria</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">criar nova categoria</DialogTitle>
                     <DialogDescription class="sr-only">preencha os dados para criar uma nova categoria</DialogDescription>
                 </template>
                 <CreateCategoryForm
@@ -228,7 +228,7 @@
         <UiDialog v-model:open="isEditDialogOpen">
             <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">editar categoria</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">editar categoria</DialogTitle>
                     <DialogDescription class="sr-only">edite os dados da categoria</DialogDescription>
                 </template>
                 <CreateCategoryForm v-if="categoryToEdit" :category="categoryToEdit" @success="handleCategoryUpdated" @cancel="closeEditModal" />
@@ -239,23 +239,23 @@
         <UiDialog v-model:open="isDeleteDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">confirmar exclusão</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">confirmar exclusão</DialogTitle>
                     <DialogDescription class="sr-only">confirme a exclusão da categoria</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-sm text-[#B6B6B6]">tem certeza que deseja excluir esta categoria? esta ação não pode ser desfeita.</p>
+                    <p class="text-sm text-muted-foreground">tem certeza que deseja excluir esta categoria? esta ação não pode ser desfeita.</p>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
                             variant="outline"
                             @click="isDeleteDialogOpen = false"
-                            class="cursor-pointer rounded-md border-[#2F2F2F] bg-[#1E1E1E] p-2 text-white hover:bg-[#313131]"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             variant="destructive"
                             @click="confirmDelete"
-                            class="cursor-pointer rounded-md bg-red-600 p-2 text-white hover:bg-red-700"
+                            class="cursor-pointer rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
                         >
                             excluir
                         </UiButton>
@@ -268,11 +268,11 @@
         <UiDialog v-model:open="isBulkDeleteDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">confirmar exclusão em lote</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">confirmar exclusão em lote</DialogTitle>
                     <DialogDescription class="sr-only">confirme a exclusão das categorias selecionadas</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-sm text-[#B6B6B6]">
+                    <p class="text-sm text-muted-foreground">
                         tem certeza que deseja excluir {{ selectedIds.length }} {{ selectedIds.length === 1 ? 'categoria' : 'categorias' }}? esta ação
                         não pode ser desfeita.
                     </p>
@@ -280,14 +280,14 @@
                         <UiButton
                             variant="outline"
                             @click="isBulkDeleteDialogOpen = false"
-                            class="cursor-pointer rounded-md border-[#2F2F2F] bg-[#1E1E1E] p-2 text-white hover:bg-[#313131]"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             variant="destructive"
                             @click="confirmBulkDeleteAction"
-                            class="cursor-pointer rounded-md bg-red-600 p-2 text-white hover:bg-red-700"
+                            class="cursor-pointer rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
                         >
                             excluir {{ selectedIds.length }}
                         </UiButton>
@@ -307,7 +307,7 @@
             <template #actions>
                 <button
                     @click="confirmBulkDelete"
-                    class="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+                    class="flex items-center gap-2 rounded-md bg-destructive px-4 py-2 text-destructive-foreground transition-colors hover:bg-destructive/90"
                 >
                     <Trash2 class="!h-4 !w-4" />
                     excluir ({{ selectedIds.length }})

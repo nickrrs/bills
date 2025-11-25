@@ -7,6 +7,7 @@ import { createApp, h, watch } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import { usePage } from '@inertiajs/vue3';
+import { ACCENT_COLOR_MAP, ACCENT_COLOR_LIGHT_MAP } from './composables/useThemeColors';
 
 /**
  * Atualiza o CSRF token no meta tag quando ele mudar
@@ -64,6 +65,36 @@ createInertiaApp({
 
         const initialSettings = (props.initialPage.props as any)?.settings;
         initializeTheme(initialSettings?.theme);
+
+        // Inicializa cores de tema imediatamente após aplicar o tema
+        // Usa requestAnimationFrame para garantir que o DOM esteja pronto
+        requestAnimationFrame(() => {
+            let accentColor = initialSettings?.accent_color || 'indigo';
+
+            // Migração: converte "emerald" antigo para "lime"
+            if (accentColor === 'emerald') {
+                accentColor = 'lime';
+            }
+
+            // Fallback para valores inválidos
+            if (!ACCENT_COLOR_MAP[accentColor as keyof typeof ACCENT_COLOR_MAP]) {
+                accentColor = 'indigo';
+            }
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const colorMode = isDark ? 'dark' : 'light';
+            const accent = ACCENT_COLOR_MAP[accentColor as keyof typeof ACCENT_COLOR_MAP][colorMode];
+            const accentLight = ACCENT_COLOR_LIGHT_MAP[accentColor as keyof typeof ACCENT_COLOR_LIGHT_MAP][colorMode];
+
+            const root = document.documentElement;
+            root.style.setProperty('--accent-primary', accent);
+            root.style.setProperty('--accent-primary-light', accentLight);
+
+            // Dispara evento para notificar componentes sobre a inicialização
+            window.dispatchEvent(new CustomEvent('accent-color-changed', {
+                detail: { color: accent, colorMode }
+            }));
+        });
 
         const app = createApp({
             render: () => [

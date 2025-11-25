@@ -1,19 +1,19 @@
 <template>
-    <div v-if="shouldRender" class="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div class="text-sm text-gray-400">
+    <div v-if="shouldRender" class="mt-4 pb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div class="text-sm dark:text-gray-400 light:text-[#080808]">
             <span>mostrando</span>
-            <span class="mx-1 font-medium text-white">{{ displayFrom }}</span>
+            <span class="mx-1 font-medium text-accent-primary">{{ displayFrom }}</span>
             <span>até</span>
-            <span class="mx-1 font-medium text-white">{{ displayTo }}</span>
+            <span class="mx-1 font-medium text-accent-primary">{{ displayTo }}</span>
             <span>de</span>
-            <span class="mx-1 font-medium text-white">{{ total ?? 0 }}</span>
+            <span class="mx-1 font-medium text-accent-primary">{{ total ?? 0 }}</span>
             <span>{{ label }}</span>
         </div>
 
         <div class="flex items-center gap-2">
             <button
                 type="button"
-                class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
+                class="flex h-9 w-9 items-center justify-center rounded-md border dark:border-[#2F2F2F] dark:bg-[#1E1E1E] light:bg-card light:text-foreground text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
                 :disabled="current === 1"
                 @click="emitChange(current - 1)"
             >
@@ -26,7 +26,8 @@
                     :key="page"
                     type="button"
                     class="flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm font-medium transition-colors"
-                    :class="page === current ? 'border-indigo-500 bg-indigo-500/20 text-indigo-400' : 'border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131]'"
+                    :class="page === current ? 'border-accent-primary text-accent-primary' : 'light:border-border light:bg-card light:text-foreground light:hover:bg-accent dark:border-[#2F2F2F] dark:bg-[#1E1E1E] dark:text-white dark:hover:bg-[#313131]'"
+                    :style="page === current ? { backgroundColor: accentPrimaryWithOpacity } : {}"
                     @click="emitChange(page)"
                 >
                     {{ page }}
@@ -35,7 +36,7 @@
 
             <button
                 type="button"
-                class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
+                class="flex h-9 w-9 items-center justify-center rounded-md border dark:border-[#2F2F2F] dark:bg-[#1E1E1E] light:bg-card light:text-foreground text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
                 :disabled="current === last"
                 @click="emitChange(current + 1)"
             >
@@ -48,6 +49,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { getAccentPrimaryWithOpacity } from '@/utils/colors';
+
+// Computed para obter a cor accent-primary atual com opacidade (20%)
+const accentPrimaryWithOpacity = computed(() => {
+    return getAccentPrimaryWithOpacity(0.2);
+});
+
 
 interface Props {
     current: number;

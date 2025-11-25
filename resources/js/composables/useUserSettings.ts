@@ -7,7 +7,7 @@ import type { SharedData } from '@/types';
  * temas e cores de destaque
  */
 export type Theme = 'light' | 'dark' | 'system';
-export type AccentColor = 'indigo' | 'emerald' | 'red' | 'orange' | 'cyan' | 'purple';
+export type AccentColor = 'indigo' | 'lime' | 'red' | 'orange' | 'cyan' | 'purple';
 
 export interface UserSettings {
     theme: Theme;
@@ -56,6 +56,11 @@ async function syncWithBackend(settings: UserSettings): Promise<void> {
 }
 
 function mergeWithDefaults(inertiaSettings: any): UserSettings {
+    // Migração: converte "emerald" antigo para "lime"
+    if (inertiaSettings?.accent_color === 'emerald') {
+        inertiaSettings.accent_color = 'lime';
+    }
+
     return {
         ...DEFAULT_SETTINGS,
         ...inertiaSettings,
@@ -66,10 +71,28 @@ function mergeWithDefaults(inertiaSettings: any): UserSettings {
     };
 }
 
+// Instância singleton compartilhada
+let sharedSettings: ReturnType<typeof reactive<UserSettings>> | null = null;
+let sharedUpdateSetting: <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => void;
+let sharedUpdateNestedSetting: (path: string, value: any) => void;
+let sharedResetSettings: () => void;
+let isInitialized = false;
+
 export function useUserSettings() {
     const page = usePage<SharedData>();
     const isAuthenticated = computed(() => !!page.props.auth?.user);
 
+    // Se já existe uma instância compartilhada, retorna ela
+    if (sharedSettings) {
+        return {
+            settings: sharedSettings,
+            updateSetting: sharedUpdateSetting,
+            updateNestedSetting: sharedUpdateNestedSetting,
+            resetSettings: sharedResetSettings,
+        };
+    }
+
+    // Cria nova instância singleton
     const settings = reactive<UserSettings>({ ...DEFAULT_SETTINGS });
 
     function updateSetting<K extends keyof UserSettings>(
@@ -115,18 +138,28 @@ export function useUserSettings() {
         }
     }
 
-    watch(
-        () => (page.props as any)?.settings,
-        (newSettings) => {
-            if (newSettings) {
-                const merged = mergeWithDefaults(newSettings);
-                Object.assign(settings, merged);
-            } else {
-                Object.assign(settings, DEFAULT_SETTINGS);
-            }
-        },
-        { deep: true, immediate: true }
-    );
+    // Inicializa watch apenas uma vez
+    if (!isInitialized) {
+        watch(
+            () => (page.props as any)?.settings,
+            (newSettings) => {
+                if (newSettings) {
+                    const merged = mergeWithDefaults(newSettings);
+                    Object.assign(settings, merged);
+                } else {
+                    Object.assign(settings, DEFAULT_SETTINGS);
+                }
+            },
+            { deep: true, immediate: true }
+        );
+        isInitialized = true;
+    }
+
+    // Armazena a instância singleton
+    sharedSettings = settings;
+    sharedUpdateSetting = updateSetting;
+    sharedUpdateNestedSetting = updateNestedSetting;
+    sharedResetSettings = resetSettings;
 
     return {
         settings,

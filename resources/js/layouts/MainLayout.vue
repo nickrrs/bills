@@ -1,5 +1,5 @@
 <template>
-    <div class="w-screen relative h-screen flex flex-col bg-[#0D0D0D]">
+    <div class="w-screen relative h-screen flex flex-col bg-background">
         <Toaster />
         <MainNavbar :no-sub-nav="noSubNav" />
         <div class="w-full h-full overflow-auto">

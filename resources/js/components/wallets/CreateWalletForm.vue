@@ -5,8 +5,8 @@
             <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-2">
                     <div class="flex flex-row items-baseline gap-1">
-                        <label class="text-sm font-medium text-white">nome</label>
-                        <span class="text-red-400 text-sm leading-none">*</span>
+                        <label class="text-sm font-medium text-foreground">nome</label>
+                        <span class="text-destructive text-sm leading-none">*</span>
                     </div>
                     <input
                         v-model="formData.name"
@@ -14,54 +14,54 @@
                         type="text"
                         maxlength="20"
                         placeholder="escolha um nome para a carteira"
-                        class="w-full px-3 py-2 bg-[#0E0E10] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
+                        class="w-full px-3 py-2 bg-input border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent"
                     />
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">tipo de carteira</label>
+                    <label class="text-sm font-medium text-foreground">tipo de carteira</label>
                     <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-3 p-3 bg-[#0E0E10] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
+                        <label class="flex items-center gap-3 p-3 bg-input border border-border rounded-md cursor-pointer hover:border-accent-primary transition-colors">
                             <input
                                 v-model="formData.type"
                                 type="radio"
                                 value="generic"
-                                class="w-4 h-4 text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                                class="w-4 h-4 text-accent-primary focus:ring-2 focus:ring-accent-primary"
                             />
                             <div class="flex-1">
-                                <span class="text-white font-medium">geral</span>
-                                <p class="text-xs text-[#767676]">carteira para uso geral do dia a dia</p>
+                                <span class="text-foreground font-medium">geral</span>
+                                <p class="text-xs text-muted-foreground">carteira para uso geral do dia a dia</p>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 bg-[#0E0E10] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
+                        <label class="flex items-center gap-3 p-3 bg-input border border-border rounded-md cursor-pointer hover:border-accent-primary transition-colors">
                             <input
                                 v-model="formData.type"
                                 type="radio"
                                 value="saving"
-                                class="w-4 h-4 text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                                class="w-4 h-4 text-accent-primary focus:ring-2 focus:ring-accent-primary"
                             />
                             <div class="flex-1">
-                                <span class="text-white font-medium">poupança / meta</span>
-                                <p class="text-xs text-[#767676]">para economizar e alcançar seus objetivos</p>
+                                <span class="text-foreground font-medium">poupança / meta</span>
+                                <p class="text-xs text-muted-foreground">para economizar e alcançar seus objetivos</p>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 bg-[#0E0E10] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
+                        <label class="flex items-center gap-3 p-3 bg-input border border-border rounded-md cursor-pointer hover:border-accent-primary transition-colors">
                             <input
                                 v-model="formData.type"
                                 type="radio"
                                 value="investment"
-                                class="w-4 h-4 text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                                class="w-4 h-4 text-accent-primary focus:ring-2 focus:ring-accent-primary"
                             />
                             <div class="flex-1">
-                                <span class="text-white font-medium">investimento</span>
-                                <p class="text-xs text-[#767676]">para acompanhar seus investimentos</p>
+                                <span class="text-foreground font-medium">investimento</span>
+                                <p class="text-xs text-muted-foreground">para acompanhar seus investimentos</p>
                             </div>
                         </label>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">cor do cartão</label>
+                    <label class="text-sm font-medium text-foreground">cor do cartão</label>
                     <div class="grid grid-cols-5 gap-3">
                         <button
                             v-for="colorOption in colorOptions"
@@ -71,8 +71,8 @@
                             :class="[
                                 'w-full aspect-square rounded-lg border-2 transition-all hover:scale-105',
                                 formData.color === colorOption.value
-                                    ? 'border-white ring-2 ring-[#3800D8] ring-offset-2 ring-offset-[#131316]'
-                                    : 'border-[#2F2F2F] hover:border-[#3800D8]'
+                                    ? 'border-white ring-2 ring-accent-primary ring-offset-2 ring-offset-card'
+                                    : 'border-border hover:border-accent-primary'
                             ]"
                             :style="{ background: colorOption.gradient }"
                             :title="colorOption.label"
@@ -91,24 +91,24 @@
                 <WalletIconSelector v-model="formData.icon" :is-in-drawer="isInDrawer" />
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">descrição</label>
+                    <label class="text-sm font-medium text-foreground">descrição</label>
                     <textarea
                         v-model="formData.description"
                         placeholder="qual é o objetivo dessa carteira?"
                         rows="3"
-                        class="w-full px-3 py-2 bg-[#0E0E10] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent resize-none"
+                        class="w-full px-3 py-2 bg-input border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent resize-none"
                     ></textarea>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">saldo inicial</label>
+                    <label class="text-sm font-medium text-foreground">saldo inicial</label>
                     <input
                         :value="formatBalanceInput(formData.balance)"
                         type="text"
                         placeholder="0,00"
                         @input="handleBalanceInput"
                         @keydown="preventInvalidKeys"
-                        class="w-full px-3 py-2 bg-[#0E0E10] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
+                        class="w-full px-3 py-2 bg-input border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent"
                     />
                 </div>
 
@@ -117,27 +117,27 @@
                         <input
                             v-model="formData.active"
                             type="checkbox"
-                            class="w-4 h-4 rounded !border-[#2F2F2F] !bg-[#131316] text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                            class="w-4 h-4 rounded border-border bg-card text-accent-primary focus:ring-2 focus:ring-accent-primary"
                         />
-                        <span class="text-sm text-white">ativo</span>
+                        <span class="text-sm text-foreground">ativo</span>
                     </label>
 
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input
                             v-model="formData.is_default"
                             type="checkbox"
-                            class="w-4 h-4 rounded border-[#2F2F2F] bg-[#131316] text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                            class="w-4 h-4 rounded border-border bg-card text-accent-primary focus:ring-2 focus:ring-accent-primary"
                         />
-                        <span class="text-sm text-white">selecionar como padrão?</span>
+                        <span class="text-sm text-foreground">selecionar como padrão?</span>
                     </label>
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#2F2F2F]">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <button
                     type="button"
                     @click="$emit('cancel')"
-                    class="px-4 py-2 text-sm font-medium text-[#B6B6B6] hover:text-white transition-colors"
+                    class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
                     cancelar
                 </button>
@@ -145,7 +145,7 @@
                     type="button"
                     @click="handleSubmit"
                     :disabled="loading || !formData.name"
-                    class="px-4 py-2 text-sm font-medium bg-[#6965f2] text-white rounded-md hover:bg-[#3800D8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    class="px-4 py-2 text-sm font-medium bg-accent-primary text-white rounded-md hover:bg-accent-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                     <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />
                     {{ wallet ? 'atualizar carteira' : 'criar carteira' }}
@@ -156,8 +156,8 @@
         <!-- Prévia do Card -->
         <div class="lg:w-80 flex-shrink-0">
             <div class="sticky top-4">
-                <h3 class="text-sm font-medium text-white">prévia da carteira</h3>
-                <p class="text-xs text-[#767676] mb-4">é assim que a carteira vai aparecer na sua lista</p>
+                <h3 class="text-sm font-medium text-foreground">prévia da carteira</h3>
+                <p class="text-xs text-muted-foreground mb-4">é assim que a carteira vai aparecer na sua lista</p>
                 <div class="w-full h-[260px] rounded-3xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden" :style="{ background: previewTheme.gradient }">
                     <div class="flex h-full flex-col justify-between p-6">
                         <div class="flex items-start justify-between z-10">
@@ -177,7 +177,7 @@
                                     />
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-white">{{ formData.name || 'Nome da Carteira' }}</h3>
+                                    <h3 class="text-lg font-bold text-white">{{ formData.name || 'nome da carteira' }}</h3>
                                     <p class="text-xs font-medium uppercase tracking-wide" :class="previewTheme.tagColor">
                                         {{ formData.description || 'Sem descrição' }}
                                     </p>
@@ -213,7 +213,7 @@
                             <div class="flex items-center space-x-2" :class="previewTheme.footerText">
                                 <CreditCard class="h-4 w-4" />
                                 <span class="text-xs font-medium">
-                                    {{ formData.active ? 'Carteira ativa' : 'Carteira inativa' }}
+                                    {{ formData.active ? 'carteira ativa' : 'carteira inativa' }}
                                 </span>
                             </div>
                         </div>

@@ -7,23 +7,23 @@
             <div class="flex flex-col gap-6 sm:gap-8 mt-6 sm:mt-8">
                 <div class="flex flex-col gap-3">
                     <div class="flex flex-row gap-2 items-center">
-                        <Palette class="h-5 w-5 text-gray-400" />
-                        <span class="text-sm font-medium text-gray-300">aparência</span>
+                        <Palette class="h-5 w-5 text-muted-foreground" />
+                        <span class="text-sm font-medium text-foreground">aparência</span>
                     </div>
 
                     <div class="flex flex-col lg:flex-row items-start gap-6 lg:gap-8 w-full lg:max-w-4xl">
                         <div class="flex flex-col gap-4 sm:gap-6 flex-1 w-full lg:max-w-md">
                             <div class="flex flex-col gap-2 sm:gap-3">
-                                <span class="text-sm text-gray-400">modo de exibição</span>
+                                <span class="text-sm text-muted-foreground">modo de exibição</span>
                                 <div class="flex flex-row gap-2 sm:gap-3 flex-wrap">
                                     <button
                                         v-for="themeOption in themeOptions"
                                         :key="themeOption.value"
                                         @click="updateTheme(themeOption.value)"
                                         :class="[
-                                            'relative flex flex-col items-center justify-center p-4 sm:p-5 cursor-pointer bg-[#1a1a1a] hover:bg-[#222] rounded-2xl border-2 transition-all duration-200 text-center min-w-[90px] sm:min-w-[110px] h-[100px] sm:h-[120px] flex-1 sm:flex-none',
+                                            'relative flex flex-col items-center justify-center p-4 sm:p-5 cursor-pointer bg-card hover:bg-accent rounded-2xl border-2 transition-all duration-200 text-center min-w-[90px] sm:min-w-[110px] h-[100px] sm:h-[120px] flex-1 sm:flex-none',
                                             settings.theme === themeOption.value
-                                                ? `${accentColorBorderClass} bg-[#222]`
+                                                ? `${accentColorBorderClass} bg-accent`
                                                 : 'border-transparent'
                                         ]"
                                     >
@@ -40,13 +40,13 @@
                                         >
                                             <component :is="themeOption.icon" class="h-5 w-5 sm:h-6 sm:w-6" :class="themeOption.iconClass" />
                                         </div>
-                                        <span class="text-xs sm:text-sm text-gray-400">{{ themeOption.label }}</span>
+                                        <span class="text-xs sm:text-sm text-muted-foreground">{{ themeOption.label }}</span>
                                     </button>
                                 </div>
                             </div>
 
                             <div class="flex flex-col gap-2 sm:gap-3">
-                                <span class="text-sm text-gray-400">Cor de Destaque</span>
+                                <span class="text-sm text-muted-foreground">cor de destaque</span>
                                 <div class="flex flex-row gap-2 sm:gap-3 flex-wrap">
                                     <button
                                         v-for="color in accentColors"
@@ -56,7 +56,7 @@
                                             'w-10 h-10 sm:w-12 sm:h-12 rounded-full cursor-pointer transition-all duration-200',
                                             color.bgClass,
                                             settings.accent_color === color.value
-                                                ? 'ring-2 ring-white ring-offset-2 ring-offset-[#1a1a1a] scale-110'
+                                                ? 'ring-2 ring-white ring-offset-2 ring-offset-card scale-110'
                                                 : 'hover:scale-105'
                                         ]"
                                         :title="color.label"
@@ -66,11 +66,11 @@
                         </div>
 
                         <div class="flex flex-col gap-2 w-2/3 lg:w-[320px] lg:flex-shrink-0">
-                            <div class="bg-[#1a1a1a] rounded-xl p-4 sm:p-6 border border-[#2a2a2a]">
+                            <div class="bg-card rounded-xl p-4 sm:p-6 border border-border">
                                 <div class="flex items-center justify-between mb-3 sm:mb-4 flex-wrap gap-2">
                                     <div class="flex items-center gap-2">
                                         <Wallet class="h-4 w-4 sm:h-5 sm:w-5" :class="accentColorClass" />
-                                        <div class="h-2 w-16 sm:w-20 bg-gray-700 rounded"></div>
+                                        <div class="h-2 w-16 sm:w-20 dark:bg-gray-700 light:bg-[#f0f0f0] rounded"></div>
                                     </div>
                                     <button
                                         :class="[
@@ -78,40 +78,40 @@
                                             accentColorBgClass
                                         ]"
                                     >
-                                        Botão Ação
+                                        botão ação
                                     </button>
                                 </div>
-                                <div class="h-2 w-full bg-gray-700 rounded mb-2"></div>
-                                <div class="h-2 w-3/4 bg-gray-700 rounded mb-3 sm:mb-4"></div>
+                                <div class="h-2 w-full dark:bg-gray-700 light:bg-[#f0f0f0] rounded mb-2"></div>
+                                <div class="h-2 w-3/4 dark:bg-gray-700 light:bg-[#f0f0f0] rounded mb-3 sm:mb-4"></div>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-xs sm:text-sm text-gray-400">Status:</span>
-                                    <span :class="['text-xs sm:text-sm font-medium', accentColorClass]">Ativo</span>
+                                    <span class="text-xs sm:text-sm text-muted-foreground">status:</span>
+                                    <span :class="['text-xs sm:text-sm font-medium', accentColorClass]">ativo</span>
                                 </div>
                             </div>
-                            <span class="text-xs text-gray-500">Veja como os elementos se comportam com sua cor.</span>
+                            <span class="text-xs text-muted-foreground">veja como os elementos se comportam com sua cor</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-6">
                     <div class="flex flex-row gap-2 items-center">
-                        <Bell class="h-5 w-5 text-gray-400" />
-                        <span class="text-sm font-medium text-gray-300">Notificações</span>
+                        <Bell class="h-5 w-5 text-muted-foreground" />
+                        <span class="text-sm font-medium text-foreground">notificações</span>
                     </div>
 
                     <div class="flex flex-col gap-3 sm:gap-4 w-full sm:w-2/3 lg:w-1/2 xl:w-1/3">
                         <div
                             v-for="notification in notifications"
                             :key="notification.key"
-                            class="flex items-center justify-between p-3 sm:p-4 bg-[#1a1a1a] rounded-xl border border-[#2a2a2a] gap-3"
+                            class="flex items-center justify-between p-3 sm:p-4 bg-card rounded-xl border border-border gap-3"
                         >
                             <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                                 <div :class="['p-1.5 sm:p-2 rounded-lg flex-shrink-0', notification.iconBgClass]">
                                     <component :is="notification.icon" class="h-3.5 w-3.5 sm:h-4 sm:w-4" :class="notification.iconClass" />
                                 </div>
                                 <div class="flex flex-col min-w-0 flex-1">
-                                    <span class="text-xs sm:text-sm font-medium text-gray-300 truncate">{{ notification.title }}</span>
-                                    <span class="text-xs text-gray-500 line-clamp-2">{{ notification.description }}</span>
+                                    <span class="text-xs sm:text-sm font-medium text-foreground truncate">{{ notification.title }}</span>
+                                    <span class="text-xs text-muted-foreground line-clamp-2">{{ notification.description }}</span>
                                 </div>
                             </div>
                             <div class="flex-shrink-0">
@@ -155,21 +155,21 @@ const { updateAppearance } = useAppearance(settings, updateSetting);
 const themeOptions = [
     {
         value: 'light' as Theme,
-        label: 'Claro',
+        label: 'claro',
         icon: Sun,
         bgClass: 'bg-white',
         iconClass: 'text-gray-600'
     },
     {
         value: 'dark' as Theme,
-        label: 'Escuro',
+        label: 'escuro',
         icon: Moon,
         bgClass: 'bg-[#111] border-2 border-white/20',
         iconClass: 'text-white'
     },
     {
         value: 'system' as Theme,
-        label: 'Sistema',
+        label: 'sistema',
         icon: Monitor,
         bgClass: 'bg-gray-100',
         iconClass: 'text-gray-600'
@@ -178,7 +178,7 @@ const themeOptions = [
 
 const accentColors = [
     { value: 'indigo' as AccentColor, label: 'Indigo', bgClass: 'bg-indigo-500' },
-    { value: 'emerald' as AccentColor, label: 'Emerald', bgClass: 'bg-lime-500' },
+    { value: 'lime' as AccentColor, label: 'Lime', bgClass: 'bg-lime-500' },
     { value: 'red' as AccentColor, label: 'Red', bgClass: 'bg-red-500' },
     { value: 'orange' as AccentColor, label: 'Orange', bgClass: 'bg-orange-500' },
     { value: 'cyan' as AccentColor, label: 'Cyan', bgClass: 'bg-cyan-500' },
@@ -188,7 +188,7 @@ const accentColors = [
 const accentColorClass = computed(() => {
     const colorMap: Record<AccentColor, string> = {
         indigo: 'text-indigo-500',
-        emerald: 'text-lime-500',
+        lime: 'text-lime-500',
         red: 'text-red-500',
         orange: 'text-orange-500',
         cyan: 'text-cyan-500',
@@ -200,7 +200,7 @@ const accentColorClass = computed(() => {
 const accentColorBgClass = computed(() => {
     const colorMap: Record<AccentColor, string> = {
         indigo: 'bg-indigo-500 hover:bg-indigo-600',
-        emerald: 'bg-lime-500 hover:bg-lime-600',
+        lime: 'bg-lime-500 hover:bg-lime-600',
         red: 'bg-red-500 hover:bg-red-600',
         orange: 'bg-orange-500 hover:bg-orange-600',
         cyan: 'bg-cyan-500 hover:bg-cyan-600',
@@ -212,7 +212,7 @@ const accentColorBgClass = computed(() => {
 const accentColorBorderClass = computed(() => {
     const colorMap: Record<AccentColor, string> = {
         indigo: 'border-indigo-500',
-        emerald: 'border-lime-500',
+        lime: 'border-lime-500',
         red: 'border-red-500',
         orange: 'border-orange-500',
         cyan: 'border-cyan-500',
@@ -224,8 +224,8 @@ const accentColorBorderClass = computed(() => {
 const notifications = computed(() => [
     {
         key: 'account_alerts',
-        title: 'Alertas de Contas',
-        description: 'Receba avisos quando uma conta estiver prestes a vencer.',
+        title: 'alertas de contas',
+        description: 'receba avisos quando uma conta estiver prestes a vencer',
         icon: AlertCircle,
         iconBgClass: 'bg-red-500/20',
         iconClass: 'text-red-500',
@@ -233,8 +233,8 @@ const notifications = computed(() => [
     },
     {
         key: 'weekly_summary',
-        title: 'Resumo Semanal',
-        description: 'Um resumo do seu desempenho financeiro toda segunda-feira.',
+        title: 'resumo semanal',
+        description: 'um resumo do seu desempenho financeiro toda segunda-feira',
         icon: TrendingUp,
         iconBgClass: 'bg-indigo-500/20',
         iconClass: 'text-indigo-500',
@@ -242,8 +242,8 @@ const notifications = computed(() => [
     },
     {
         key: 'goals_achieved',
-        title: 'Metas Atingidas',
-        description: 'Celebre quando você alcançar seus objetivos de economia.',
+        title: 'metas atingidas',
+        description: 'celebre quando você alcançar seus objetivos de economia',
         icon: Target,
         iconBgClass: 'bg-lime-500/20',
         iconClass: 'text-lime-500',
@@ -257,6 +257,10 @@ function updateTheme(theme: Theme) {
 
 function updateAccentColor(color: AccentColor) {
     updateSetting('accent_color', color);
+    // Dispara evento imediatamente para atualizar componentes
+    window.dispatchEvent(new CustomEvent('accent-color-changed', {
+        detail: { color }
+    }));
 }
 
 function updateNotification(key: string, value: boolean) {
@@ -284,13 +288,25 @@ const ToggleSwitch = defineComponent({
         const getAccentBgClass = () => {
             const colorMap: Record<string, string> = {
                 indigo: 'bg-indigo-500',
-                emerald: 'bg-lime-500',
+                lime: 'bg-lime-500',
                 red: 'bg-red-500',
                 orange: 'bg-orange-500',
                 cyan: 'bg-cyan-500',
                 purple: 'bg-purple-500',
             };
             return colorMap[props.accentColor] || 'bg-indigo-500';
+        };
+
+        const getAccentRingClass = () => {
+            const colorMap: Record<string, string> = {
+                indigo: 'focus:ring-indigo-500',
+                lime: 'focus:ring-lime-500',
+                red: 'focus:ring-red-500',
+                orange: 'focus:ring-orange-500',
+                cyan: 'focus:ring-cyan-500',
+                purple: 'focus:ring-purple-500',
+            };
+            return colorMap[props.accentColor] || 'focus:ring-indigo-500';
         };
 
         return () =>
@@ -300,7 +316,8 @@ const ToggleSwitch = defineComponent({
                 'aria-checked': props.checked,
                 onClick: toggle,
                 class: [
-                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2',
+                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
+                    getAccentRingClass(),
                     props.checked ? getAccentBgClass() : 'bg-gray-600',
                 ],
             }, [

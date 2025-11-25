@@ -1,12 +1,12 @@
 <template>
     <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
-            <label class="text-sm font-medium text-white">ícone da carteira</label>
+            <label class="text-sm font-medium text-foreground">ícone da carteira</label>
             <button
                 v-if="selectedIcon"
                 type="button"
                 @click="clearSelection"
-                class="text-xs text-[#767676] hover:text-white transition-colors"
+                class="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
                 remover ícone
             </button>
@@ -18,7 +18,7 @@
                 :key="category.name"
                 class="flex flex-col gap-2"
             >
-                <h4 class="text-xs font-medium text-[#767676] uppercase tracking-wide">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     {{ category.label }}
                 </h4>
                 <div :class="['grid gap-2', gridColsClass]">
@@ -28,11 +28,12 @@
                         type="button"
                         @click="selectIcon(icon.path)"
                         :class="[
-                            'w-full aspect-square rounded-full border-2 transition-all hover:scale-105 bg-[#131316] flex items-center justify-center overflow-hidden relative',
+                            'w-full aspect-square rounded-full border-2 transition-all hover:scale-105 bg-input flex items-center justify-center overflow-hidden relative',
                             selectedIcon === icon.path
-                                ? 'border-[#6965f2] ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316]'
-                                : 'border-[#2F2F2F] hover:border-[#3800D8]'
+                                ? 'border-accent-primary ring-2 ring-accent-primary ring-offset-2 ring-offset-card wallet-icon-selected'
+                                : 'border-border hover:border-accent-primary'
                         ]"
+                        :style="selectedIcon === icon.path ? selectedIconStyle : {}"
                         style="min-height: 56px;"
                         :title="icon.name"
                     >
@@ -50,13 +51,16 @@
             </div>
         </div>
 
-        <div v-if="!selectedIcon" class="text-xs text-[#767676]">
+        <div v-if="!selectedIcon" class="text-xs text-muted-foreground">
             <p>se nenhum ícone for selecionado, será usado o ícone padrão do tipo de carteira.</p>
         </div>
     </div>
 </template>
 
 <script lang="ts">
+import { computed } from 'vue';
+import { getAccentPrimaryWithOpacity } from '@/utils/colors';
+
 export default {
     name: 'WalletIconSelector',
     props: {
@@ -70,6 +74,18 @@ export default {
         },
     },
     emits: ['update:modelValue'],
+    setup() {
+        // Computed para o estilo do ícone selecionado
+        const selectedIconStyle = computed(() => {
+            return {
+                backgroundColor: getAccentPrimaryWithOpacity(0.2),
+            };
+        });
+
+        return {
+            selectedIconStyle,
+        };
+    },
     data() {
         return {
             iconCategories: [

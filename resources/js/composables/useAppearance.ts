@@ -1,5 +1,6 @@
 import { computed, watch } from 'vue';
 import { useUserSettings, type Theme } from './useUserSettings';
+import { useThemeColors } from './useThemeColors';
 
 export function updateTheme(value: Theme) {
     if (value === 'system') {
@@ -30,6 +31,7 @@ export function useAppearance(settingsRef?: any, updateSettingRef?: any) {
         : useUserSettings();
 
     const { settings, updateSetting } = userSettings;
+    const { applyThemeColors } = useThemeColors();
 
     const appearance = computed(() => settings.theme);
 
@@ -38,6 +40,17 @@ export function useAppearance(settingsRef?: any, updateSettingRef?: any) {
         (newTheme) => {
             currentTheme = newTheme;
             updateTheme(newTheme);
+            // Aplica cores quando o tema mudar
+            applyThemeColors();
+        },
+        { immediate: true }
+    );
+
+    // Observa mudanças na cor de destaque
+    watch(
+        () => settings.accent_color,
+        () => {
+            applyThemeColors();
         },
         { immediate: true }
     );
@@ -45,6 +58,7 @@ export function useAppearance(settingsRef?: any, updateSettingRef?: any) {
     function updateAppearance(value: Theme) {
         updateSetting('theme', value);
         updateTheme(value);
+        applyThemeColors();
     }
 
     return {

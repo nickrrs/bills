@@ -24,7 +24,7 @@ class StoreUserSettingsRequest extends FormRequest
         return [
             'settings' => 'required|array',
             'settings.theme' => 'nullable|in:light,dark,system',
-            'settings.accent_color' => 'nullable|in:indigo,emerald,red,orange,cyan,purple',
+            'settings.accent_color' => 'nullable|in:indigo,lime,red,orange,cyan,purple',
             'settings.notifications' => 'nullable|array',
             'settings.notifications.account_alerts' => 'nullable|boolean',
             'settings.notifications.weekly_summary' => 'nullable|boolean',

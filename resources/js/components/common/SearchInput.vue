@@ -6,7 +6,7 @@
             :placeholder="placeholder"
             :disabled="disabled"
             :aria-label="ariaLabel || placeholder"
-            class="w-full rounded-md border border-[#2F2F2F] bg-[#131316] py-2.5 pl-10 pr-10 text-sm text-white placeholder-[#767676] transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#3800D8]"
+            class="w-full rounded-md border dark:border-[#2F2F2F] dark:bg-[#131316] py-2.5 pl-10 pr-10 text-sm text-white placeholder-[#767676] transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-accent-primary"
             :class="inputClass"
             @input="handleInput"
         />

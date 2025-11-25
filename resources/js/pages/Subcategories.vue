@@ -4,7 +4,7 @@
         <div class="h-full w-full px-8 py-8">
             <PageHeader title="subcategorias" description="gerencie a subclassificação de suas categorias.">
                 <template #badge>
-                    <span class="rounded-md bg-white/10 px-2 py-1 text-xs font-semibold text-gray-300">
+                    <span class="rounded-md bg-muted px-2 py-1 text-xs font-semibold text-muted-foreground">
                         {{ totalSubcategories }} Total
                     </span>
                 </template>
@@ -21,25 +21,25 @@
                             <button
                                 v-if="!isSelectionMode"
                                 @click="toggleSelectionMode"
-                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
                                 title="selecionar múltiplas subcategorias (Ctrl + Espaço)"
                             >
                                 <Target class="!h-4 !w-4" />
                                 <span>selecionar</span>
-                                <span class="hidden rounded border border-[#2F2F2F] px-1 py-0.5 text-[11px] uppercase text-[#8c8c8c] lg:inline-flex">
+                                <span class="hidden rounded border border-border px-1 py-0.5 text-[11px] uppercase text-muted-foreground lg:inline-flex">
                                     Ctrl + Espaço
                                 </span>
                             </button>
                             <button
                                 v-else
                                 @click="exitSelectionMode"
-                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
                             >
                                 cancelar seleção
                             </button>
                             <button
                                 @click="openModal"
-                                class="flex items-center gap-x-2 rounded-md border border-[#2F2F2F] bg-[#1E1E1E] px-4 py-2 text-white transition-colors hover:bg-[#313131]"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
                             >
                                 <Plus class="!h-4 !w-4" />
                                 nova subcategoria
@@ -56,10 +56,10 @@
                     <div
                         v-for="category in categories"
                         :key="`category-loading-${category.id}`"
-                        class="h-full w-full rounded-[20px] border border-[#2F2F2F] bg-[#181818] transition-all duration-300"
+                        class="h-full w-full rounded-[20px] border border-border bg-card transition-all duration-300"
                     >
                         <div
-                            class="flex flex-row items-center justify-between space-x-3 rounded-t-[20px] border-b border-[#2F2F2F] bg-gradient-to-b from-[#FFFFFF08] to-transparent p-[20px]"
+                            class="flex flex-row items-center justify-between space-x-3 rounded-t-[20px] border-b border-border bg-gradient-to-b from-muted/30 to-transparent p-[20px]"
                         >
                             <div class="flex flex-row items-center space-x-3">
                                 <div
@@ -75,20 +75,20 @@
                                     <ShoppingBag v-else class="!h-5 !w-5" :style="{ color: category.color }" />
                                 </div>
                                 <div class="flex flex-col items-start">
-                                    <span class="text-sm font-semibold text-white">{{ category.name }}</span>
-                                    <span class="text-xs font-medium text-[#767676]">carregando subcategorias...</span>
+                                    <span class="text-sm font-semibold text-foreground">{{ category.name }}</span>
+                                    <span class="text-xs font-medium text-muted-foreground">carregando subcategorias...</span>
                                 </div>
                             </div>
                             <span class="mb-1 whitespace-nowrap font-semibold" :style="{ color: category.color }">R$ 0,00</span>
                         </div>
-                        <div class="border-b border-[#2F2F2F] p-3">
+                        <div class="border-b border-border p-3">
                             <div class="relative">
-                                <Search class="absolute left-3 top-1/2 !h-4 !w-4 -translate-y-1/2 transform text-[#767676]" />
+                                <Search class="absolute left-3 top-1/2 !h-4 !w-4 -translate-y-1/2 transform text-muted-foreground" />
                                 <input
                                     type="text"
                                     :placeholder="`buscar em ${category.name.toLowerCase()}...`"
                                     disabled
-                                    class="w-full rounded-md border border-[#2F2F2F] bg-[#131316] py-2 pl-9 pr-4 text-sm text-white placeholder-[#767676] opacity-50 cursor-not-allowed"
+                                    class="w-full rounded-md border border-border bg-input py-2 pl-9 pr-4 text-sm text-foreground placeholder-muted-foreground opacity-50 cursor-not-allowed"
                                 />
                             </div>
                         </div>
@@ -117,10 +117,10 @@
                     <div
                         v-for="categoryGroup in groupedCategories"
                         :key="categoryGroup.category.id"
-                        class="h-full w-full rounded-[20px] border border-[#2F2F2F] bg-[#181818] transition-all duration-300 hover:-translate-y-1 hover:border-[#525151]"
+                                class="h-full w-full rounded-[20px] border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-accent"
                     >
                         <div
-                            class="flex flex-row items-center justify-between space-x-3 rounded-t-[20px] border-b border-[#2F2F2F] bg-gradient-to-b from-[#FFFFFF08] to-transparent p-[20px]"
+                            class="flex flex-row items-center justify-between space-x-3 rounded-t-[20px] border-b border-border bg-gradient-to-b from-muted/30 to-transparent p-[20px]"
                         >
                             <div class="flex flex-row items-center space-x-3">
                                 <div
@@ -136,8 +136,8 @@
                                     <ShoppingBag v-else class="!h-5 !w-5" :style="{ color: categoryGroup.category.color }" />
                                 </div>
                                 <div class="flex flex-col items-start">
-                                    <span class="text-sm font-semibold text-white">{{ categoryGroup.category.name }}</span>
-                                    <span class="text-xs font-medium text-[#767676]">
+                                    <span class="text-sm font-semibold text-foreground">{{ categoryGroup.category.name }}</span>
+                                    <span class="text-xs font-medium text-muted-foreground">
                                         {{ categoryGroup.totalSubcategories }}
                                         {{ categoryGroup.totalSubcategories === 1 ? 'subcategoria' : 'subcategorias' }}
                                     </span>
@@ -145,20 +145,20 @@
                             </div>
                             <span class="mb-1 whitespace-nowrap font-semibold" :style="{ color: categoryGroup.category.color }">R$ 0,00</span>
                         </div>
-                        <div class="border-b border-[#2F2F2F] p-3">
+                        <div class="border-b border-border p-3">
                             <div class="relative">
-                                <Search class="absolute left-3 top-1/2 !h-4 !w-4 -translate-y-1/2 transform text-[#767676]" />
+                                <Search class="absolute left-3 top-1/2 !h-4 !w-4 -translate-y-1/2 transform text-muted-foreground" />
                                 <input
                                     :value="categorySearchQueries[categoryGroup.category.id] || ''"
                                     @input="handleCategorySearchInput(categoryGroup.category.id, ($event.target as HTMLInputElement).value)"
                                     type="text"
                                     :placeholder="`buscar em ${categoryGroup.category.name.toLowerCase()}...`"
-                                    class="w-full rounded-md border border-[#2F2F2F] bg-[#131316] py-2 pl-9 pr-8 text-sm text-white placeholder-[#767676] transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#3800D8]"
+                                    class="w-full rounded-md border border-border bg-input py-2 pl-9 pr-8 text-sm text-foreground placeholder-muted-foreground transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-accent-primary"
                                 />
                                 <button
                                     v-if="categorySearchQueries[categoryGroup.category.id]"
                                     @click="clearCategorySearch(categoryGroup.category.id)"
-                                    class="absolute right-2 top-1/2 -translate-y-1/2 transform text-[#767676] transition-colors hover:text-white"
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 transform text-muted-foreground transition-colors hover:text-foreground"
                                 >
                                     <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -170,9 +170,9 @@
                             <div
                                 v-for="subcategory in categoryGroup.subcategories"
                                 :key="subcategory.id"
-                                class="group relative flex flex-row items-center space-x-3 rounded-[10px] p-[12px] transition-all duration-300 hover:bg-[#27272A]/60"
+                                class="group relative flex flex-row items-center space-x-3 rounded-[10px] p-[12px] transition-all duration-300 hover:bg-accent/60"
                                 :class="{
-                                    'ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#181818]':
+                                    'ring-2 ring-accent-primary ring-offset-2 ring-offset-card':
                                         isSelectionMode && selectedIds.includes(subcategory.id),
                                     'cursor-pointer': isSelectionMode,
                                 }"
@@ -181,7 +181,7 @@
                                 <div
                                     v-if="isSelectionMode"
                                     class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 transition-all"
-                                    :class="selectedIds.includes(subcategory.id) ? 'border-[#6965f2] bg-[#6965f2]' : 'border-white/30 bg-[#181818]'"
+                                    :class="selectedIds.includes(subcategory.id) ? 'border-accent-primary bg-accent-primary' : 'border-border bg-card'"
                                 >
                                     <svg
                                         v-if="selectedIds.includes(subcategory.id)"
@@ -207,21 +207,21 @@
                                 </div>
                                 <div class="flex-1">
                                     <div class="flex flex-row items-center justify-between">
-                                        <span class="text-sm font-semibold text-white">{{ subcategory.name }}</span>
-                                        <span class="text-xs font-medium text-gray-400">R$ 0,00</span>
+                                        <span class="text-sm font-semibold text-foreground">{{ subcategory.name }}</span>
+                                        <span class="text-xs font-medium text-muted-foreground">R$ 0,00</span>
                                     </div>
                                 </div>
                                 <div v-if="!isSelectionMode" class="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                                     <button
                                         @click.stop="handleEditSubcategory(subcategory.id)"
-                                        class="rounded-[6px] p-[4px] text-[#a0a0a0] transition-all duration-300 hover:bg-[#3800D8] hover:text-white"
+                                        class="rounded-[6px] p-[4px] text-muted-foreground transition-all duration-300 hover:bg-accent-primary hover:text-white"
                                         title="Editar"
                                     >
                                         <Pencil class="!h-[14px] !w-[14px]" />
                                     </button>
                                     <button
                                         @click.stop="handleDeleteSubcategory(subcategory.id)"
-                                        class="rounded-[6px] p-[4px] text-[#a0a0a0] transition-all duration-300 hover:bg-red-700 hover:text-red-400"
+                                        class="rounded-[6px] p-[4px] text-muted-foreground transition-all duration-300 hover:bg-destructive hover:text-destructive-foreground"
                                         title="Excluir"
                                     >
                                         <Trash2 class="!h-[14px] !w-[14px]" />
@@ -239,20 +239,20 @@
                             </div>
                             <div
                                 v-if="categoryGroup.pagination.totalPages > 1"
-                                class="mx-3 mt-2 flex items-center justify-between rounded-lg border border-[#2F2F2F] px-3 py-2 text-xs text-[#B6B6B6]"
+                                class="mx-3 mt-2 flex items-center justify-between rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground"
                             >
                                 <button
-                                    class="rounded-md border border-[#2F2F2F] px-3 py-1 text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="rounded-md border border-border px-3 py-1 text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
                                     @click="changeCategoryPage(categoryGroup.category.id, 'prev')"
                                     :disabled="categoryGroup.pagination.currentPage === 1"
                                 >
                                     anterior
                                 </button>
-                                <span class="text-white">
+                                <span class="text-foreground">
                                     página {{ categoryGroup.pagination.currentPage }} de {{ categoryGroup.pagination.totalPages }}
                                 </span>
                                 <button
-                                    class="rounded-md border border-[#2F2F2F] px-3 py-1 text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="rounded-md border border-border px-3 py-1 text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
                                     @click="changeCategoryPage(categoryGroup.category.id, 'next')"
                                     :disabled="categoryGroup.pagination.currentPage === categoryGroup.pagination.totalPages"
                                 >
@@ -261,7 +261,7 @@
                             </div>
                             <button
                                 @click="openModalForCategory(categoryGroup.category.id)"
-                                class="mx-3 mb-3 mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 p-2.5 text-center text-sm font-medium text-[#666] transition-all duration-200 hover:border-indigo-500 hover:bg-indigo-500/5 hover:text-indigo-500"
+                                class="mx-3 mb-3 mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border p-2.5 text-center text-sm font-medium text-muted-foreground transition-all duration-200 hover:border-accent-primary hover:bg-accent-primary/5 hover:text-accent-primary"
                             >
                                 <PlusCircle class="!h-4 !w-4" />
                                 <span class="text-sm font-medium">adicionar em categoria</span>
@@ -271,10 +271,10 @@
                 </template>
                 <div
                     v-else
-                    class="col-span-full flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 p-10 text-center text-gray-400"
+                    class="col-span-full flex flex-col items-center justify-center rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground"
                 >
                     <p class="text-base font-medium">nenhuma subcategoria encontrada!</p>
-                    <p class="text-sm text-gray-500">clique em "nova subcategoria" para criar sua primeira subcategoria.</p>
+                    <p class="text-sm text-muted-foreground">clique em "nova subcategoria" para criar sua primeira subcategoria.</p>
                 </div>
             </div>
             <PaginationControls
@@ -293,7 +293,7 @@
         <UiDialog v-model:open="isModalOpen">
             <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">criar nova subcategoria</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">criar nova subcategoria</DialogTitle>
                     <DialogDescription class="sr-only">preencha os dados para criar uma nova subcategoria</DialogDescription>
                 </template>
                 <CreateSubcategoryForm
@@ -310,7 +310,7 @@
         <UiDialog v-model:open="isEditDialogOpen">
             <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">editar subcategoria</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">editar subcategoria</DialogTitle>
                     <DialogDescription class="sr-only">edite os dados da subcategoria</DialogDescription>
                 </template>
                 <CreateSubcategoryForm
@@ -326,23 +326,23 @@
         <UiDialog v-model:open="isDeleteDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">confirmar exclusão</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">confirmar exclusão</DialogTitle>
                     <DialogDescription class="sr-only">confirme a exclusão da subcategoria</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-sm text-[#B6B6B6]">tem certeza que deseja excluir esta subcategoria? esta ação não pode ser desfeita.</p>
+                    <p class="text-sm text-muted-foreground">tem certeza que deseja excluir esta subcategoria? esta ação não pode ser desfeita.</p>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
                             variant="outline"
                             @click="isDeleteDialogOpen = false"
-                            class="cursor-pointer rounded-md border-[#2F2F2F] bg-[#1E1E1E] p-2 text-white hover:bg-[#313131]"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             variant="destructive"
                             @click="confirmDelete"
-                            class="cursor-pointer rounded-md bg-red-600 p-2 text-white hover:bg-red-700"
+                            class="cursor-pointer rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
                         >
                             excluir
                         </UiButton>
@@ -355,11 +355,11 @@
         <UiDialog v-model:open="isBulkDeleteDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-lg font-semibold text-white">confirmar exclusão em lote</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">confirmar exclusão em lote</DialogTitle>
                     <DialogDescription class="sr-only">confirme a exclusão das subcategorias selecionadas</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-sm text-[#B6B6B6]">
+                    <p class="text-sm text-muted-foreground">
                         tem certeza que deseja excluir {{ selectedIds.length }} {{ selectedIds.length === 1 ? 'subcategoria' : 'subcategorias' }}?
                         esta ação não pode ser desfeita.
                     </p>
@@ -367,14 +367,14 @@
                         <UiButton
                             variant="outline"
                             @click="isBulkDeleteDialogOpen = false"
-                            class="cursor-pointer rounded-md border-[#2F2F2F] bg-[#1E1E1E] p-2 text-white hover:bg-[#313131]"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             variant="destructive"
                             @click="confirmBulkDeleteAction"
-                            class="cursor-pointer rounded-md bg-red-600 p-2 text-white hover:bg-red-700"
+                            class="cursor-pointer rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
                         >
                             excluir {{ selectedIds.length }}
                         </UiButton>
@@ -394,7 +394,7 @@
             <template #actions>
                 <button
                     @click="confirmBulkDelete"
-                    class="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+                    class="flex items-center gap-2 rounded-md bg-destructive px-4 py-2 text-destructive-foreground transition-colors hover:bg-destructive/90"
                 >
                     <Trash2 class="!h-4 !w-4" />
                     excluir ({{ selectedIds.length }})
@@ -410,7 +410,6 @@ import PageHeader from '@/components/common/PageHeader.vue';
 import PaginationControls from '@/components/common/PaginationControls.vue';
 import SearchInput from '@/components/common/SearchInput.vue';
 import CreateSubcategoryForm from '@/components/subcategories/CreateSubcategoryForm.vue';
-import SubcategoryCardSkeleton from '@/components/subcategories/SubcategoryCardSkeleton.vue';
 import CategoryCardSkeleton from '@/components/subcategories/CategoryCardSkeleton.vue';
 import { Button as UiButton } from '@/components/ui/button';
 import { DialogDescription, DialogTitle, Dialog as UiDialog } from '@/components/ui/dialog';
@@ -513,7 +512,6 @@ export default {
         UiButton,
         DraggableDialogContent,
         CreateSubcategoryForm,
-        SubcategoryCardSkeleton,
         CategoryCardSkeleton,
     },
     setup() {

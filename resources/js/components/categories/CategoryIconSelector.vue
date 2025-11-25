@@ -1,19 +1,19 @@
 <template>
     <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
-            <label class="text-sm font-medium text-white">escolha um ícone</label>
+            <label class="text-sm font-medium text-foreground">escolha um ícone</label>
             <button
                 v-if="selectedIcon"
                 type="button"
                 @click="clearSelection"
-                class="text-xs text-[#767676] hover:text-white transition-colors"
+                class="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
                 remover ícone
             </button>
         </div>
 
         <div class="flex flex-col gap-3">
-            <div class="flex gap-2 border-b border-[#2F2F2F] pb-2">
+            <div class="flex gap-2 border-b border-border pb-2">
                 <button
                     v-for="category in iconCategories"
                     :key="category.name"
@@ -22,8 +22,8 @@
                     :class="[
                         'px-3 py-1.5 text-xs font-medium rounded-md transition-colors',
                         activeCategory === category.name
-                            ? 'bg-[#6965f2] text-white'
-                            : 'text-[#767676] hover:text-white hover:bg-[#1E1E1E]'
+                            ? 'bg-accent-primary text-white'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                     ]"
                 >
                     {{ category.label }}
@@ -37,14 +37,15 @@
                     type="button"
                     @click="selectIcon(icon.name)"
                     :class="[
-                        'w-full aspect-square rounded-lg border-2 transition-all hover:scale-105 bg-[#0E0E10] flex items-center justify-center',
+                        'w-full aspect-square rounded-lg border-2 transition-all hover:scale-105 bg-input flex items-center justify-center',
                         selectedIcon === icon.name
-                            ? 'border-[#6965f2] ring-2 ring-[#6965f2] ring-offset-2 ring-offset-[#131316] bg-[#6965f2]/20'
-                            : 'border-[#2F2F2F] hover:border-[#3800D8]'
+                            ? 'border-accent-primary ring-2 ring-accent-primary ring-offset-2 ring-offset-card category-icon-selected'
+                            : 'border-border hover:border-accent-primary'
                     ]"
+                    :style="selectedIcon === icon.name ? selectedIconStyle : {}"
                     :title="icon.label"
                 >
-                    <component :is="icon.component" class="h-5 w-5" :class="selectedIcon === icon.name ? 'text-white' : 'text-[#767676]'" />
+                    <component :is="icon.component" class="h-5 w-5" :class="selectedIcon === icon.name ? 'text-white' : 'text-muted-foreground'" />
                 </button>
             </div>
         </div>
@@ -52,6 +53,7 @@
 </template>
 
 <script lang="ts">
+import { computed } from 'vue';
 import type { Component } from 'vue';
 import {
     ShoppingBag,
@@ -84,6 +86,7 @@ import {
     TreePine,
     Settings,
 } from 'lucide-vue-next';
+import { getAccentPrimaryWithOpacity } from '@/utils/colors';
 
 interface IconOption {
     name: string;
@@ -106,6 +109,18 @@ export default {
         },
     },
     emits: ['update:modelValue'],
+    setup() {
+        // Computed para o estilo do ícone selecionado
+        const selectedIconStyle = computed(() => {
+            return {
+                backgroundColor: getAccentPrimaryWithOpacity(0.2),
+            };
+        });
+
+        return {
+            selectedIconStyle,
+        };
+    },
     data() {
         return {
             activeCategory: 'general',
