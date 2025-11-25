@@ -150,8 +150,9 @@
 
                         <!-- Informações (simuladas) -->
                         <div class="space-y-2">
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-xs text-muted-foreground">12 transações este mês</span>
+                            <div class="flex flex-row items-center text-sm gap-x-1">
+                                <span class="text-xs font-bold" :style="{ color: category.color }">0</span>
+                                <span class="text-xs text-muted-foreground">transações este mês</span>
                             </div>
                             <div class="mt-3">
                                 <div class="mb-1 flex items-center justify-between text-xs">
@@ -243,7 +244,10 @@
                     <DialogDescription class="sr-only">confirme a exclusão da categoria</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-sm text-muted-foreground">tem certeza que deseja excluir esta categoria? esta ação não pode ser desfeita.</p>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-sm text-muted-foreground text-justify">tem certeza que deseja excluir esta categoria?</p>
+                        <p class="text-sm text-muted-foreground text-justify">todas as subcategorias vinculadas também serão excluídas. esta ação não pode ser desfeita.</p>
+                    </div>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
                             variant="outline"
