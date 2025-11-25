@@ -46,8 +46,8 @@ onMounted(() => {
                         </div>
                     </Link>
                     <div class="inline-flex text-center gap-1">
-                        <h1 class="text-xl font-medium">the efficient way to track your</h1>
-                        <h1 class="text-xl font-medium text-[#4338CA]">money</h1>
+                        <h1 class="text-xl font-medium text-white">the efficient way to track your</h1>
+                        <h1 class="text-xl font-medium text-[#865df5]">money</h1>
                     </div>
                 </div>
                 <slot />
