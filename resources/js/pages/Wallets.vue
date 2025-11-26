@@ -6,7 +6,7 @@
                 <template #actions>
                     <div class="flex flex-col gap-3 md:flex-row md:items-center">
                         <div class="flex items-center gap-2">
-                            <span v-if="!isRefreshing" class="text-sm light:text-[#6e6e6e] dark:text-[#B6B6B6]">informações atualizadas a cada 45 segundos</span>
+                            <span v-if="!isRefreshing" class="shimmer-text text-sm light:text-[#6e6e6e] dark:text-[#B6B6B6]">informações atualizadas a cada 45 segundos</span>
                             <div v-else class="flex items-center gap-2 text-[#6965f2]">
                                 <LoaderCircle class="!h-4 !w-4 animate-spin" />
                                 <span class="text-xs">atualizando...</span>
@@ -1443,5 +1443,34 @@ export default {
     100% {
         transform: translateX(0);
     }
+}
+
+/* Efeito Shimmer */
+.shimmer-text {
+  position: relative;
+  background: linear-gradient(90deg, #4a4a4a 20%, #ffffff 50%, #4a4a4a 80%);
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2.5s linear infinite;
+}
+
+/* Shimmer para modo escuro */
+.dark .shimmer-text {
+  background: linear-gradient(90deg, #888888 20%, #ffffff 50%, #888888 80%);
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
 }
 </style>

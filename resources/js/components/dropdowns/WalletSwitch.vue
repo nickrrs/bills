@@ -54,10 +54,12 @@
                     :style="selectedWalletId === wallet.id ? { backgroundColor: currentAccentColor } : {}"
                     @select.prevent="selectWallet(wallet)"
                 >
-                    <div class="flex items- gap-x-0.5 justify-center w-full">
+                    <div class="flex items-center gap-x-0.5 justify-center w-full">
                         <span class="text-sm font-medium mt-[1px]" :style="{ color: currentAccentColor }">{{ selectedWalletId === wallet.id ? '' : '@' }}</span>
                         <span class="text-sm flex-1" :class="selectedWalletId === wallet.id ? 'text-white font-bold' : 'text-muted-foreground'">{{ wallet.name }}</span>
-                        <span v-if="selectedWalletId === wallet.id" class="text-white font-bold text-xs">✓</span>
+                        <span v-if="selectedWalletId === wallet.id" class="text-white font-bold text-xs">
+                            <Check class="!h-4 !w-4" />
+                        </span>
                     </div>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -120,7 +122,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Button as UiButton } from '@/components/ui/button'
-import { ChevronsUpDown, ChevronsDownUp, Plus, Search, LoaderCircle, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ChevronsUpDown, ChevronsDownUp, Plus, Search, LoaderCircle, ChevronLeft, ChevronRight, Check } from 'lucide-vue-next'
 import {
     DropdownMenu,
     DropdownMenuContent,
