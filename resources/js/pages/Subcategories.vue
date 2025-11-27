@@ -1,11 +1,11 @@
 <template>
-    <InertiaHead title="Subcategorias" />
+    <InertiaHead title="subcategorias" />
     <MainLayout :no-sub-nav="true">
         <div class="h-full w-full px-8 py-8">
             <PageHeader title="subcategorias" description="gerencie a subclassificação de suas categorias.">
                 <template #badge>
                     <span class="rounded-md bg-muted px-2 py-1 text-xs font-semibold text-muted-foreground">
-                        {{ totalSubcategories }} Total
+                        {{ totalSubcategories }} total
                     </span>
                 </template>
                 <template #actions>
@@ -32,7 +32,7 @@
                                 <Target class="!h-4 !w-4" />
                                 <span>selecionar</span>
                                 <span class="hidden rounded border border-border px-1 py-0.5 text-[11px] uppercase text-muted-foreground lg:inline-flex">
-                                    Ctrl + Espaço
+                                    ctrl + espaço
                                 </span>
                             </button>
                             <button
@@ -185,7 +185,7 @@
                             >
                                 <div
                                     v-if="isSelectionMode"
-                                    class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 transition-all"
+                                    class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all"
                                     :class="selectedIds.includes(subcategory.id) ? 'border-accent-primary bg-accent-primary' : 'border-border bg-card'"
                                 >
                                     <svg
@@ -264,13 +264,22 @@
                                     próxima
                                 </button>
                             </div>
-                            <button
-                                @click="openModalForCategory(categoryGroup.category.id)"
-                                class="mx-3 mb-3 mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border p-2.5 text-center text-sm font-medium text-muted-foreground transition-all duration-200 hover:border-accent-primary hover:bg-accent-primary/5 hover:text-accent-primary"
-                            >
-                                <PlusCircle class="!h-4 !w-4" />
-                                <span class="text-sm font-medium">adicionar em categoria</span>
-                            </button>
+                            <div class="mx-3 mb-3 mt-2 flex gap-2">
+                                <button
+                                    @click="handleViewMoreFromGrid(categoryGroup.category.id)"
+                                    class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-border p-2.5 text-center text-sm font-medium text-muted-foreground transition-all duration-200 hover:border-accent-primary hover:bg-accent-primary/5 hover:text-accent-primary"
+                                >
+                                    <Eye class="!h-4 !w-4" />
+                                    <span class="text-sm font-medium">ver mais</span>
+                                </button>
+                                <button
+                                    @click="openModalForCategory(categoryGroup.category.id)"
+                                    class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-border p-2.5 text-center text-sm font-medium text-muted-foreground transition-all duration-200 hover:border-accent-primary hover:bg-accent-primary/5 hover:text-accent-primary"
+                                >
+                                    <PlusCircle class="!h-4 !w-4" />
+                                    <span class="text-sm font-medium">adicionar</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -297,27 +306,32 @@
                 </template>
                 <template v-else>
                     <SubcategoriesTable
-                        :grouped-categories="groupedCategories"
+                        :grouped-categories="displayedCategories"
                         :is-selection-mode="isSelectionMode"
                         :selected-ids="selectedIds"
                         :all-selected="selectedIds.length > 0 && selectedIds.length === getSelectionIds().length"
+                        :single-category-mode="singleCategoryMode"
                         @edit="handleEditSubcategory"
                         @delete="handleDeleteSubcategory"
                         @toggle-selection="toggleSubcategorySelection"
                         @toggle-all="selectedIds.length === getSelectionIds().length ? clearSelection() : selectAllSubcategories()"
+                        @add-to-category="openModalForCategory"
+                        @change-category-page="changeCategoryPage"
+                        @expand-single-category="handleExpandSingleCategory"
+                        @exit-single-category-view="handleExitSingleCategoryView"
                     />
                 </template>
             </div>
 
             <PaginationControls
-                v-if="pagination"
-                :current="pagination.current_page"
-                :last="pagination.last_page"
-                :from="pagination.from"
-                :to="pagination.to"
-                :total="pagination.total"
-                :entity-label="pagination.total === 1 ? 'categoria' : 'categorias'"
-                @change="goToPage"
+                v-if="contextualPagination"
+                :current="contextualPagination.current_page"
+                :last="contextualPagination.last_page"
+                :from="contextualPagination.from"
+                :to="contextualPagination.to"
+                :total="contextualPagination.total"
+                :entity-label="contextualPagination.entity_label"
+                @change="handleContextualPageChange"
             />
         </div>
 
@@ -463,6 +477,7 @@ import {
     Clock,
     Coffee,
     Dumbbell,
+    Eye,
     Film,
     Gamepad2,
     Gift,
@@ -497,6 +512,7 @@ interface Subcategory {
     id: number;
     name: string;
     slug: string;
+    preferred: boolean;
     category_id: number;
     icon: string | null;
     color: string;
@@ -507,6 +523,7 @@ interface Category {
     id: number;
     name: string;
     icon: string | null;
+    preferred: boolean;
     color: string;
     type: 'expense' | 'recept';
     subcategories?: Subcategory[];
@@ -541,6 +558,7 @@ export default {
         Trash2,
         PlusCircle,
         Star,
+        Eye,
         UiDialog,
         DialogTitle,
         DialogDescription,
@@ -582,6 +600,11 @@ export default {
                 to: number | null;
             } | null,
             viewMode: 'grid' as 'grid' | 'table',
+            singleCategoryMode: false,
+            singleCategoryId: null as number | null,
+            singleCategoryPage: 1,
+            singleCategoryPerPage: 10,
+            savedCategoryPage: 1, // página atual das categorias antes de entrar no modo máximo
         };
     },
     computed: {
@@ -630,6 +653,74 @@ export default {
             return this.categories.reduce((total, category) => {
                 return total + (category.subcategories?.length || 0);
             }, 0);
+        },
+        displayedCategories(): CategoryGroup[] {
+            if (this.singleCategoryMode && this.singleCategoryId) {
+                // modo de categoria única - mostra apenas uma categoria com paginação de 10 por página
+                const category = this.categories.find(c => c.id === this.singleCategoryId);
+                if (!category) return [];
+
+                const subcategories = category.subcategories || [];
+                const searchQuery = this.categorySearchQueries[category.id] || '';
+                const filtered = searchQuery.trim()
+                    ? subcategories.filter((subcategory) =>
+                        subcategory.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    : subcategories;
+
+                const totalSubcategories = filtered.length;
+                const totalPages = Math.max(1, Math.ceil(totalSubcategories / this.singleCategoryPerPage));
+                const currentPage = Math.min(Math.max(this.singleCategoryPage, 1), totalPages);
+                const start = (currentPage - 1) * this.singleCategoryPerPage;
+                const paginatedSubcategories = filtered.slice(start, start + this.singleCategoryPerPage);
+
+                return [{
+                    category,
+                    subcategories: paginatedSubcategories,
+                    totalSubcategories,
+                    pagination: {
+                        currentPage,
+                        totalPages,
+                    },
+                }];
+            }
+
+            // modo normal - mostra todas as categorias
+            return this.groupedCategories;
+        },
+        // paginação contextual - diferentes controles para modo normal vs. máximo
+        contextualPagination() {
+            if (this.singleCategoryMode && this.singleCategoryId) {
+                // modo máximo - paginação das subcategorias
+                const category = this.categories.find(c => c.id === this.singleCategoryId);
+                if (!category) return null;
+
+                const subcategories = category.subcategories || [];
+                const searchQuery = this.categorySearchQueries[category.id] || '';
+                const filtered = searchQuery.trim()
+                    ? subcategories.filter((subcategory) =>
+                        subcategory.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    : subcategories;
+
+                const totalSubcategories = filtered.length;
+                const totalPages = Math.max(1, Math.ceil(totalSubcategories / this.singleCategoryPerPage));
+
+                return {
+                    current_page: this.singleCategoryPage,
+                    last_page: totalPages,
+                    from: totalSubcategories > 0 ? (this.singleCategoryPage - 1) * this.singleCategoryPerPage + 1 : null,
+                    to: Math.min(this.singleCategoryPage * this.singleCategoryPerPage, totalSubcategories),
+                    total: totalSubcategories,
+                    entity_label: totalSubcategories === 1 ? 'subcategoria' : 'subcategorias'
+                };
+            }
+
+            // modo normal - paginação das categorias
+            return this.pagination ? {
+                ...this.pagination,
+                entity_label: this.pagination.total === 1 ? 'categoria' : 'categorias'
+            } : null;
         },
     },
     mounted() {
@@ -777,18 +868,41 @@ export default {
             };
         },
         changeCategoryPage(categoryId: number, direction: 'next' | 'prev') {
-            const group = this.allGroupedCategories.find((g) => g.category.id === categoryId);
-            if (!group) return;
+            if (this.singleCategoryMode && this.singleCategoryId === categoryId) {
+                // Modo de categoria única - usar paginação especial
+                const category = this.categories.find(c => c.id === categoryId);
+                if (!category) return;
 
-            const delta = direction === 'next' ? 1 : -1;
-            const currentPage = this.categoryPagination[categoryId] ?? 1;
-            const nextPage = Math.min(Math.max(currentPage + delta, 1), group.pagination.totalPages);
+                const subcategories = category.subcategories || [];
+                const searchQuery = this.categorySearchQueries[categoryId] || '';
+                const filtered = searchQuery.trim()
+                    ? subcategories.filter((subcategory) =>
+                        subcategory.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    : subcategories;
 
-            if (nextPage !== currentPage) {
-                this.categoryPagination = {
-                    ...this.categoryPagination,
-                    [categoryId]: nextPage,
-                };
+                const totalPages = Math.max(1, Math.ceil(filtered.length / this.singleCategoryPerPage));
+                const delta = direction === 'next' ? 1 : -1;
+                const nextPage = Math.min(Math.max(this.singleCategoryPage + delta, 1), totalPages);
+
+                if (nextPage !== this.singleCategoryPage) {
+                    this.singleCategoryPage = nextPage;
+                }
+            } else {
+                // Modo normal
+                const group = this.allGroupedCategories.find((g) => g.category.id === categoryId);
+                if (!group) return;
+
+                const delta = direction === 'next' ? 1 : -1;
+                const currentPage = this.categoryPagination[categoryId] ?? 1;
+                const nextPage = Math.min(Math.max(currentPage + delta, 1), group.pagination.totalPages);
+
+                if (nextPage !== currentPage) {
+                    this.categoryPagination = {
+                        ...this.categoryPagination,
+                        [categoryId]: nextPage,
+                    };
+                }
             }
         },
         getIconComponent(iconName: string | null): Component | null {
@@ -891,6 +1005,34 @@ export default {
                 }
             });
             return ids;
+        },
+        handleExpandSingleCategory(categoryId: number) {
+            // Salvar a página atual das categorias antes de entrar no modo máximo
+            this.savedCategoryPage = this.currentPage;
+            this.singleCategoryMode = true;
+            this.singleCategoryId = categoryId;
+            this.singleCategoryPage = 1;
+        },
+        handleExitSingleCategoryView() {
+            this.singleCategoryMode = false;
+            this.singleCategoryId = null;
+            this.singleCategoryPage = 1;
+            // Restaurar a página das categorias ao sair do modo máximo
+            this.currentPage = this.savedCategoryPage;
+        },
+        handleViewMoreFromGrid(categoryId: number) {
+            // Mudar para modo tabela e ativar visualização máxima da categoria
+            this.viewMode = 'table';
+            this.handleExpandSingleCategory(categoryId);
+        },
+        handleContextualPageChange(page: number) {
+            if (this.singleCategoryMode) {
+                // Modo máximo - alterar página das subcategorias
+                this.singleCategoryPage = page;
+            } else {
+                // Modo normal - alterar página das categorias
+                this.goToPage(page);
+            }
         },
     },
 };
