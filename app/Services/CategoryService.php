@@ -74,4 +74,29 @@ class CategoryService
             ->where('user_id', $userId)
             ->delete();
     }
+
+    public function getCategoryPage(int $categoryId, int $userId, int $perPage = 6, string $search = '')
+    {
+        $query = Category::query()
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc');
+
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // Conta quantas categorias existem antes da categoria desejada
+        $categoriesBeforeCount = $query->clone()
+            ->where('created_at', '>', function($subQuery) use ($categoryId) {
+                $subQuery->select('created_at')
+                    ->from('categories')
+                    ->where('id', $categoryId);
+            })
+            ->count();
+
+        // Calcula a página baseada na posição
+        $page = intval(floor($categoriesBeforeCount / $perPage)) + 1;
+
+        return $page;
+    }
 }

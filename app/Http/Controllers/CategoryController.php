@@ -41,6 +41,29 @@ class CategoryController extends Controller
         ]);
     }
 
+
+    public function apiShow(Category $category): JsonResponse
+    {
+        return response()->json($category);
+    }
+
+    public function apiGetCategoryPage(Request $request, Category $category): JsonResponse
+    {
+        if ($category->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $perPage = $request->input('per_page', 6);
+        $search = $request->input('search', '');
+
+        $page = $this->categoryService->getCategoryPage($category->id, $request->user()->id, $perPage, $search);
+
+        return response()->json([
+            'page' => $page,
+            'category' => $category
+        ]);
+    }
+
     public function apiStore(StoreCategoryRequest $request): JsonResponse
     {
         $data = $request->all();

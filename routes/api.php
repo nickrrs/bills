@@ -26,6 +26,8 @@ Route::middleware(['web', 'auth:web'])->group(function () {
     * Categories API
     *****************************/
     Route::get('/categories', [CategoryController::class, 'apiIndex'])->name('api.categories.index');
+    Route::get('/categories/{category}', [CategoryController::class, 'apiShow'])->name('api.categories.show');
+    Route::get('/categories/{category}/page', [CategoryController::class, 'apiGetCategoryPage'])->name('api.categories.page');
     Route::post('/categories', [CategoryController::class, 'apiStore'])->name('api.categories.store');
     Route::delete('/categories/bulk', [CategoryController::class, 'apiBulkDestroy'])->name('api.categories.bulk.destroy');
     Route::put('/categories/{category}', [CategoryController::class, 'apiUpdate'])->name('api.categories.update');
