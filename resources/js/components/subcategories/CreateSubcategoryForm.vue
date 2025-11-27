@@ -489,6 +489,7 @@ export default {
                 { name: 'Star', label: 'estrela', component: Star },
             ] as IconOption[],
             emptyCategories: false,
+            shouldAutoNavigateToPreselectedCategory: true, // flag para controlar navegação automática
         };
     },
     computed: {
@@ -497,8 +498,6 @@ export default {
             return this.categories.find(c => c.id === this.formData.category_id) || null;
         },
         availableIcons(): Record<string, Component> {
-            // Criar um objeto com os ícones disponíveis para acesso dinâmico
-            // Isso permite tree-shaking e reduz o tamanho do bundle
             return {
                 ShoppingBag, Coffee, Trash2, Bus, Send, Wifi, Zap, Smartphone, Gamepad2, Music, Gift, Briefcase,
                 PawPrint, Baby, Dumbbell, Star, Wallet, UtensilsCrossed, Home, Heart, GraduationCap, Car, Film,
@@ -517,7 +516,7 @@ export default {
             if (this.selectedCategory && !this.subcategory) {
                 return this.selectedCategory.color;
             }
-            return '#ec4899'; // Primeira cor da lista
+            return '#ec4899'; // primeira cor da lista
         },
     },
     watch: {
@@ -552,11 +551,9 @@ export default {
             if (newCategoryId && !this.subcategory) {
                 const category = this.categories.find(c => c.id === newCategoryId);
                 if (category) {
-                    // Herda a cor da categoria pai (normaliza para minúsculas)
                     this.formData.color = category.color.toLowerCase();
                 }
             } else if (!newCategoryId && !this.subcategory) {
-                // Se nenhuma categoria for selecionada, volta para a primeira cor
                 this.formData.color = '#ec4899';
             }
         },
@@ -626,6 +623,12 @@ export default {
                     } else {
                         this.emptyCategories = false;
 
+                        if (this.shouldAutoNavigateToPreselectedCategory && this.preselectedCategoryId && !this.categories.find(c => c.id === this.preselectedCategoryId)) {
+                            this.shouldAutoNavigateToPreselectedCategory = false;
+                            await this.loadCategoryPage();
+                            return;
+                        }
+
                         if (this.formData.category_id && !this.subcategory) {
                             const category = this.categories.find(c => c.id === this.formData.category_id);
                             if (category) {
@@ -636,7 +639,6 @@ export default {
                 }
             } catch (error) {
                 console.error('Error loading categories:', error);
-                // Em caso de erro, garante valores padrão
                 if (!this.subcategory && !this.formData.category_id) {
                     this.formData.icon = 'ShoppingBag';
                     this.formData.color = '#ec4899';
@@ -645,12 +647,34 @@ export default {
                 this.loadingCategories = false;
             }
         },
+        async loadCategoryPage() {
+            if (!this.preselectedCategoryId) return;
+
+            try {
+                let url = `/api/categories/${this.preselectedCategoryId}/page?per_page=${this.categoryPerPage}`;
+                if (this.categorySearchQuery.trim()) {
+                    url += `&search=${encodeURIComponent(this.categorySearchQuery.trim())}`;
+                }
+
+                const response = await apiGet(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    const targetPage = data.page;
+
+                    await this.loadCategories(targetPage);
+                }
+            } catch (error) {
+                console.error('Error loading category page:', error);
+                await this.loadCategories(1);
+            }
+        },
         handleCategorySearchInput() {
             if (this.categorySearchTimeout) {
                 clearTimeout(this.categorySearchTimeout);
             }
 
             this.categorySearchTimeout = setTimeout(() => {
+                this.shouldAutoNavigateToPreselectedCategory = false;
                 this.categoryCurrentPage = 1;
                 this.loadCategories(1);
             }, 500);
@@ -658,10 +682,14 @@ export default {
         clearCategorySearch() {
             this.categorySearchQuery = '';
             this.categoryCurrentPage = 1;
+            if (this.preselectedCategoryId && this.preselectedCategoryId === this.formData.category_id) {
+                this.shouldAutoNavigateToPreselectedCategory = true;
+            }
             this.loadCategories(1);
         },
         goToCategoryPage(page: number) {
             if (page >= 1 && page <= (this.categoryPagination?.last_page || 1)) {
+                this.shouldAutoNavigateToPreselectedCategory = false;
                 this.loadCategories(page);
             }
         },
