@@ -66,7 +66,7 @@ class SubcategoryController extends Controller
         );
 
         return response()->json([
-            'message' => 'Subcategories deleted successfully',
+            'message' => 'subcategorias deletadas com sucesso',
             'deleted_count' => $deletedCount,
         ]);
     }

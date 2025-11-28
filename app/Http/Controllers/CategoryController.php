@@ -50,7 +50,7 @@ class CategoryController extends Controller
     public function apiGetCategoryPage(Request $request, Category $category): JsonResponse
     {
         if ($category->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'não autorizado'], 403);
         }
 
         $perPage = $request->input('per_page', 6);
@@ -75,7 +75,7 @@ class CategoryController extends Controller
     public function apiUpdate(Request $request, Category $category): JsonResponse
     {
         if ($category->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'não autorizado'], 403);
         }
 
         $data = $request->all();
@@ -88,11 +88,11 @@ class CategoryController extends Controller
     public function apiDestroy(Request $request, Category $category): JsonResponse
     {
         if ($category->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'não autorizado'], 403);
         }
 
         $this->categoryService->deleteCategory($category);
-        return response()->json(['message' => 'Category deleted successfully']);
+        return response()->json(['message' => 'categoria deletada com sucesso']);
     }
 
     public function apiBulkDestroy(BulkDeleteCategoryRequest $request): JsonResponse
@@ -103,7 +103,7 @@ class CategoryController extends Controller
         );
 
         return response()->json([
-            'message' => 'Categories deleted successfully',
+            'message' => 'categorias deletadas com sucesso',
             'deleted_count' => $deletedCount,
         ]);
     }

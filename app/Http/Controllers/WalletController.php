@@ -33,7 +33,7 @@ class WalletController extends Controller
     public function store(StoreWalletRequest $request)
     {
         $this->walletService->createWallet($request->validated());
-        return redirect()->route('wallets')->with('success', 'Wallet created successfully');
+        return redirect()->route('wallets')->with('success', 'carteira criada com sucesso');
     }
 
     // API Methods
@@ -84,7 +84,7 @@ class WalletController extends Controller
         }
 
         $this->walletService->deleteWallet($wallet);
-        return response()->json(['message' => 'Wallet deleted successfully']);
+        return response()->json(['message' => 'carteira deletada com sucesso']);
     }
 
     public function apiBulkDestroy(BulkDeleteWalletRequest $request): JsonResponse
@@ -95,7 +95,7 @@ class WalletController extends Controller
         );
 
         return response()->json([
-            'message' => 'Wallets deleted successfully',
+            'message' => 'carteiras deletadas com sucesso',
             'deleted_count' => $deletedCount,
         ]);
     }
