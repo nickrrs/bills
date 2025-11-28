@@ -46,7 +46,7 @@
                 <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectNavItem('smart-boxes')">caixinhas inteligentes</span>
             </div>
         </div>
-        <div class="w-full h-[calc(100vh-128px)] px-2 pb-2 light:bg-white dark:bg-[#131316]">
+        <div class="w-full h-[calc(100vh-54px)] px-2 pb-2 light:bg-white dark:bg-[#131316]">
             <div class="w-full h-full light:bg-[#fafafa] dark:bg-[#0d0d0d] border-2 shadow-md border-border rounded-md">
                 tste
             </div>

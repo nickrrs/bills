@@ -1,11 +1,12 @@
 <template>
     <TooltipProvider>
-        <div class="w-screen relative h-screen flex flex-col bg-background">
+        <div class="w-screen relative h-screen flex bg-background">
             <Toaster />
             <MainNavbar :no-sub-nav="noSubNav" />
-            <div class="w-full h-full overflow-auto">
+            <!-- Conteúdo principal com margem para sidebar -->
+            <main class="flex-1 mt-[72px] lg:mt-0 lg:ml-64 h-screen overflow-auto">
                 <slot />
-            </div>
+            </main>
         </div>
     </TooltipProvider>
 </template>
