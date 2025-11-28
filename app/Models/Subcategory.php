@@ -21,4 +21,14 @@ class Subcategory extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function goals()
+    {
+        return $this->hasMany(Goal::class);
+    }
+
+    public function limits()
+    {
+        return $this->hasMany(Limit::class);
+    }
 }

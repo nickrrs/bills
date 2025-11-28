@@ -27,4 +27,14 @@ class Category extends Model
     {
         return $this->hasMany(Subcategory::class);
     }
+
+    public function goals()
+    {
+        return $this->hasMany(Goal::class);
+    }
+
+    public function limits()
+    {
+        return $this->hasMany(Limit::class);
+    }
 }
