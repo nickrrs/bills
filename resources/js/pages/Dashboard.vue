@@ -2,7 +2,7 @@
     <InertiaHead title="dashboard" />
     <MainLayout>
         <div
-            class="relative flex h-[54px] w-full items-end gap-x-2 overflow-x-auto border-b-2 border-border bg-card px-4 sm:gap-x-3 sm:px-6 md:gap-x-4 md:px-8"
+            class="relative flex h-[54px] w-full items-end gap-x-2 overflow-x-auto border-border bg-card px-4 sm:gap-x-3 sm:px-6 md:gap-x-4 md:px-8"
         >
             <!-- Barra animada -->
             <div
@@ -44,6 +44,11 @@
                 :class="selectedNavItemClass('smart-boxes')"
             >
                 <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectNavItem('smart-boxes')">caixinhas inteligentes</span>
+            </div>
+        </div>
+        <div class="w-full h-[calc(100vh-128px)] px-2 pb-2 light:bg-white dark:bg-[#131316]">
+            <div class="w-full h-full light:bg-[#fafafa] dark:bg-[#0d0d0d] border-2 shadow-md border-border rounded-md">
+                tste
             </div>
         </div>
     </MainLayout>
