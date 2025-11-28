@@ -1,35 +1,40 @@
 <template>
     <!-- Sidebar Desktop -->
-    <aside class="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex-col z-50">
-        <div class="flex flex-col h-full overflow-y-auto relative">
+    <aside class="fixed left-0 top-0 z-50 hidden h-screen w-64 flex-col border-r border-border bg-card lg:flex">
+        <div class="relative flex h-full flex-col overflow-y-auto">
             <!-- Header: Logo -->
-            <div class="flex items-center justify-between px-4 py-4 border-b border-border">
-                <div class="flex items-center space-x-2 min-w-0 flex-1">
-                    <InertiaLink :href="route('dashboard')" class="flex items-center shrink-0">
+            <div class="flex items-center justify-between border-b border-border px-4 py-4">
+                <div class="flex min-w-0 flex-1 items-center space-x-2">
+                    <InertiaLink :href="route('dashboard')" class="flex shrink-0 items-center">
                         <AppLogoIcon />
                     </InertiaLink>
-                    <h1 class="text-2xl font-bold dark:text-white light:text-black whitespace-nowrap">bills</h1>
+                    <h1 class="whitespace-nowrap text-2xl font-bold light:text-black dark:text-white">bills</h1>
                 </div>
             </div>
 
             <!-- WalletSwitch -->
-            <div class="px-4 py-4 border-b border-border">
+            <div class="border-b border-border px-4 py-4">
                 <WalletSwitch />
             </div>
 
             <!-- Alerta de verificação de email -->
-            <div v-if="!emailIsVerified" class="px-4 py-3 border-b border-border">
-                <div class="flex items-start gap-2 p-3 bg-card border-2 border-border rounded-md shadow-sm">
-                    <OctagonAlert class="!h-4 !w-4 light:text-yellow-600 dark:text-yellow-500 animate-pulse flex-shrink-0 mt-0.5" />
-                    <span class="text-xs light:text-yellow-600 dark:text-yellow-500 cursor-default animate-pulse leading-tight">por favor, cheque seu e-mail para verificar sua conta</span>
+            <div v-if="!emailIsVerified" class="border-b border-border px-4 py-3">
+                <div class="flex items-start gap-2 rounded-md border-2 border-border bg-card p-3 shadow-sm">
+                    <OctagonAlert class="mt-0.5 !h-4 !w-4 flex-shrink-0 animate-pulse light:text-yellow-600 dark:text-yellow-500" />
+                    <span class="animate-pulse cursor-default text-xs leading-tight light:text-yellow-600 dark:text-yellow-500"
+                        >por favor, cheque seu e-mail para verificar sua conta</span
+                    >
                 </div>
             </div>
 
             <!-- Navegação -->
-            <nav class="flex-1 px-4 py-4 flex flex-col gap-2">
+            <nav class="flex flex-1 flex-col gap-2 px-4 py-4">
                 <InertiaLink
                     :href="route('wallets')"
-                    :class="['flex items-center gap-x-2 px-3 py-2 rounded-md transition-colors', isActiveRoute('wallets') ? 'bg-accent text-foreground' : 'hover:bg-accent text-muted-foreground hover:text-foreground']"
+                    :class="[
+                        'flex items-center gap-x-2 rounded-md px-3 py-2 transition-colors',
+                        isActiveRoute('wallets') ? 'bg-accent text-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                    ]"
                 >
                     <Wallet class="h-4 w-4 shrink-0" />
                     <span class="whitespace-nowrap">carteiras</span>
@@ -38,15 +43,16 @@
                 <div>
                     <button
                         @click="toggleCategories"
-                        :class="['flex items-center justify-between w-full gap-x-2 px-3 py-2 rounded-md transition-colors', 'hover:bg-accent text-muted-foreground hover:text-foreground']"
+                        :class="[
+                            'flex w-full items-center justify-between gap-x-2 rounded-md px-3 py-2 transition-colors',
+                            'text-muted-foreground hover:bg-accent hover:text-foreground',
+                        ]"
                     >
-                        <div class="flex items-center gap-x-2 min-w-0">
+                        <div class="flex min-w-0 items-center gap-x-2">
                             <Layers class="h-4 w-4 shrink-0" />
                             <span class="whitespace-nowrap">categorias financeiras</span>
                         </div>
-                        <ChevronDown
-                            :class="['!h-4 !w-4 transition-transform shrink-0', categoriesOpen ? 'rotate-180' : '']"
-                        />
+                        <ChevronDown :class="['!h-4 !w-4 shrink-0 transition-transform', categoriesOpen ? 'rotate-180' : '']" />
                     </button>
                     <Transition
                         enter-active-class="transition-all duration-200"
@@ -56,17 +62,27 @@
                         leave-from-class="opacity-100 max-h-96"
                         leave-to-class="opacity-0 max-h-0"
                     >
-                        <div v-if="categoriesOpen" class="mt-1 ml-4 flex flex-col gap-1">
+                        <div v-if="categoriesOpen" class="ml-4 mt-1 flex flex-col gap-1">
                             <InertiaLink
                                 :href="route('categories')"
-                                :class="['flex items-center gap-x-2 px-3 py-2 rounded-md transition-colors text-sm', isActiveRoute('categories') ? 'bg-accent text-foreground' : 'hover:bg-accent text-muted-foreground hover:text-foreground']"
+                                :class="[
+                                    'flex items-center gap-x-2 rounded-md px-3 py-2 text-sm transition-colors',
+                                    isActiveRoute('categories')
+                                        ? 'bg-accent text-foreground'
+                                        : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                                ]"
                             >
                                 <Layers class="h-4 w-4 shrink-0" />
                                 <span>categorias</span>
                             </InertiaLink>
                             <InertiaLink
                                 :href="route('subcategories')"
-                                :class="['flex items-center gap-x-2 px-3 py-2 rounded-md transition-colors text-sm', isActiveRoute('subcategories') ? 'bg-accent text-foreground' : 'hover:bg-accent text-muted-foreground hover:text-foreground']"
+                                :class="[
+                                    'flex items-center gap-x-2 rounded-md px-3 py-2 text-sm transition-colors',
+                                    isActiveRoute('subcategories')
+                                        ? 'bg-accent text-foreground'
+                                        : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                                ]"
                             >
                                 <Layers2 class="h-4 w-4 shrink-0" />
                                 <span>subcategorias</span>
@@ -77,7 +93,10 @@
 
                 <InertiaLink
                     :href="route('dashboard')"
-                    :class="['flex items-center gap-x-2 px-3 py-2 rounded-md transition-colors', isActiveRoute('dashboard') ? 'bg-accent text-foreground' : 'hover:bg-accent text-muted-foreground hover:text-foreground']"
+                    :class="[
+                        'flex items-center gap-x-2 rounded-md px-3 py-2 transition-colors',
+                        isActiveRoute('dashboard') ? 'bg-accent text-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                    ]"
                 >
                     <TrendingUp class="h-4 w-4 shrink-0" />
                     <span class="whitespace-nowrap">rastreios</span>
@@ -85,39 +104,43 @@
             </nav>
 
             <!-- Botão nova transação -->
-            <div class="px-4 py-4 border-t border-border">
-                <UiButton class="w-full text-foreground !h-[32px] !border border-border bg-card hover:bg-accent hover:text-accent-foreground !rounded-md justify-center items-center">
+            <div class="border-t border-border px-4 py-4">
+                <UiButton
+                    class="!h-[32px] w-full items-center justify-center !rounded-md !border border-border bg-card text-foreground hover:bg-accent hover:text-accent-foreground"
+                >
                     <span class="whitespace-nowrap">nova transação</span>
                 </UiButton>
             </div>
 
             <!-- UserDropdown -->
-            <div class="px-4 py-4 border-t border-border flex flex-row items-center gap-2">
+            <div class="flex flex-row items-center gap-2 border-t border-border px-4 py-4">
                 <UserDropdown />
-                <div class="flex flex-col justify-center items-start min-w-0">
-                    <span class="text-xs font-bold text-black dark:text-white truncate">{{ user.name }}</span>
-                    <span class="text-xs text-muted-foreground truncate">{{ user.email }}</span>
+                <div class="flex min-w-0 flex-col items-start justify-center">
+                    <span class="truncate text-xs font-bold text-black dark:text-white">{{ user.name }}</span>
+                    <span class="truncate text-xs text-muted-foreground">{{ user.email }}</span>
                 </div>
             </div>
         </div>
     </aside>
 
     <!-- Mobile: Navbar fixo -->
-    <div class="lg:hidden fixed top-0 left-0 right-0 h-[72px] bg-card border-b border-border px-4 flex items-center justify-between z-50 overflow-visible">
-        <div class="flex items-center gap-3 flex-1 min-w-0 overflow-visible">
-            <InertiaLink :href="route('dashboard')" class="flex items-center justify-center shrink-0 min-w-[30px] w-[30px] h-[30px] overflow-visible">
-                <BillsLogo :width="30" :height="30" gradient-id="mobile-logo-grad" class="block w-[30px] h-[30px] flex-shrink-0 overflow-visible" />
+    <div
+        class="fixed left-0 right-0 top-0 z-50 flex h-[72px] items-center justify-between overflow-visible border-b border-border bg-card px-4 lg:hidden"
+    >
+        <div class="flex min-w-0 flex-1 items-center gap-3 overflow-visible">
+            <InertiaLink :href="route('dashboard')" class="flex h-[30px] w-[30px] min-w-[30px] shrink-0 items-center justify-center overflow-visible">
+                <BillsLogo :width="30" :height="30" gradient-id="mobile-logo-grad" class="block h-[30px] w-[30px] flex-shrink-0 overflow-visible" />
             </InertiaLink>
-            <div class="hidden sm:block relative shrink-0 bg-border h-6 w-px"></div>
-            <div class="hidden sm:block shrink-0">
+            <div class="relative hidden h-6 w-px shrink-0 bg-border sm:block"></div>
+            <div class="hidden shrink-0 sm:block">
                 <WalletSwitch />
             </div>
         </div>
-        <div class="flex items-center gap-3 shrink-0">
+        <div class="flex shrink-0 items-center gap-3">
             <UserDropdown />
             <button
                 @click="mobileMenuOpen = !mobileMenuOpen"
-                class="p-2 rounded-md hover:bg-accent transition-colors flex items-center justify-center min-w-[40px] min-h-[40px]"
+                class="flex min-h-[40px] min-w-[40px] items-center justify-center rounded-md p-2 transition-colors hover:bg-accent"
                 aria-label="Toggle menu"
             >
                 <template v-if="!mobileMenuOpen">
@@ -139,11 +162,7 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
     >
-        <div
-            v-if="mobileMenuOpen"
-            class="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            @click="mobileMenuOpen = false"
-        ></div>
+        <div v-if="mobileMenuOpen" class="fixed inset-0 z-40 bg-black/50 lg:hidden" @click="mobileMenuOpen = false"></div>
     </Transition>
 
     <!-- Mobile: Sidebar drawer -->
@@ -157,26 +176,28 @@
     >
         <aside
             v-if="mobileMenuOpen"
-            class="fixed top-[72px] left-0 bottom-0 w-80 max-w-[85vw] bg-card border-r border-border z-50 overflow-y-auto lg:hidden"
+            class="fixed bottom-0 left-0 top-[72px] z-50 w-80 max-w-[85vw] overflow-y-auto border-r border-border bg-card lg:hidden"
         >
-            <div class="flex flex-col p-4 gap-4 h-full">
+            <div class="flex h-full flex-col gap-4 p-4">
                 <!-- WalletSwitch (apenas em telas muito pequenas onde não cabe no navbar) -->
                 <div class="sm:hidden">
                     <WalletSwitch />
                 </div>
 
                 <!-- alerta de verificação de email -->
-                <div v-if="!emailIsVerified" class="flex items-center gap-2 p-3 bg-card border-2 border-border rounded-md shadow-sm">
-                    <OctagonAlert class="!h-4 !w-4 light:text-yellow-600 dark:text-yellow-500 animate-pulse flex-shrink-0" />
-                    <span class="text-sm light:text-yellow-600 dark:text-yellow-500 cursor-default animate-pulse">por favor, cheque seu e-mail para verificar sua conta</span>
+                <div v-if="!emailIsVerified" class="flex items-center gap-2 rounded-md border-2 border-border bg-card p-3 shadow-sm">
+                    <OctagonAlert class="!h-4 !w-4 flex-shrink-0 animate-pulse light:text-yellow-600 dark:text-yellow-500" />
+                    <span class="animate-pulse cursor-default text-sm light:text-yellow-600 dark:text-yellow-500"
+                        >por favor, cheque seu e-mail para verificar sua conta</span
+                    >
                 </div>
 
                 <!-- links de navegação -->
-                <nav class="flex flex-col gap-2 flex-1">
+                <nav class="flex flex-1 flex-col gap-2">
                     <InertiaLink
                         :href="route('wallets')"
                         @click="mobileMenuOpen = false"
-                        class="flex items-center gap-x-2 px-3 py-2 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                        class="flex items-center gap-x-2 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     >
                         carteiras
                     </InertiaLink>
@@ -184,12 +205,10 @@
                     <div class="px-3 py-2">
                         <button
                             @click="mobileCategoriesOpen = !mobileCategoriesOpen"
-                            class="flex items-center justify-between w-full gap-x-2 text-muted-foreground hover:text-foreground transition-colors"
+                            class="flex w-full items-center justify-between gap-x-2 text-muted-foreground transition-colors hover:text-foreground"
                         >
                             <span>categorias financeiras</span>
-                            <ChevronDown
-                                :class="['!h-4 !w-4 transition-transform', mobileCategoriesOpen ? 'rotate-180' : '']"
-                            />
+                            <ChevronDown :class="['!h-4 !w-4 transition-transform', mobileCategoriesOpen ? 'rotate-180' : '']" />
                         </button>
                         <Transition
                             enter-active-class="transition-all duration-200"
@@ -199,18 +218,18 @@
                             leave-from-class="opacity-100 max-h-96"
                             leave-to-class="opacity-0 max-h-0"
                         >
-                            <div v-if="mobileCategoriesOpen" class="mt-2 ml-4 flex flex-col gap-2">
+                            <div v-if="mobileCategoriesOpen" class="ml-4 mt-2 flex flex-col gap-2">
                                 <InertiaLink
                                     :href="route('categories')"
                                     @click="mobileMenuOpen = false"
-                                    class="px-3 py-2 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                                    class="rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                                 >
                                     categorias
                                 </InertiaLink>
                                 <InertiaLink
                                     :href="route('subcategories')"
                                     @click="mobileMenuOpen = false"
-                                    class="px-3 py-2 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                                    class="rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                                 >
                                     subcategorias
                                 </InertiaLink>
@@ -221,17 +240,17 @@
                     <InertiaLink
                         :href="route('dashboard')"
                         @click="mobileMenuOpen = false"
-                        class="flex items-center gap-x-2 px-3 py-2 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                        class="flex items-center gap-x-2 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     >
                         rastreios
                     </InertiaLink>
                 </nav>
 
                 <!-- botão nova transação -->
-                <div class="pt-4 border-t border-border">
+                <div class="border-t border-border pt-4">
                     <UiButton
                         @click="mobileMenuOpen = false"
-                        class="w-full text-foreground !h-[32px] !border border-border bg-card hover:bg-accent hover:text-accent-foreground !rounded-md"
+                        class="!h-[32px] w-full !rounded-md !border border-border bg-card text-foreground hover:bg-accent hover:text-accent-foreground"
                     >
                         nova transação
                     </UiButton>
@@ -241,15 +260,14 @@
     </Transition>
 </template>
 <script lang="ts">
-import AppLogoIcon from "../assets/AppLogoIcon.vue";
-import BillsLogo from "../assets/BillsLogo.vue";
-import { OctagonAlert, ChevronDown, Menu as MenuIcon, X, Wallet, Layers, Layers2, TrendingUp } from "lucide-vue-next";
-import { Button as UiButton } from "@/components/ui/button";
-import { Link as InertiaLink } from '@inertiajs/vue3';
-import WalletSwitch from "@/components/dropdowns/WalletSwitch.vue";
-import UserDropdown from "@/components/dropdowns/UserDropdown.vue";
-import { usePage } from "@inertiajs/vue3";
-import type { SharedData } from "@/types";
+import UserDropdown from '@/components/dropdowns/UserDropdown.vue';
+import WalletSwitch from '@/components/dropdowns/WalletSwitch.vue';
+import { Button as UiButton } from '@/components/ui/button';
+import type { SharedData } from '@/types';
+import { Link as InertiaLink, usePage } from '@inertiajs/vue3';
+import { ChevronDown, Layers, Layers2, Menu as MenuIcon, OctagonAlert, TrendingUp, Wallet, X } from 'lucide-vue-next';
+import AppLogoIcon from '../assets/AppLogoIcon.vue';
+import BillsLogo from '../assets/BillsLogo.vue';
 export default {
     name: 'MainNavbar',
     components: {
@@ -292,10 +310,9 @@ export default {
             categoriesOpen: loadCategoriesState(),
             mobileMenuOpen: false,
             mobileCategoriesOpen: false,
-        }
+        };
     },
     mounted() {
-        // Garante que o dropdown está aberto se estiver em categorias/subcategorias
         if (this.isCategoriesRoute) {
             this.categoriesOpen = true;
             this.saveCategoriesState();
@@ -312,12 +329,10 @@ export default {
             return usePage<SharedData>().url.slice(1);
         },
         isCategoriesRoute() {
-            // Usa window.location.pathname para uma comparação mais confiável
-            const currentPath = typeof window !== 'undefined'
-                ? window.location.pathname.replace(/\/$/, '')
-                : this.currentUrl.split('?')[0].replace(/\/$/, '');
+            const currentPath =
+                typeof window !== 'undefined' ? window.location.pathname.replace(/\/$/, '') : this.currentUrl.split('?')[0].replace(/\/$/, '');
             return currentPath === '/categories' || currentPath === '/subcategories';
-        }
+        },
     },
     methods: {
         saveCategoriesState() {
@@ -333,19 +348,17 @@ export default {
             try {
                 return this.currentUrl === routeName;
             } catch {
-                // Se houver erro ao gerar a rota, retorna false
                 return false;
             }
-        }
+        },
     },
     watch: {
         isCategoriesRoute(newVal: boolean) {
-            // Abre o dropdown automaticamente quando navegar para categorias/subcategorias
             if (newVal) {
                 this.categoriesOpen = true;
                 this.saveCategoriesState();
             }
-        }
-    }
+        },
+    },
 };
 </script>

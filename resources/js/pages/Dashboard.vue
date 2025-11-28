@@ -1,14 +1,9 @@
 <template>
     <InertiaHead title="dashboard" />
     <MainLayout>
-        <div
-            class="relative flex h-[54px] w-full items-end gap-x-2 overflow-x-auto border-border bg-card px-4 sm:gap-x-3 sm:px-6 md:gap-x-4 md:px-8"
-        >
+        <div class="relative flex h-[54px] w-full items-end gap-x-2 overflow-x-auto border-border bg-card px-4 sm:gap-x-3 sm:px-6 md:gap-x-4 md:px-8">
             <!-- Barra animada -->
-            <div
-                class="absolute bottom-0 h-0.5 bg-accent-primary transition-all duration-300 ease-in-out"
-                :style="activeBarStyle"
-            ></div>
+            <div class="absolute bottom-0 h-0.5 bg-accent-primary transition-all duration-300 ease-in-out" :style="activeBarStyle"></div>
 
             <div
                 ref="overview"
@@ -46,10 +41,8 @@
                 <span class="cursor-pointer select-none text-sm sm:text-base" @click="selectNavItem('smart-boxes')">caixinhas inteligentes</span>
             </div>
         </div>
-        <div class="w-full h-[calc(100vh-54px)] px-2 pb-2 light:bg-white dark:bg-[#131316]">
-            <div class="w-full h-full light:bg-[#fafafa] dark:bg-[#0d0d0d] border-2 shadow-md border-border rounded-md">
-                tste
-            </div>
+        <div class="h-[calc(100vh-54px)] w-full px-2 pb-2 light:bg-white dark:bg-[#131316]">
+            <div class="h-full w-full rounded-md border-2 border-border shadow-md light:bg-[#fafafa] dark:bg-[#0d0d0d]">tste</div>
         </div>
     </MainLayout>
 </template>
@@ -80,9 +73,7 @@ export default {
     },
     methods: {
         selectedNavItemClass(label: string) {
-            return this.selectedNavItem === label
-                ? 'text-accent-primary'
-                : 'text-muted-foreground hover:text-foreground';
+            return this.selectedNavItem === label ? 'text-accent-primary' : 'text-muted-foreground hover:text-foreground';
         },
         selectNavItem(item: string) {
             this.selectedNavItem = item;
