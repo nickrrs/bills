@@ -64,4 +64,11 @@ class WalletService
     {
         $wallet->delete();
     }
+
+    public function bulkDeleteWallets(array $ids, int $userId)
+    {
+        return Wallet::whereIn('id', $ids)
+            ->where('user_id', $userId)
+            ->delete();
+    }
 }

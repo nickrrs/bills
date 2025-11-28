@@ -1,18 +1,18 @@
 <template>
     <DropdownMenu>
         <DropdownMenuTrigger>
-            <div class="border border-[#2F2F2F] rounded-full">
-                <img src="https://github.com/shadcn.png" alt="profile" class="!w-[32px] !h-[32px] rounded-full cursor-pointer">
+            <div class="border border-border rounded-full">
+                <img src="https://pbs.twimg.com/profile_images/1825710839157932032/nUQcwp-4_400x400.jpg" alt="profile" class="!w-[32px] !h-[32px] rounded-full cursor-pointer">
             </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent :align="'end'" class="w-56 bg-[#1E1E1E] border-[#2F2F2F] !rounded-md">
+        <DropdownMenuContent :align="'end'" class="w-56 bg-popover border-border !rounded-md">
             <DropdownMenuLabel class="flex flex-col gap-1">
-                <span class="text-white text-sm font-medium">Nickolas Ribeiro</span>
-                <span class="text-[#B6B6B6] text-xs">nick@bills.com.br</span>
+                <span class="text-foreground text-sm font-medium">Nickolas Ribeiro</span>
+                <span class="text-muted-foreground text-xs">nick@bills.com.br</span>
             </DropdownMenuLabel>
             <template v-for="(item, index) in menuItems" :key="index">
-                <DropdownMenuSeparator v-if="item.separatorBefore" class="bg-[#2F2F2F]"/>
-                <DropdownMenuItem class="cursor-pointer text-[#b8b8b8] p-0" :class="logoutItemClass(item.label)">
+                <DropdownMenuSeparator v-if="item.separatorBefore" class="bg-border"/>
+                <DropdownMenuItem class="cursor-pointer text-muted-foreground hover:text-accent-foreground p-0" :class="logoutItemClass(item.label)">
                     <InertiaLink
                         v-if="item.method"
                         :method="item.method as any"
@@ -80,49 +80,49 @@ export default {
                 {
                     route: 'dashboard',
                     icon: User,
-                    label: 'edit profile',
+                    label: 'editar perfil',
                     separatorBefore: true,
                 },
                 {
-                    route: 'dashboard',
+                    route: 'settings',
                     icon: Settings,
-                    label: 'settings',
+                    label: 'configurações',
                     separatorBefore: false,
                 },
                 {
                     route: 'wallets',
                     icon: Wallet,
-                    label: 'my wallets',
+                    label: 'carteiras',
                     separatorBefore: false,
                 },
                 {
                     route: 'dashboard',
                     icon: CreditCard,
-                    label: 'my cards',
+                    label: 'cartões',
                     separatorBefore: false,
                 },
                 {
-                    route: 'dashboard',
+                    route: 'categories',
                     icon: Layers,
-                    label: 'finance categories',
+                    label: 'categorias financeiras',
                     separatorBefore: false,
                 },
                 {
-                    route: 'dashboard',
+                    route: 'subcategories',
                     icon: Layers2,
-                    label: 'finance subcategories',
+                    label: 'subcategorias financeiras',
                     separatorBefore: false,
                 },
                 {
                     route: 'dashboard',
                     icon: TrendingUp,
-                    label: 'my tracks',
+                    label: 'minhas movimentações',
                     separatorBefore: false,
                 },
                 {
                     route: 'logout',
                     icon: LogOut,
-                    label: 'logout',
+                    label: 'sair',
                     method: 'post',
                     separatorBefore: true,
                 },
@@ -131,7 +131,7 @@ export default {
     },
     methods: {
         logoutItemClass(itemLabel: string) {
-            return itemLabel === 'logout' ? 'hover:!bg-red-400' : 'hover:!bg-[#38353C]';
+            return itemLabel === 'sair' ? 'hover:!bg-destructive hover:!text-destructive-foreground' : 'hover:!bg-accent';
         }
     },
 };

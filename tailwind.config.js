@@ -23,58 +23,89 @@ export default {
     			sm: 'calc(var(--radius) - 4px)'
     		},
     		colors: {
-    			background: 'hsl(var(--background))',
-    			foreground: 'hsl(var(--foreground))',
+    			background: 'var(--background)',
+    			foreground: 'var(--foreground)',
     			card: {
-    				DEFAULT: 'hsl(var(--card))',
-    				foreground: 'hsl(var(--card-foreground))'
+    				DEFAULT: 'var(--card)',
+    				foreground: 'var(--card-foreground)'
     			},
     			popover: {
-    				DEFAULT: 'hsl(var(--popover))',
-    				foreground: 'hsl(var(--popover-foreground))'
+    				DEFAULT: 'var(--popover)',
+    				foreground: 'var(--popover-foreground)'
     			},
     			primary: {
-    				DEFAULT: 'hsl(var(--primary))',
-    				foreground: 'hsl(var(--primary-foreground))'
+    				DEFAULT: 'var(--primary)',
+    				foreground: 'var(--primary-foreground)'
     			},
     			secondary: {
-    				DEFAULT: 'hsl(var(--secondary))',
-    				foreground: 'hsl(var(--secondary-foreground))'
+    				DEFAULT: 'var(--secondary)',
+    				foreground: 'var(--secondary-foreground)'
     			},
     			muted: {
-    				DEFAULT: 'hsl(var(--muted))',
-    				foreground: 'hsl(var(--muted-foreground))'
+    				DEFAULT: 'var(--muted)',
+    				foreground: 'var(--muted-foreground)'
     			},
     			accent: {
-    				DEFAULT: 'hsl(var(--accent))',
-    				foreground: 'hsl(var(--accent-foreground))'
+    				DEFAULT: 'var(--accent)',
+    				foreground: 'var(--accent-foreground)',
+    				primary: 'var(--accent-primary)',
+    				'primary-light': 'var(--accent-primary-light)'
     			},
     			destructive: {
-    				DEFAULT: 'hsl(var(--destructive))',
-    				foreground: 'hsl(var(--destructive-foreground))'
+    				DEFAULT: 'var(--destructive)',
+    				foreground: 'var(--destructive-foreground)'
     			},
-    			border: 'hsl(var(--border))',
-    			input: 'hsl(var(--input))',
-    			ring: 'hsl(var(--ring))',
+    			border: 'var(--border)',
+    			input: 'var(--input)',
+    			ring: 'var(--ring)',
     			chart: {
-    				'1': 'hsl(var(--chart-1))',
-    				'2': 'hsl(var(--chart-2))',
-    				'3': 'hsl(var(--chart-3))',
-    				'4': 'hsl(var(--chart-4))',
-    				'5': 'hsl(var(--chart-5))'
+    				'1': 'var(--chart-1)',
+    				'2': 'var(--chart-2)',
+    				'3': 'var(--chart-3)',
+    				'4': 'var(--chart-4)',
+    				'5': 'var(--chart-5)'
     			},
     			sidebar: {
-    				DEFAULT: 'hsl(var(--sidebar-background))',
-    				foreground: 'hsl(var(--sidebar-foreground))',
-    				primary: 'hsl(var(--sidebar-primary))',
-    				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-    				accent: 'hsl(var(--sidebar-accent))',
-    				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-    				border: 'hsl(var(--sidebar-border))',
-    				ring: 'hsl(var(--sidebar-ring))'
+    				DEFAULT: 'var(--sidebar-background)',
+    				foreground: 'var(--sidebar-foreground)',
+    				primary: 'var(--sidebar-primary)',
+    				'primary-foreground': 'var(--sidebar-primary-foreground)',
+    				accent: 'var(--sidebar-accent)',
+    				'accent-foreground': 'var(--sidebar-accent-foreground)',
+    				border: 'var(--sidebar-border)',
+    				ring: 'var(--sidebar-ring)'
+    			},
+    			sys: {
+    				bg: '#0B0F19',
+    				card: '#131722',
+    				border: '#2D3748',
+    				purple: '#820ad1',
+    				green: '#05c46b',
+    				red: '#ff4d4d',
+    				text: '#94A3B8'
+    			},
+    			real: {
+    				bg: '#09090b',
+    				card: '#111113',
+    				greenCard: '#044e2e',
+    				greenText: '#22c55e',
+    				redText: '#ef4444',
+    				iconPink: '#db2777',
+    				iconPinkBg: '#500724',
+    				iconGreen: '#65a30d',
+    				iconGreenBg: '#14532d',
+    				trackYellow: '#FFB800',
+    				nuPurple: '#820AD1',
+    				blueVault: '#0ea5e9'
     			}
     		}
     	}
     },
-    plugins: [require('tailwindcss-animate')],
+    plugins: [
+        require('tailwindcss-animate'),
+        // Plugin para adicionar variante light: (quando dark não está presente)
+        function({ addVariant }) {
+            addVariant('light', ':root:not(.dark) &');
+        }
+    ],
 };

@@ -1,53 +1,96 @@
 <template>
     <InertiaHead title="wallets" />
     <MainLayout :no-sub-nav="true">
-        <div class="w-full h-full px-8 py-8">
-            <div class="w-full flex items-center justify-between mb-4">
-                <div class="flex flex-col gap-1">
-                    <h1 class="text-white text-3xl font-bold">minhas carteiras</h1>
-                    <span class="text-sm text-[#B6B6B6]">crie e personalize suas carteiras para suas necessidades</span>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <span v-if="!isRefreshing" class="text-sm text-[#B6B6B6]">informações atualizadas a cada 45 segundos</span>
-                        <div v-if="isRefreshing" class="flex items-center gap-2 text-[#6965f2]">
-                            <LoaderCircle class="!h-4 !w-4 animate-spin" />
-                            <span class="text-xs">atualizando...</span>
+        <div class="h-full w-full px-8 py-8">
+            <PageHeader title="minhas carteiras" description="crie e personalize suas carteiras para suas necessidades">
+                <template #actions>
+                    <div class="flex flex-col gap-3 md:flex-row md:items-center">
+                        <div class="flex items-center gap-2">
+                            <span v-if="!isRefreshing" class="shimmer-text text-sm light:text-[#6e6e6e] dark:text-[#B6B6B6]">informações atualizadas a cada 45 segundos</span>
+                            <div v-else class="flex items-center gap-2 text-[#6965f2]">
+                                <LoaderCircle class="!h-4 !w-4 animate-spin" />
+                                <span class="text-xs">atualizando...</span>
+                            </div>
+                        </div>
+                        <SearchInput
+                            v-model="searchQuery"
+                            placeholder="buscar carteiras por nome..."
+                            :debounce="400"
+                            wrapper-class="w-full md:w-64"
+                            @search="handleSearch"
+                        />
+                        <div class="flex flex-wrap items-center gap-2">
+                            <ViewToggle
+                                v-model:view="viewMode"
+                                grid-label="grade"
+                                table-label="tabela"
+                            />
+                            <button
+                                v-if="!isSelectionMode"
+                                @click="toggleSelectionMode"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
+                                title="selecionar múltiplas carteiras (Ctrl + Espaço)"
+                            >
+                                <Target class="!h-4 !w-4" />
+                                <span>selecionar</span>
+                                <span class="hidden rounded border border-border px-1 py-0.5 text-[11px] uppercase text-muted-foreground lg:inline-flex">
+                                    Ctrl + Espaço
+                                </span>
+                            </button>
+                            <button
+                                v-else
+                                @click="exitSelectionMode"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
+                            >
+                                <span class="text-sm">cancelar seleção</span>
+                            </button>
+                            <button
+                                v-if="!isSelectionMode"
+                                @click="openModal"
+                                class="flex items-center gap-x-2 rounded-md border border-border bg-card px-4 py-2 text-foreground transition-colors hover:bg-accent"
+                            >
+                                <Plus class="!h-4 !w-4" />
+                                nova carteira
+                            </button>
                         </div>
                     </div>
-                    <button
-                        @click="openModal"
-                        class="flex items-center gap-x-2 px-4 py-2 bg-[#1E1E1E] border border-[#2F2F2F] text-white hover:bg-[#313131] rounded-md transition-colors"
-                    >
-                        <Plus class="!h-4 !w-4" />
-                        nova carteira
-                    </button>
-                </div>
-            </div>
-            <div class="bg-gradient-to-r from-[#1e1b4b] to-[#0f172a] rounded-[20px] border-2 border-[#252c3e] p-8 mb-10 flex items-center justify-between">
+                </template>
+            </PageHeader>
+
+            <div
+                class="mb-10 flex items-center justify-between rounded-[20px] border-2 light:border-[#e2e8f0] dark:border-[#252c3e] bg-gradient-to-r dark:from-[#1e1b4b] light:from-[#fcfcfc] light:via-[#a8a4d1] dark:to-[#0f172a] light:to-[#201b5a] p-8"
+            >
                 <div>
-                    <p class="text-sm text-indigo-300 uppercase font-semibold tracking-wider mb-2">Patrimônio Total</p>
+                    <div class="flex flex-row items-baseline gap-1">
+                        <p class="mb-2 text-sm font-semibold uppercase tracking-wider dark:text-indigo-300 light:text-indigo-600">Patrimônio Total</p>
+                        <TooltipProvider :delay-duration="200">
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <HelpCircle class="!h-4 !w-4 dark:text-indigo-300 light:text-indigo-600" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right">
+                                    <p class="text-sm text-foreground">
+                                        o patrimônio total não considera os valores armazenados na caixinha de reserva, ou destinados para seus
+                                        objetivos.
+                                    </p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
                     <div class="flex items-baseline gap-1">
-                        <span
-                            :class="[
-                                'text-5xl font-bold transition-all duration-500',
-                                balanceAnimationClass
-                            ]"
-                        >
-                            R$
-                        </span>
+                        <span :class="['text-5xl font-bold transition-all duration-500', balanceAnimationClass]"> R$ </span>
                         <div
-                            class="overflow-hidden relative balance-container"
+                            class="balance-container relative overflow-hidden"
                             :class="{
                                 'balance-container--scrollable': needsTotalBalanceScrollAnimation,
-                                'balance-container--large': needsTotalBalanceScrollAnimation
+                                'balance-container--large': needsTotalBalanceScrollAnimation,
                             }"
                         >
                             <h2
                                 :class="[
-                                    'text-5xl font-bold transition-all duration-500 whitespace-nowrap',
+                                    'whitespace-nowrap text-5xl font-bold transition-all duration-500',
                                     balanceAnimationClass,
-                                    needsTotalBalanceScrollAnimation ? 'balance-scroll-animation' : ''
+                                    needsTotalBalanceScrollAnimation ? 'balance-scroll-animation' : '',
                                 ]"
                                 :key="`balance-${totalBalance}`"
                             >
@@ -55,136 +98,190 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="flex items-center mt-3 space-x-4">
-                        <span v-if="calculatePercentageChange() > 0" class="flex items-center text-emerald-400 text-sm font-medium bg-emerald-400/10 px-2 py-1 rounded">
-                            <TrendingUp class="!h-4 !w-4 mr-1" /> {{ calculatePercentageChange() }}% este mês
+                    <div class="mt-3 flex items-center space-x-4">
+                        <span
+                            v-if="calculatePercentageChange() > 0"
+                            class="flex items-center rounded dark:bg-emerald-400/10 light:bg-emerald-400/40 px-2 py-1 text-sm font-medium dark:text-emerald-400 light:text-emerald-600"
+                        >
+                            <TrendingUp class="mr-1 !h-4 !w-4" /> {{ calculatePercentageChange() }}% este mês
                         </span>
-                        <span v-else class="flex items-center text-red-400 text-sm font-medium bg-red-400/10 px-2 py-1 rounded">
-                            <TrendingDown class="!h-4 !w-4 mr-1" /> {{ calculatePercentageChange() }}% este mês
+                        <span v-else class="flex items-center rounded bg-red-400/10 px-2 py-1 text-sm font-medium text-red-400">
+                            <TrendingDown class="mr-1 !h-4 !w-4" /> {{ calculatePercentageChange() }}% este mês
                         </span>
-                        <span class="text-gray-400 text-sm">disponível em {{ pagination?.total ?? wallets.length }} carteiras</span>
+                        <span class="text-sm dark:text-gray-400 light:text-[#080808]">disponível em {{ pagination?.total ?? wallets.length }} carteiras</span>
                     </div>
                 </div>
-                <div class="hidden md:block opacity-50">
+                <div class="hidden opacity-50 md:block">
                     <svg width="200" height="60" viewBox="0 0 200 60">
                         <path d="M0 50 Q 30 40, 50 45 T 100 20 T 150 30 T 200 5" fill="none" stroke="#6366f1" stroke-width="3" />
                         <path d="M0 50 Q 30 40, 50 45 T 100 20 T 150 30 T 200 5 V 60 H 0 Z" fill="url(#grad1)" opacity="0.3" />
                         <defs>
                             <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0" />
+                                <stop offset="0%" style="stop-color: #6366f1; stop-opacity: 1" />
+                                <stop offset="100%" style="stop-color: #6366f1; stop-opacity: 0" />
                             </linearGradient>
                         </defs>
                     </svg>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pb-4">
-                <template v-if="wallets.length">
-                    <WalletFlipCard
+            <div v-if="viewMode === 'grid'" class="grid grid-cols-1 gap-8 pb-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <template v-if="loading">
+                    <WalletCardSkeleton v-for="n in 3" :key="`skeleton-${n}`" />
+                </template>
+                <template v-else-if="wallets.length">
+                    <div
                         v-for="wallet in wallets"
                         :key="wallet.id"
-                        :flipped="flippedCards[wallet.id]"
-                        :front-style="{ background: getWalletTheme(wallet).gradient }"
-                        class="cursor-pointer hover:scale-105 transition-all duration-300"
-                        @toggle="toggleCard(wallet.id)"
+                        class="relative"
+                        :class="{
+                            'rounded-3xl ring-2 ring-accent-primary ring-offset-2 dark:ring-offset-[#131316] light:ring-offset-[#fcfcfc]':
+                                isSelectionMode && selectedIds.includes(wallet.id),
+                        }"
                     >
-                        <template #front>
-                            <div class="flex h-full flex-col justify-between" :style="{ background: getWalletTheme(wallet).gradient }">
-                                <div class="flex items-start justify-between z-10">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="rounded-lg bg-white/10 p-2 backdrop-blur-md">
-                                            <component :is="getWalletTheme(wallet).icon" class="h-6 w-6" :class="getWalletTheme(wallet).iconColor" />
-                                        </div>
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <h3 class="text-lg font-bold text-white">{{ wallet.name }}</h3>
-                                                <Star v-if="isDefaultWallet(wallet)" class="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                                            </div>
-                                            <p class="text-xs font-medium uppercase tracking-wide" :class="getWalletTheme(wallet).tagColor">
-                                                {{ wallet.description || 'Sem descrição' }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <button class="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm transition-colors hover:bg-white/30" @click.stop="toggleCard(wallet.id)">
-                                        <MoreHorizontal class="h-4 w-4 text-white" />
-                                    </button>
-                                </div>
-
-                                <div class="z-10 flex flex-1 flex-col justify-center">
-                                    <p class="mb-1 text-xs uppercase tracking-wider" :class="getWalletTheme(wallet).mutedText">Saldo Atual</p>
-                                    <div class="flex items-baseline gap-1">
-                                        <span class="text-3xl font-bold text-white tracking-tight">R$</span>
-                                        <div
-                                            class="overflow-hidden relative balance-container"
-                                            :class="{ 'balance-container--scrollable': needsWalletBalanceScrollAnimation(wallet) }"
-                                        >
-                                            <p
-                                                :class="[
-                                                    'text-3xl font-bold text-white tracking-tight whitespace-nowrap',
-                                                    needsWalletBalanceScrollAnimation(wallet) ? 'balance-scroll-animation' : ''
-                                                ]"
-                                            >
-                                                {{ formatCurrencyValue(wallet.balance ?? 0) }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <svg class="card-sparkline" viewBox="0 0 100 25" preserveAspectRatio="none">
-                                    <path :d="walletSparkline(wallet)" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+                        <div v-if="isSelectionMode" class="absolute left-3 top-3 z-20" @click.stop="toggleWalletSelection(wallet.id)">
+                            <div
+                                :class="[
+                                    'flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 transition-all',
+                                    selectedIds.includes(wallet.id)
+                                        ? 'border-accent-primary bg-accent-primary'
+                                        : 'border-white/30 bg-[#131316]/80 backdrop-blur-sm hover:border-white/50',
+                                ]"
+                            >
+                                <svg
+                                    v-if="selectedIds.includes(wallet.id)"
+                                    class="h-4 w-4 text-white"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                                 </svg>
-
-                                <div class="z-10 mt-2 flex items-center justify-between border-t border-white/10 pt-4">
-                                    <div class="flex items-center space-x-2" :class="getWalletTheme(wallet).footerText">
-                                        <CreditCard class="h-4 w-4" />
-                                        <span class="text-xs font-medium">
-                                            {{ wallet.active ? 'Carteira ativa' : 'Carteira inativa' }}
-                                        </span>
+                            </div>
+                        </div>
+                        <WalletFlipCard
+                            :key="wallet.id"
+                            :flipped="flippedCards[wallet.id]"
+                            :front-style="{ background: getWalletTheme(wallet).gradient }"
+                            :class="[isSelectionMode ? 'cursor-pointer' : 'cursor-pointer transition-all duration-300 hover:-translate-y-2']"
+                            @toggle="isSelectionMode ? toggleWalletSelection(wallet.id) : toggleCard(wallet.id)"
+                        >
+                            <template #front>
+                                <div class="flex h-full flex-col justify-between" :style="{ background: getWalletTheme(wallet).gradient }">
+                                    <div class="z-10 flex items-start justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="flex items-center justify-center rounded-lg bg-white/10 p-2 backdrop-blur-md">
+                                                <img
+                                                    v-if="wallet.icon && wallet.icon.startsWith('/images/')"
+                                                    :src="wallet.icon"
+                                                    :alt="wallet.name"
+                                                    class="h-6 w-6 object-contain"
+                                                />
+                                                <component
+                                                    v-else
+                                                    :is="getWalletTheme(wallet).icon"
+                                                    class="h-6 w-6"
+                                                    :class="getWalletTheme(wallet).iconColor"
+                                                />
+                                            </div>
+                                            <div>
+                                                <div class="flex items-center gap-2">
+                                                    <h3 class="text-lg font-bold text-white">{{ wallet.name }}</h3>
+                                                    <Star v-if="isDefaultWallet(wallet)" class="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                                </div>
+                                                <p class="text-xs font-medium uppercase tracking-wide" :class="getWalletTheme(wallet).tagColor">
+                                                    {{ wallet.description || 'Sem descrição' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            class="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm transition-colors hover:bg-white/30"
+                                            @click.stop="toggleCard(wallet.id)"
+                                        >
+                                            <MoreHorizontal class="h-4 w-4 text-white" />
+                                        </button>
                                     </div>
 
-                                    <div
-                                        class="group relative flex cursor-help items-center space-x-2 text-white/70 transition-colors hover:text-white"
-                                    >
-                                        <Target class="h-4 w-4" />
-                                        <span class="text-xs font-medium">Detalhes</span>
-                                        <div class="track-tooltip absolute bottom-[calc(100%+8px)] right-0 w-[180px] max-w-[calc(100vw-2rem)] rounded-lg border border-white/10 bg-black/90 p-2 opacity-0 invisible pointer-events-none z-20 transition-all duration-200 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
-                                            <div class="mb-1 flex items-center justify-between border-b border-white/10 pb-2">
-                                                <span class="text-[10px] font-bold text-white">Criada em</span>
-                                                <span class="text-[10px] text-indigo-400">{{ formatDate(wallet.created_at) }}</span>
+                                    <div class="z-10 flex flex-1 flex-col justify-center">
+                                        <p class="mb-1 text-xs uppercase tracking-wider" :class="getWalletTheme(wallet).mutedText">Saldo Atual</p>
+                                        <div class="flex items-baseline gap-1">
+                                            <span class="text-3xl font-bold tracking-tight text-white">R$</span>
+                                            <div
+                                                class="balance-container relative overflow-hidden"
+                                                :class="{ 'balance-container--scrollable': needsWalletBalanceScrollAnimation(wallet) }"
+                                            >
+                                                <p
+                                                    :class="[
+                                                        'whitespace-nowrap text-3xl font-bold tracking-tight text-white',
+                                                        needsWalletBalanceScrollAnimation(wallet) ? 'balance-scroll-animation' : '',
+                                                    ]"
+                                                >
+                                                    {{ formatCurrencyValue(wallet.balance ?? 0) }}
+                                                </p>
                                             </div>
-                                            <div class="tooltip-scroll-container max-h-12 overflow-hidden relative mt-2">
-                                                <div class="tooltip-scroll-content flex flex-col">
-                                                    <div class="min-h-4 flex items-center">
-                                                        <div class="flex items-center justify-between w-full">
-                                                            <span class="text-[10px] text-gray-400">Atualizada</span>
-                                                            <span class="text-[10px] text-gray-200">{{ formatDate(wallet.updated_at) }}</span>
+                                        </div>
+                                    </div>
+
+                                    <svg class="card-sparkline" viewBox="0 0 100 25" preserveAspectRatio="none">
+                                        <path :d="walletSparkline(wallet)" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+                                    </svg>
+
+                                    <div class="z-10 mt-2 flex items-center justify-between border-t border-white/10 pt-4">
+                                        <div class="flex items-center space-x-2" :class="getWalletTheme(wallet).footerText">
+                                            <CreditCard class="h-4 w-4" />
+                                            <span class="mb-1 text-xs font-medium">
+                                                {{ wallet.active ? 'carteira ativa' : 'carteira inativa' }}
+                                            </span>
+                                        </div>
+
+                                        <div
+                                            class="group relative flex cursor-help items-center space-x-2 text-white/70 transition-colors hover:text-white"
+                                        >
+                                            <Target class="h-4 w-4" />
+                                            <span class="text-xs font-medium">detalhes</span>
+                                            <div
+                                                class="track-tooltip pointer-events-none invisible absolute bottom-[calc(100%+8px)] right-0 z-20 w-[180px] max-w-[calc(100vw-2rem)] rounded-lg border border-white/10 bg-black/90 p-2 opacity-0 shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all duration-200"
+                                            >
+                                                <div class="mb-1 flex items-center justify-between border-b border-white/10 pb-2">
+                                                    <span class="text-[10px] font-bold text-white">Criada em</span>
+                                                    <span class="text-[10px] text-accent-primary">{{ formatDate(wallet.created_at) }}</span>
+                                                </div>
+                                                <div class="tooltip-scroll-container relative mt-2 max-h-12 overflow-hidden">
+                                                    <div class="tooltip-scroll-content flex flex-col">
+                                                        <div class="flex min-h-4 items-center">
+                                                            <div class="flex w-full items-center justify-between">
+                                                                <span class="text-[10px] text-gray-400">Atualizada</span>
+                                                                <span class="text-[10px] text-gray-200">{{ formatDate(wallet.updated_at) }}</span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="min-h-4 flex items-center">
-                                                        <div class="flex items-center justify-between w-full">
-                                                            <span class="text-[10px] text-gray-400">Transações</span>
-                                                            <span class="text-[10px] text-indigo-400">0</span>
+                                                        <div class="flex min-h-4 items-center">
+                                                            <div class="flex w-full items-center justify-between">
+                                                                <span class="text-[10px] text-gray-400">Transações</span>
+                                                                <span class="text-[10px] text-accent-primary">0</span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="min-h-4 flex items-center">
-                                                        <div class="flex items-center justify-between w-full">
-                                                            <span class="text-[10px] text-gray-400">Transferências</span>
-                                                            <span class="text-[10px] text-indigo-400">0</span>
+                                                        <div class="flex min-h-4 items-center">
+                                                            <div class="flex w-full items-center justify-between">
+                                                                <span class="text-[10px] text-gray-400">Transferências</span>
+                                                                <span class="text-[10px] text-accent-primary">0</span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="min-h-4 flex items-center">
-                                                        <div class="flex items-center justify-between w-full">
-                                                            <span class="text-[10px] text-gray-400">Cartões</span>
-                                                            <span class="text-[10px] text-indigo-400">0</span>
+                                                        <div class="flex min-h-4 items-center">
+                                                            <div class="flex w-full items-center justify-between">
+                                                                <span class="text-[10px] text-gray-400">Cartões</span>
+                                                                <span class="text-[10px] text-accent-primary">0</span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="min-h-4 flex items-center">
-                                                        <div class="flex items-center justify-between w-full">
-                                                            <span class="text-[10px] text-gray-400">Status</span>
-                                                            <span class="text-[10px]" :class="wallet.active ? 'text-emerald-400' : 'text-red-400'">
-                                                                {{ wallet.active ? 'Ativa' : 'Inativa' }}
-                                                            </span>
+                                                        <div class="flex min-h-4 items-center">
+                                                            <div class="flex w-full items-center justify-between">
+                                                                <span class="text-[10px] text-gray-400">Status</span>
+                                                                <span
+                                                                    class="text-[10px]"
+                                                                    :class="wallet.active ? 'text-emerald-400' : 'text-red-400'"
+                                                                >
+                                                                    {{ wallet.active ? 'Ativa' : 'Inativa' }}
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -192,18 +289,18 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </template>
+                            </template>
 
-                        <template #back>
-                            <WalletActionsBack
-                                :title="getWalletTheme(wallet).backTitle"
-                                :actions="getWalletTheme(wallet).actions"
-                                @close="flipToFront(wallet.id)"
-                            >
-                            </WalletActionsBack>
-                        </template>
-                    </WalletFlipCard>
+                            <template #back>
+                                <WalletActionsBack
+                                    :title="getWalletTheme(wallet).backTitle"
+                                    :actions="getWalletTheme(wallet).actions"
+                                    @close="flipToFront(wallet.id)"
+                                >
+                                </WalletActionsBack>
+                            </template>
+                        </WalletFlipCard>
+                    </div>
                 </template>
                 <div
                     v-else
@@ -214,131 +311,129 @@
                 </div>
 
                 <button
-                    class="flex h-[260px] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/10 text-gray-400 transition-all hover:border-indigo-500/50 hover:bg-white/5 hover:text-white"
+                    class="wallet-add-button flex h-[260px] flex-col items-center justify-center rounded-3xl border-2 border-dashed dark:border-white/10 light:border-border dark:text-gray-400 transition-all hover:bg-white/5 dark:hover:text-white light:hover:text-[#6e6e6e]"
+                    :class="{
+                        'cursor-not-allowed opacity-50': loading,
+                    }"
+                    :style="hoverBorderStyle"
                     type="button"
+                    :disabled="loading"
                     @click="openModal"
                 >
                     <div
-                        class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 bg-white/5 transition-colors group-hover:bg-indigo-500/20"
+                        class="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-white/5 dark:bg-white/5 light:bg-black/5 transition-colors wallet-add-icon"
+                        :style="walletAddIconStyle"
                     >
                         <Plus class="h-8 w-8" />
                     </div>
-                    <span class="text-sm font-medium">Adicionar Carteira</span>
+                    <span class="text-sm font-medium">adicionar carteira</span>
                 </button>
             </div>
 
-            <div v-if="pagination && pagination.last_page > 1" class="mt-8 flex items-center justify-between">
-                <div class="text-sm text-gray-400">
-                    <span>mostrando</span>
-                    <span class="mx-1 font-medium text-white">{{ pagination.from ?? 0 }}</span>
-                    <span>até</span>
-                    <span class="mx-1 font-medium text-white">{{ pagination.to ?? 0 }}</span>
-                    <span>de</span>
-                    <span class="mx-1 font-medium text-white">{{ pagination.total }}</span>
-                    <span>carteiras</span>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <button
-                        @click="goToPage(pagination.current_page - 1)"
-                        :disabled="pagination.current_page === 1"
-                        class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
-                    >
-                        <ChevronLeft class="h-4 w-4" />
-                    </button>
-
-                    <div class="flex items-center gap-1">
-                        <button
-                            v-for="page in getPageNumbers()"
-                            :key="page"
-                            @click="goToPage(page)"
-                            :class="[
-                                'flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm font-medium transition-colors',
-                                page === pagination.current_page
-                                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-400'
-                                    : 'border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131]'
-                            ]"
-                        >
-                            {{ page }}
-                        </button>
+            <!-- Tabela de Carteiras -->
+            <div v-else-if="viewMode === 'table'" class="pb-4">
+                <template v-if="loading">
+                    <div class="rounded-lg border border-border bg-card p-8">
+                        <div class="flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="h-8 w-8 animate-spin rounded-full border-2 border-accent-primary border-t-transparent mx-auto mb-4"></div>
+                                <p class="text-muted-foreground">carregando carteiras...</p>
+                            </div>
+                        </div>
                     </div>
-
-                    <button
-                        @click="goToPage(pagination.current_page + 1)"
-                        :disabled="pagination.current_page === pagination.last_page"
-                        class="flex h-9 w-9 items-center justify-center rounded-md border border-[#2F2F2F] bg-[#1E1E1E] text-white transition-colors hover:bg-[#313131] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1E1E1E]"
-                    >
-                        <ChevronRight class="h-4 w-4" />
-                    </button>
-                </div>
+                </template>
+                <template v-else>
+                    <WalletsTable
+                        :wallets="wallets"
+                        :is-selection-mode="isSelectionMode"
+                        :selected-ids="selectedIds"
+                        :all-selected="selectedIds.length > 0 && selectedIds.length === wallets.length"
+                        @edit="handleEditWallet"
+                        @delete="handleDeleteWallet"
+                        @manage-balance="handleManageBalance"
+                        @toggle-selection="toggleWalletSelection"
+                        @toggle-all="selectedIds.length === wallets.length ? clearSelection() : selectAllWallets()"
+                    />
+                </template>
             </div>
+
+            <PaginationControls
+                v-if="pagination"
+                :current="pagination.current_page"
+                :last="pagination.last_page"
+                :from="pagination.from"
+                :to="pagination.to"
+                :total="pagination.total"
+                entity-label="carteiras"
+                @change="goToPage"
+            />
         </div>
 
         <UiDialog v-model:open="isModalOpen">
-            <DraggableDialogContent class="w-full max-w-6xl max-h-[80vh] overflow-y-auto">
+            <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-white text-lg font-semibold">criar nova carteira</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">criar nova carteira</DialogTitle>
                     <DialogDescription class="sr-only">preencha os dados para criar uma nova carteira</DialogDescription>
                 </template>
-                <CreateWalletForm :reset-form="shouldResetForm" @success="handleWalletCreated" @cancel="closeModal" @reset-complete="handleResetComplete" />
+                <CreateWalletForm
+                    :reset-form="shouldResetForm"
+                    @success="handleWalletCreated"
+                    @cancel="closeModal"
+                    @reset-complete="handleResetComplete"
+                />
             </DraggableDialogContent>
         </UiDialog>
 
         <UiDialog v-model:open="isEditDialogOpen">
-            <DraggableDialogContent class="w-full max-w-6xl max-h-[80vh] overflow-y-auto">
+            <DraggableDialogContent class="max-h-[80vh] w-full max-w-6xl overflow-y-auto">
                 <template #header>
-                    <DialogTitle class="text-white text-lg font-semibold">editar carteira</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">editar carteira</DialogTitle>
                     <DialogDescription class="sr-only">edite os dados da carteira</DialogDescription>
                 </template>
-                <CreateWalletForm
-                    v-if="walletToEdit"
-                    :wallet="walletToEdit"
-                    @success="handleWalletUpdated"
-                    @cancel="closeEditModal"
-                />
+                <CreateWalletForm v-if="walletToEdit" :wallet="walletToEdit" @success="handleWalletUpdated" @cancel="closeEditModal" />
             </DraggableDialogContent>
         </UiDialog>
 
         <UiDialog v-model:open="isManageBalanceDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-white text-lg font-semibold">gerenciar saldo</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">gerenciar saldo</DialogTitle>
                     <DialogDescription class="sr-only">atualize o saldo da carteira</DialogDescription>
                 </template>
                 <div v-if="walletToManageBalance" class="flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-white">carteira</label>
-                        <p class="text-[#B6B6B6] text-sm">{{ walletToManageBalance.name }}</p>
+                        <label class="text-sm font-medium text-foreground">carteira</label>
+                        <p class="text-sm text-muted-foreground">{{ walletToManageBalance.name }}</p>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-white">saldo atual</label>
-                        <p class="text-white text-2xl font-bold">R$ {{ formatCurrencyValue(walletToManageBalance.balance ?? 0) }}</p>
+                        <label class="text-sm font-medium text-foreground">saldo atual</label>
+                        <p class="text-2xl font-bold text-foreground">R$ {{ formatCurrencyValue(walletToManageBalance.balance ?? 0) }}</p>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-white">novo saldo</label>
+                        <label class="text-sm font-medium text-foreground">novo saldo</label>
                         <input
                             :value="newBalance"
                             type="text"
                             @input="handleBalanceInput"
                             placeholder="0,00"
-                            class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent text-right text-lg font-semibold"
+                            class="w-full rounded-md border border-border bg-input px-3 py-2 text-right text-lg font-semibold text-foreground placeholder-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-accent-primary"
                         />
-                        <span class="text-xs text-[#767676]">digite o novo valor do saldo</span>
+                        <span class="text-xs text-muted-foreground">digite o novo valor do saldo</span>
                     </div>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
                             variant="outline"
                             @click="closeManageBalanceDialog"
-                            class="border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131] p-2 rounded-md cursor-pointer"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             @click="updateBalance"
                             :disabled="isUpdatingBalance"
-                            class="bg-indigo-600 text-white hover:bg-indigo-700 p-2 rounded-md cursor-pointer disabled:opacity-50"
+                            class="cursor-pointer rounded-md bg-accent-primary p-2 text-white hover:bg-accent-primary/90 disabled:opacity-50"
                         >
-                            <LoaderCircle v-if="isUpdatingBalance" class="!h-4 !w-4 animate-spin mr-2" />
+                            <LoaderCircle v-if="isUpdatingBalance" class="mr-2 !h-4 !w-4 animate-spin" />
                             {{ isUpdatingBalance ? 'atualizando...' : 'atualizar' }}
                         </UiButton>
                     </div>
@@ -349,25 +444,23 @@
         <UiDialog v-model:open="isDeleteDialogOpen">
             <DraggableDialogContent class="w-full max-w-md">
                 <template #header>
-                    <DialogTitle class="text-white text-lg font-semibold">confirmar exclusão</DialogTitle>
+                    <DialogTitle class="text-lg font-semibold text-foreground">confirmar exclusão</DialogTitle>
                     <DialogDescription class="sr-only">confirme a exclusão da carteira</DialogDescription>
                 </template>
                 <div class="flex flex-col gap-4">
-                    <p class="text-[#B6B6B6] text-sm">
-                        tem certeza que deseja excluir esta carteira? esta ação não pode ser desfeita.
-                    </p>
+                    <p class="text-sm text-muted-foreground">tem certeza que deseja excluir esta carteira? esta ação não pode ser desfeita.</p>
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <UiButton
                             variant="outline"
                             @click="isDeleteDialogOpen = false"
-                            class="border-[#2F2F2F] bg-[#1E1E1E] text-white hover:bg-[#313131] p-2 rounded-md cursor-pointer"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
                         >
                             cancelar
                         </UiButton>
                         <UiButton
                             variant="destructive"
                             @click="confirmDelete"
-                            class="bg-red-600 text-white hover:bg-red-700 p-2 rounded-md cursor-pointer"
+                            class="cursor-pointer rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
                         >
                             excluir
                         </UiButton>
@@ -375,43 +468,113 @@
                 </div>
             </DraggableDialogContent>
         </UiDialog>
+
+        <UiDialog v-model:open="isBulkDeleteDialogOpen">
+            <DraggableDialogContent class="w-full max-w-md">
+                <template #header>
+                    <DialogTitle class="text-lg font-semibold text-foreground">confirmar exclusão em lote</DialogTitle>
+                    <DialogDescription class="sr-only">confirme a exclusão das carteiras selecionadas</DialogDescription>
+                </template>
+                <div class="flex flex-col gap-4">
+                    <p class="text-sm text-muted-foreground">
+                        tem certeza que deseja excluir {{ selectedIds.length }} {{ selectedIds.length === 1 ? 'carteira' : 'carteiras' }}? esta ação
+                        não pode ser desfeita.
+                    </p>
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <UiButton
+                            variant="outline"
+                            @click="isBulkDeleteDialogOpen = false"
+                            class="cursor-pointer rounded-md border-border bg-card p-2 text-foreground hover:bg-accent"
+                        >
+                            cancelar
+                        </UiButton>
+                        <UiButton
+                            variant="destructive"
+                            @click="confirmBulkDeleteAction"
+                            class="cursor-pointer rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            excluir {{ selectedIds.length }}
+                        </UiButton>
+                    </div>
+                </div>
+            </DraggableDialogContent>
+        </UiDialog>
+
+        <SelectionToolbar
+            :visible="isSelectionMode"
+            :count="selectedIds.length"
+            singular-label="carteira selecionada"
+            plural-label="carteiras selecionadas"
+            @select-all="selectAllWallets"
+            @clear="clearSelection"
+        >
+            <template #actions>
+                <button
+                    @click="confirmBulkDelete"
+                    class="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+                >
+                    <Trash2 class="!h-4 !w-4" />
+                    excluir ({{ selectedIds.length }})
+                </button>
+            </template>
+        </SelectionToolbar>
     </MainLayout>
 </template>
+<style scoped>
+.wallet-add-button:hover {
+    border-color: var(--hover-border-color) !important;
+}
+
+.wallet-add-icon:hover {
+    background-color: var(--hover-icon-bg) !important;
+}
+</style>
 <script lang="ts">
-import type { Component } from 'vue';
+import PageHeader from '@/components/common/PageHeader.vue';
+import PaginationControls from '@/components/common/PaginationControls.vue';
+import SelectionToolbar from '@/components/common/SelectionToolbar.vue';
+import SearchInput from '@/components/common/SearchInput.vue';
+import ViewToggle from '@/components/common/ViewToggle.vue';
+import { Button as UiButton } from '@/components/ui/button';
+import { DialogDescription, DialogTitle, Dialog as UiDialog } from '@/components/ui/dialog';
+import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
+import { useToast } from '@/components/ui/toast';
+import Tooltip from '@/components/ui/tooltip/Tooltip.vue';
+import TooltipContent from '@/components/ui/tooltip/TooltipContent.vue';
+import TooltipProvider from '@/components/ui/tooltip/TooltipProvider.vue';
+import TooltipTrigger from '@/components/ui/tooltip/TooltipTrigger.vue';
+import CreateWalletForm from '@/components/wallets/CreateWalletForm.vue';
+import WalletActionsBack, { type WalletBackAction } from '@/components/wallets/WalletActionsBack.vue';
+import WalletCardSkeleton from '@/components/wallets/WalletCardSkeleton.vue';
+import WalletFlipCard from '@/components/wallets/WalletFlipCard.vue';
+import WalletsTable from '@/components/wallets/WalletsTable.vue';
 import MainLayout from '@/layouts/MainLayout.vue';
+import selectionModeMixin from '@/mixins/selectionModeMixin';
+import type { Wallet } from '@/types';
+import { apiBulkDelete, apiDelete, apiGet, apiPut } from '@/utils/api';
+import { formatCurrencyValue, formatDate } from '@/utils/formatters';
+import { getAccentPrimaryWithOpacity } from '@/utils/colors';
+import { useUserSettings } from '@/composables/useUserSettings';
 import { Head as InertiaHead } from '@inertiajs/vue3';
 import {
-    Plus,
-    LoaderCircle,
-    TrendingUp,
-    TrendingDown,
-    Wallet2,
-    MoreHorizontal,
     CreditCard,
-    Target,
+    DollarSign,
+    HelpCircle,
+    LoaderCircle,
+    MoreHorizontal,
+    PiggyBank,
+    Plus,
     Send,
     Settings2,
-    DollarSign,
-    Trash2,
-    PiggyBank,
-    ChevronLeft,
-    ChevronRight,
     Star,
+    Target,
+    Trash2,
+    TrendingDown,
+    TrendingUp,
+    Wallet2,
 } from 'lucide-vue-next';
-import type { Wallet } from '@/types';
-import {
-    Dialog as UiDialog,
-    DialogTitle,
-    DialogDescription,
-} from '@/components/ui/dialog';
-import { Button as UiButton } from '@/components/ui/button';
-import DraggableDialogContent from '@/components/ui/dialog/DraggableDialogContent.vue';
-import CreateWalletForm from '@/components/wallets/CreateWalletForm.vue';
-import WalletFlipCard from '@/components/wallets/WalletFlipCard.vue';
-import WalletActionsBack, { type WalletBackAction } from '@/components/wallets/WalletActionsBack.vue';
-import { apiDelete, apiGet, apiPut } from '@/utils/api';
-import { useToast } from '@/components/ui/toast';
+import type { Component } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 
 interface WalletTheme {
     gradient: string;
@@ -427,7 +590,7 @@ interface WalletTheme {
 const sparkLines = {
     withMoney: 'M0 20 L15 15 L30 18 L45 10 L60 14 L75 5 L100 12',
     withoutMoney: 'M0 15 L20 15 L40 15 L60 15 L80 15 L100 15',
-}
+};
 
 const TYPE_ICONS: Record<string, Component> = {
     generic: Wallet2,
@@ -473,11 +636,15 @@ const COLOR_THEMES: Record<string, Omit<WalletTheme, 'icon' | 'backTitle' | 'act
     },
 };
 
-
 export default {
     name: 'Wallets',
+    mixins: [selectionModeMixin],
     components: {
-        MainLayout,
+        PageHeader,
+        PaginationControls,
+        SearchInput,
+        SelectionToolbar,
+        ViewToggle,
         InertiaHead,
         Plus,
         LoaderCircle,
@@ -494,9 +661,16 @@ export default {
         MoreHorizontal,
         CreditCard,
         Target,
-        ChevronLeft,
-        ChevronRight,
         Star,
+        Trash2,
+        HelpCircle,
+        TooltipProvider,
+        Tooltip,
+        TooltipTrigger,
+        TooltipContent,
+        WalletCardSkeleton,
+        WalletsTable,
+        MainLayout,
     },
     data() {
         return {
@@ -531,6 +705,9 @@ export default {
             isAnimating: false,
             openModalListener: null as (() => void) | null,
             walletDefaultChangedListener: null as (() => void) | null,
+            isBulkDeleteDialogOpen: false,
+            searchQuery: '',
+            viewMode: 'grid' as 'grid' | 'table',
         };
     },
     computed: {
@@ -539,15 +716,15 @@ export default {
         },
         walletToEdit() {
             if (!this.walletToEditId) return null;
-            return this.wallets.find(w => w.id === this.walletToEditId) || null;
+            return this.wallets.find((w) => w.id === this.walletToEditId) || null;
         },
         walletToManageBalance() {
             if (!this.walletToManageBalanceId) return null;
-            return this.wallets.find(w => w.id === this.walletToManageBalanceId) || null;
+            return this.wallets.find((w) => w.id === this.walletToManageBalanceId) || null;
         },
         balanceAnimationClass() {
             if (!this.isAnimating) {
-                return 'text-white';
+                return 'dark:text-white light:text-black';
             }
 
             if (this.balanceChangeDirection === 'up') {
@@ -556,7 +733,7 @@ export default {
                 return 'text-red-400 balance-pulse-down';
             }
 
-            return 'text-white';
+            return 'dark:text-white light:text-black';
         },
         needsTotalBalanceScrollAnimation(): boolean {
             const formattedValue = this.formatCurrencyValue(this.totalBalance);
@@ -619,7 +796,63 @@ export default {
     },
     setup() {
         const { toast } = useToast();
-        return { toast };
+        const { settings } = useUserSettings();
+
+        // Ref para forçar atualização do computed
+        const colorUpdateKey = ref(0);
+
+        // Computed reativo que observa mudanças na cor de destaque
+        const hoverBorderStyle = computed(() => {
+            // Força recálculo observando settings.accent_color, tema e colorUpdateKey
+            void settings.accent_color;
+            void document.documentElement.classList.contains('dark');
+            void colorUpdateKey.value; // Força dependência reativa
+
+            // Garante que a cor esteja disponível antes de usar
+            const accentColor = getComputedStyle(document.documentElement)
+                .getPropertyValue('--accent-primary')
+                .trim();
+
+            // Se a cor não estiver disponível ainda, usa fallback
+            if (!accentColor || accentColor === '#6366f1') {
+                return {
+                    '--hover-border-color': getAccentPrimaryWithOpacity(0.5, 'rgba(99, 102, 241, 0.5)'),
+                };
+            }
+
+            return {
+                '--hover-border-color': getAccentPrimaryWithOpacity(1),
+            };
+        });
+
+        // Computed para o estilo do ícone do botão adicionar carteira
+        const walletAddIconStyle = computed(() => {
+            void settings.accent_color;
+            void colorUpdateKey.value;
+            return {
+                '--hover-icon-bg': getAccentPrimaryWithOpacity(0.2),
+            };
+        });
+
+        // Listener para evento de mudança de cor
+        const handleAccentColorChange = () => {
+            colorUpdateKey.value++;
+        };
+
+        onMounted(() => {
+            window.addEventListener('accent-color-changed', handleAccentColorChange);
+            // Força atualização inicial após montagem
+            // Pequeno delay para garantir que as cores foram aplicadas
+            setTimeout(() => {
+                colorUpdateKey.value++;
+            }, 100);
+        });
+
+        onBeforeUnmount(() => {
+            window.removeEventListener('accent-color-changed', handleAccentColorChange);
+        });
+
+        return { toast, hoverBorderStyle, walletAddIconStyle };
     },
     methods: {
         async fetchWallets(page?: number, showFullLoading: boolean = false) {
@@ -631,7 +864,11 @@ export default {
                     this.isRefreshing = true;
                 }
 
-                const url = `/api/wallets?page=${targetPage}&per_page=${this.perPage}`;
+                let url = `/api/wallets?page=${targetPage}&per_page=${this.perPage}`;
+                if (this.searchQuery.trim()) {
+                    url += `&search=${encodeURIComponent(this.searchQuery.trim())}`;
+                }
+
                 const response = await apiGet(url);
 
                 if (!response.ok) {
@@ -699,35 +936,15 @@ export default {
                 this.loadWallets(page);
             }
         },
-        getPageNumbers(): number[] {
-            if (!this.pagination) return [];
-
-            const current = this.pagination.current_page;
-            const last = this.pagination.last_page;
-            const pages: number[] = [];
-
-            let start = Math.max(1, current - 2);
-            const end = Math.min(last, start + 4);
-
-            if (end - start < 4) {
-                start = Math.max(1, end - 4);
-            }
-
-            for (let i = start; i <= end; i++) {
-                pages.push(i);
-            }
-
-            return pages;
-        },
         async handleWalletCreated() {
+            this.closeModal();
             await this.loadWallets(this.currentPage);
             this.resetAllCardsToFront();
-            this.closeModal();
         },
         async handleWalletUpdated() {
+            this.closeEditModal();
             await this.loadWallets(this.currentPage);
             this.resetAllCardsToFront();
-            this.closeEditModal();
         },
         openModal() {
             this.isModalOpen = true;
@@ -745,25 +962,8 @@ export default {
             this.isEditDialogOpen = false;
             this.walletToEditId = null;
         },
-        formatCurrency(value: number): string {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-            }).format(value);
-        },
-        formatCurrencyValue(value: number): string {
-            return new Intl.NumberFormat('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            }).format(value);
-        },
-        formatDate(dateString: string): string {
-            return new Intl.DateTimeFormat('pt-BR', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-            }).format(new Date(dateString));
-        },
+        formatCurrencyValue,
+        formatDate,
         calculatePercentageChange(): number {
             return 12;
         },
@@ -772,11 +972,16 @@ export default {
             const colorTheme = COLOR_THEMES[walletColor];
             const typeIcon = TYPE_ICONS[wallet.type] || Wallet2;
 
-            const iconColorClass = walletColor === 'indigo' ? 'text-indigo-400' :
-                                 walletColor === 'emerald' ? 'text-emerald-300' :
-                                 walletColor === 'purple' ? 'text-purple-300' :
-                                 walletColor === 'pink' ? 'text-pink-300' :
-                                 'text-gray-300';
+            const iconColorClass =
+                walletColor === 'indigo'
+                    ? 'text-indigo-400'
+                    : walletColor === 'emerald'
+                      ? 'text-emerald-300'
+                      : walletColor === 'purple'
+                        ? 'text-purple-300'
+                        : walletColor === 'pink'
+                          ? 'text-pink-300'
+                          : 'text-gray-300';
 
             return {
                 gradient: colorTheme.gradient,
@@ -795,7 +1000,7 @@ export default {
             };
         },
         handleManageBalance(walletId: number) {
-            const wallet = this.wallets.find(w => w.id === walletId);
+            const wallet = this.wallets.find((w) => w.id === walletId);
             if (wallet) {
                 this.walletToManageBalanceId = walletId;
                 this.newBalance = this.formatBalanceInput(wallet.balance ?? 0);
@@ -975,6 +1180,67 @@ export default {
                 ...this.flippedCards,
                 [id]: !this.flippedCards[id],
             };
+        },
+        toggleWalletSelection(walletId: number) {
+            this.toggleSelectionItem(walletId);
+        },
+        selectAllWallets() {
+            this.selectAllItems();
+        },
+        confirmBulkDelete() {
+            if (this.selectedIds.length === 0) return;
+            this.isBulkDeleteDialogOpen = true;
+        },
+        async confirmBulkDeleteAction() {
+            this.isBulkDeleteDialogOpen = false;
+            const walletIdsToDelete = [...this.selectedIds];
+
+            if (walletIdsToDelete.length === 0) return;
+
+            try {
+                const response = await apiBulkDelete('/api/wallets/bulk', walletIdsToDelete);
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const deletedCount = result.deleted_count || walletIdsToDelete.length;
+
+                    this.toast({
+                        title: 'carteiras deletadas',
+                        description: `${deletedCount} carteira(s) deletada(s) com sucesso.`,
+                        variant: 'default',
+                    });
+
+                    this.exitSelectionMode();
+                    await this.loadWallets(this.currentPage);
+                    this.resetAllCardsToFront();
+                } else {
+                    this.toast({
+                        title: 'erro ao deletar carteiras',
+                        description: 'não foi possível deletar as carteiras selecionadas.',
+                        variant: 'destructive',
+                    });
+                }
+            } catch (error) {
+                console.error('Error deleting wallets:', error);
+                this.toast({
+                    title: 'erro ao deletar carteiras',
+                    description: 'ocorreu um erro ao tentar deletar as carteiras.',
+                    variant: 'destructive',
+                });
+            }
+        },
+        getSelectionIds() {
+            return this.wallets.map((wallet) => wallet.id);
+        },
+        onSelectionModeEnter() {
+            this.resetAllCardsToFront();
+        },
+        onSelectionModeExit() {
+            this.resetAllCardsToFront();
+        },
+        handleSearch() {
+            this.currentPage = 1;
+            this.loadWallets(1);
         },
         flipToFront(id: number) {
             if (!this.flippedCards[id]) return;
@@ -1177,5 +1443,34 @@ export default {
     100% {
         transform: translateX(0);
     }
+}
+
+/* Efeito Shimmer */
+.shimmer-text {
+  position: relative;
+  background: linear-gradient(90deg, #4a4a4a 20%, #ffffff 50%, #4a4a4a 80%);
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2.5s linear infinite;
+}
+
+/* Shimmer para modo escuro */
+.dark .shimmer-text {
+  background: linear-gradient(90deg, #888888 20%, #ffffff 50%, #888888 80%);
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
 }
 </style>

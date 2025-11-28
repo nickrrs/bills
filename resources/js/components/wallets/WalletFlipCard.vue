@@ -1,10 +1,18 @@
 <template>
     <div class="w-full h-[260px] bg-transparent cursor-pointer flip-card-container" :class="{ 'flip-card-container--flipped': flipped }" @click="handleToggle">
         <div class="relative w-full h-full text-left rounded-3xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] flip-card-inner">
-            <div class="absolute w-full h-full rounded-3xl p-6 flex flex-col justify-between border border-white/10 overflow-hidden flip-card-face flip-card-face--front" :class="frontClass" :style="frontStyle">
+            <div
+                class="absolute w-full h-full rounded-3xl p-6 flex flex-col justify-between border overflow-hidden flip-card-face flip-card-face--front bg-card text-foreground border-border"
+                :class="frontClass"
+                :style="frontStyle"
+            >
                 <slot name="front" />
             </div>
-            <div class="absolute w-full h-full rounded-3xl p-6 flex flex-col justify-between border border-white/10 overflow-hidden flip-card-face flip-card-face--back" :class="backClass" :style="backStyle">
+            <div
+                class="absolute w-full h-full rounded-3xl p-6 flex flex-col justify-between border overflow-hidden flip-card-face flip-card-face--back bg-card text-foreground border-border"
+                :class="backClass"
+                :style="backStyle"
+            >
                 <slot name="back" />
             </div>
         </div>

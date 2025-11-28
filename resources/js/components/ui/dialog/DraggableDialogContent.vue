@@ -173,7 +173,7 @@ onUnmounted(() => {
             v-bind="forwarded"
             :class="
                 cn(
-                    'fixed z-50 flex flex-col w-full max-w-lg border bg-[#131316] border-[#2F2F2F] p-0 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg',
+                    'fixed z-50 flex flex-col w-full max-w-lg border bg-card border-border p-0 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg',
                     isDragging ? 'cursor-grabbing' : 'cursor-default',
                     props.class,
                 )
@@ -189,17 +189,17 @@ onUnmounted(() => {
         >
             <!-- Header Draggable - Fixed -->
             <div
-                class="flex items-center justify-between px-6 py-4 border-b border-[#2F2F2F] cursor-grab active:cursor-grabbing flex-shrink-0 bg-[#1E1E1E]"
+                class="flex items-center justify-between px-6 py-4 border-b border-border cursor-grab active:cursor-grabbing flex-shrink-0 bg-popover"
                 @mousedown="handleMouseDown"
             >
                 <div class="flex items-center gap-2">
-                    <GripVertical class="h-4 w-4 text-[#767676]" />
+                    <GripVertical class="h-4 w-4 text-muted-foreground" />
                     <slot name="header" />
                 </div>
                 <DialogClose
                     class="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
                 >
-                    <X class="h-4 w-4 text-[#B6B6B6] hover:text-white" />
+                    <X class="h-4 w-4 text-muted-foreground hover:text-foreground" />
                     <span class="sr-only">Close</span>
                 </DialogClose>
             </div>

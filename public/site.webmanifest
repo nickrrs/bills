@@ -1,0 +1,16 @@
+{
+    "name": "API Bills",
+    "short_name": "Bills",
+    "description": "Sistema de gerenciamento de contas e finanças",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "theme_color": "#4338CA",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "/"
+}

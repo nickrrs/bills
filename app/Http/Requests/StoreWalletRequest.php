@@ -22,8 +22,8 @@ class StoreWalletRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:24',
-            'icon' => 'nullable|string|max:255',
+            'name' => 'required|string|max:20',
+            'icon' => 'nullable|string',
             'user_id' => 'sometimes|required|exists:users,id',
             'active' => 'required|boolean',
             'slug' => 'required|string|max:255',

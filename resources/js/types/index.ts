@@ -17,10 +17,21 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface UserSettings {
+    theme: 'light' | 'dark' | 'system';
+    accent_color: 'indigo' | 'emerald' | 'red' | 'orange' | 'cyan' | 'purple';
+    notifications: {
+        account_alerts: boolean;
+        weekly_summary: boolean;
+        goals_achieved: boolean;
+    };
+}
+
 export interface SharedData extends PageProps {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    settings?: UserSettings;
 }
 
 export interface User {

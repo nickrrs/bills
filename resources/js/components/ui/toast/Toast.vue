@@ -12,23 +12,37 @@
             :class="[
                 'group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all',
                 variant === 'destructive'
-                    ? 'border-red-500 bg-red-500 text-white'
-                    : 'border border-[#2F2F2F] bg-[#1E1E1E] text-white',
+                    ? 'border border-destructive bg-destructive text-destructive-foreground'
+                    : 'border border-border bg-card text-foreground',
             ]"
         >
             <div class="grid gap-1">
-                <div v-if="title" :class="['text-sm font-semibold', variant === 'destructive' ? 'text-white' : 'text-white']">
+                <div
+                    v-if="title"
+                    :class="[
+                        'text-sm font-semibold',
+                        variant === 'destructive' ? 'text-destructive-foreground' : 'text-foreground',
+                    ]"
+                >
                     {{ title }}
                 </div>
-                <div v-if="description" :class="['text-sm opacity-90', variant === 'destructive' ? 'text-white' : 'text-[#B6B6B6]']">
+                <div
+                    v-if="description"
+                    :class="[
+                        'text-sm opacity-90',
+                        variant === 'destructive' ? 'text-destructive-foreground' : 'text-muted-foreground',
+                    ]"
+                >
                     {{ description }}
                 </div>
             </div>
             <button
                 @click="open = false"
                 :class="[
-                    'absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100',
-                    variant === 'destructive' ? 'text-white hover:text-white' : 'text-[#B6B6B6] hover:text-white',
+                    'absolute right-2 top-2 rounded-md p-1 opacity-0 transition-opacity focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 group-hover:opacity-100',
+                    variant === 'destructive'
+                        ? 'text-destructive-foreground hover:text-destructive-foreground focus:ring-destructive focus:ring-offset-card'
+                        : 'text-muted-foreground hover:text-foreground focus:ring-accent-primary focus:ring-offset-card',
                 ]"
             >
                 <svg

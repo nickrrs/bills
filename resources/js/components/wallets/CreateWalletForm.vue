@@ -5,63 +5,63 @@
             <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-2">
                     <div class="flex flex-row items-baseline gap-1">
-                        <label class="text-sm font-medium text-white">nome</label>
-                        <span class="text-red-400 text-sm leading-none">*</span>
+                        <label class="text-sm font-medium text-foreground">nome</label>
+                        <span class="text-destructive text-sm leading-none">*</span>
                     </div>
                     <input
                         v-model="formData.name"
                         required
                         type="text"
-                        maxlength="24"
+                        maxlength="20"
                         placeholder="escolha um nome para a carteira"
-                        class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
+                        class="w-full px-3 py-2 bg-input border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent"
                     />
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">tipo de carteira</label>
+                    <label class="text-sm font-medium text-foreground">tipo de carteira</label>
                     <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-3 p-3 bg-[#131316] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
+                        <label class="flex items-center gap-3 p-3 bg-input border border-border rounded-md cursor-pointer hover:border-accent-primary transition-colors">
                             <input
                                 v-model="formData.type"
                                 type="radio"
                                 value="generic"
-                                class="w-4 h-4 text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                                class="w-4 h-4 text-accent-primary focus:ring-2 focus:ring-accent-primary"
                             />
                             <div class="flex-1">
-                                <span class="text-white font-medium">geral</span>
-                                <p class="text-xs text-[#767676]">carteira para uso geral do dia a dia</p>
+                                <span class="text-foreground font-medium">geral</span>
+                                <p class="text-xs text-muted-foreground">carteira para uso geral do dia a dia</p>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 bg-[#131316] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
+                        <label class="flex items-center gap-3 p-3 bg-input border border-border rounded-md cursor-pointer hover:border-accent-primary transition-colors">
                             <input
                                 v-model="formData.type"
                                 type="radio"
                                 value="saving"
-                                class="w-4 h-4 text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                                class="w-4 h-4 text-accent-primary focus:ring-2 focus:ring-accent-primary"
                             />
                             <div class="flex-1">
-                                <span class="text-white font-medium">poupança / meta</span>
-                                <p class="text-xs text-[#767676]">para economizar e alcançar seus objetivos</p>
+                                <span class="text-foreground font-medium">poupança / meta</span>
+                                <p class="text-xs text-muted-foreground">para economizar e alcançar seus objetivos</p>
                             </div>
                         </label>
-                        <label class="flex items-center gap-3 p-3 bg-[#131316] border border-[#2F2F2F] rounded-md cursor-pointer hover:border-[#3800D8] transition-colors">
+                        <label class="flex items-center gap-3 p-3 bg-input border border-border rounded-md cursor-pointer hover:border-accent-primary transition-colors">
                             <input
                                 v-model="formData.type"
                                 type="radio"
                                 value="investment"
-                                class="w-4 h-4 text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                                class="w-4 h-4 text-accent-primary focus:ring-2 focus:ring-accent-primary"
                             />
                             <div class="flex-1">
-                                <span class="text-white font-medium">investimento</span>
-                                <p class="text-xs text-[#767676]">para acompanhar seus investimentos</p>
+                                <span class="text-foreground font-medium">investimento</span>
+                                <p class="text-xs text-muted-foreground">para acompanhar seus investimentos</p>
                             </div>
                         </label>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">cor do cartão</label>
+                    <label class="text-sm font-medium text-foreground">cor do cartão</label>
                     <div class="grid grid-cols-5 gap-3">
                         <button
                             v-for="colorOption in colorOptions"
@@ -71,8 +71,8 @@
                             :class="[
                                 'w-full aspect-square rounded-lg border-2 transition-all hover:scale-105',
                                 formData.color === colorOption.value
-                                    ? 'border-white ring-2 ring-[#3800D8] ring-offset-2 ring-offset-[#131316]'
-                                    : 'border-[#2F2F2F] hover:border-[#3800D8]'
+                                    ? 'border-white ring-2 ring-accent-primary ring-offset-2 ring-offset-card'
+                                    : 'border-border hover:border-accent-primary'
                             ]"
                             :style="{ background: colorOption.gradient }"
                             :title="colorOption.label"
@@ -88,37 +88,27 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">icone (opcional)</label>
-                    <input
-                        v-model="formData.icon"
-                        type="text"
-                        placeholder="ex: 💰"
-                        maxlength="2"
-                        class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent text-center text-2xl"
-                    />
-                    <span class="text-xs text-[#767676]">escolha um emoji ou icone</span>
-                </div>
+                <WalletIconSelector v-model="formData.icon" :is-in-drawer="isInDrawer" />
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">descrição</label>
+                    <label class="text-sm font-medium text-foreground">descrição</label>
                     <textarea
                         v-model="formData.description"
                         placeholder="qual é o objetivo dessa carteira?"
                         rows="3"
-                        class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent resize-none"
+                        class="w-full px-3 py-2 bg-input border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent resize-none"
                     ></textarea>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-medium text-white">saldo inicial</label>
+                    <label class="text-sm font-medium text-foreground">saldo inicial</label>
                     <input
                         :value="formatBalanceInput(formData.balance)"
                         type="text"
                         placeholder="0,00"
                         @input="handleBalanceInput"
                         @keydown="preventInvalidKeys"
-                        class="w-full px-3 py-2 bg-[#131316] border border-[#2F2F2F] rounded-md text-white placeholder-[#767676] focus:outline-none focus:ring-2 focus:ring-[#3800D8] focus:border-transparent"
+                        class="w-full px-3 py-2 bg-input border border-border rounded-md text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent"
                     />
                 </div>
 
@@ -127,38 +117,38 @@
                         <input
                             v-model="formData.active"
                             type="checkbox"
-                            class="w-4 h-4 rounded border-[#2F2F2F] bg-[#131316] text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                            class="w-4 h-4 rounded border-border bg-card text-accent-primary focus:ring-2 focus:ring-accent-primary"
                         />
-                        <span class="text-sm text-white">ativo</span>
+                        <span class="text-sm text-foreground">ativo</span>
                     </label>
 
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input
                             v-model="formData.is_default"
                             type="checkbox"
-                            class="w-4 h-4 rounded border-[#2F2F2F] bg-[#131316] text-[#3800D8] focus:ring-2 focus:ring-[#3800D8]"
+                            class="w-4 h-4 rounded border-border bg-card text-accent-primary focus:ring-2 focus:ring-accent-primary"
                         />
-                        <span class="text-sm text-white">selecionar como padrão?</span>
+                        <span class="text-sm text-foreground">selecionar como padrão?</span>
                     </label>
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#2F2F2F]">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-border">
                 <button
                     type="button"
                     @click="$emit('cancel')"
-                    class="px-4 py-2 text-sm font-medium text-[#B6B6B6] hover:text-white transition-colors"
+                    class="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
                     cancelar
                 </button>
                 <button
                     type="button"
                     @click="handleSubmit"
-                    :disabled="loading"
-                    class="px-4 py-2 text-sm font-medium bg-[#6965f2] text-white rounded-md hover:bg-[#3800D8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    :disabled="loading || !formData.name"
+                    class="px-4 py-2 text-sm font-medium bg-accent-primary text-white rounded-md hover:bg-accent-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                     <LoaderCircle v-if="loading" class="h-4 w-4 animate-spin" />
-                    criar carteira
+                    {{ wallet ? 'atualizar carteira' : 'criar carteira' }}
                 </button>
             </div>
         </div>
@@ -166,17 +156,28 @@
         <!-- Prévia do Card -->
         <div class="lg:w-80 flex-shrink-0">
             <div class="sticky top-4">
-                <h3 class="text-sm font-medium text-white">prévia da carteira</h3>
-                <p class="text-xs text-[#767676] mb-4">é assim que a carteira vai aparecer na sua lista</p>
+                <h3 class="text-sm font-medium text-foreground">prévia da carteira</h3>
+                <p class="text-xs text-muted-foreground mb-4">é assim que a carteira vai aparecer na sua lista</p>
                 <div class="w-full h-[260px] rounded-3xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden" :style="{ background: previewTheme.gradient }">
                     <div class="flex h-full flex-col justify-between p-6">
                         <div class="flex items-start justify-between z-10">
                             <div class="flex items-center space-x-3">
-                                <div class="rounded-lg bg-white/10 p-2 backdrop-blur-md">
-                                    <component :is="previewTheme.icon" class="h-6 w-6" :class="previewTheme.iconColor" />
+                                <div class="rounded-lg bg-white/10 p-2 backdrop-blur-md flex items-center justify-center">
+                                    <img
+                                        v-if="formData.icon && formData.icon.startsWith('/images/')"
+                                        :src="formData.icon"
+                                        :alt="formData.name"
+                                        class="h-6 w-6 object-contain"
+                                    />
+                                    <component
+                                        v-else
+                                        :is="previewTheme.icon"
+                                        class="h-6 w-6"
+                                        :class="previewTheme.iconColor"
+                                    />
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-white">{{ formData.name || 'Nome da Carteira' }}</h3>
+                                    <h3 class="text-lg font-bold text-white">{{ formData.name || 'nome da carteira' }}</h3>
                                     <p class="text-xs font-medium uppercase tracking-wide" :class="previewTheme.tagColor">
                                         {{ formData.description || 'Sem descrição' }}
                                     </p>
@@ -212,7 +213,7 @@
                             <div class="flex items-center space-x-2" :class="previewTheme.footerText">
                                 <CreditCard class="h-4 w-4" />
                                 <span class="text-xs font-medium">
-                                    {{ formData.active ? 'Carteira ativa' : 'Carteira inativa' }}
+                                    {{ formData.active ? 'carteira ativa' : 'carteira inativa' }}
                                 </span>
                             </div>
                         </div>
@@ -224,10 +225,12 @@
 </template>
 
 <script lang="ts">
+import { formatCurrencyValue } from '@/utils/formatters';
 import { LoaderCircle, CreditCard, Wallet2, ShieldCheck, Smartphone, Banknote, PiggyBank, TrendingUp } from 'lucide-vue-next';
 import type { Component } from 'vue';
 import { apiPost, apiPut } from '@/utils/api';
 import { useToast } from '@/components/ui/toast';
+import WalletIconSelector from './WalletIconSelector.vue';
 
 interface ColorOption {
     value: string;
@@ -309,6 +312,7 @@ export default {
         Banknote,
         PiggyBank,
         TrendingUp,
+        WalletIconSelector,
     },
     emits: ['success', 'cancel', 'reset-complete'],
     setup() {
@@ -323,6 +327,10 @@ export default {
         wallet: {
             type: Object as () => any,
             default: null,
+        },
+        isInDrawer: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
@@ -350,7 +358,6 @@ export default {
     computed: {
         previewTheme(): WalletTheme {
             const baseTheme = COLOR_THEMES[this.formData.color] || COLOR_THEMES.indigo;
-            // Ajusta o ícone baseado no tipo
             const typeIcon = TYPE_ICONS[this.formData.type] || Wallet2;
             return {
                 ...baseTheme,
@@ -364,8 +371,6 @@ export default {
         },
         needsScrollAnimation(): boolean {
             const formattedValue = this.formatCurrencyValue(this.formData.balance || 0);
-            // Considera animação necessária se o valor formatado tiver mais de 12 caracteres
-            // (exemplo: "1.000.000,00" tem 12 caracteres)
             return formattedValue.length > 12;
         },
     },
@@ -373,7 +378,6 @@ export default {
         resetForm(newValue) {
             if (newValue) {
                 this.resetFormData();
-                // Emite evento para o pai resetar o boolean
                 this.$emit('reset-complete');
             }
         },
@@ -389,87 +393,24 @@ export default {
         },
     },
     methods: {
-        formatCurrency(value: number): string {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-            }).format(value);
-        },
-        formatCurrencyValue(value: number | string): string {
-            // Retorna apenas o valor numérico sem o "R$"
-            let numValue: number;
-            let valueStr: string;
-
-            if (typeof value === 'string') {
-                valueStr = value.replace(',', '.');
-                // Para strings muito longas (números gigantes), formata diretamente
-                if (valueStr.length > 15 && /^\d+(\.\d*)?$/.test(valueStr)) {
-                    const parts = valueStr.split('.');
-                    const integerPart = parts[0];
-                    const decimalPart = parts[1] || '00';
-
-                    // Formata a parte inteira com separadores de milhar
-                    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-                    // Garante 2 casas decimais
-                    const formattedDecimal = decimalPart.padEnd(2, '0').substring(0, 2);
-
-                    return `${formattedInteger},${formattedDecimal}`;
-                }
-                // Converte string para número, tratando vírgula
-                numValue = parseFloat(valueStr) || 0;
-            } else {
-                numValue = value || 0;
-            }
-
-            // Para números muito grandes, formata manualmente para evitar notação científica
-            if (numValue >= 1e15 || isNaN(numValue)) {
-                // Usa formatação manual para números muito grandes
-                const str = numValue.toString();
-                // Se estiver em notação científica, retorna como está (não deveria acontecer com nossa lógica)
-                if (str.includes('e+') || str.includes('E+')) {
-                    return str;
-                }
-                const parts = str.split('.');
-                const integerPart = parts[0];
-                const decimalPart = parts[1] || '00';
-
-                // Formata a parte inteira com separadores de milhar
-                const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-                // Garante 2 casas decimais
-                const formattedDecimal = decimalPart.padEnd(2, '0').substring(0, 2);
-
-                return `${formattedInteger},${formattedDecimal}`;
-            }
-
-            // Para números menores, usa Intl.NumberFormat
-            return new Intl.NumberFormat('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            }).format(numValue);
-        },
+        formatCurrencyValue,
         formatBalanceInput(value: number | string): string {
-            // Formata o valor para exibição no input, permitindo edição
             if (value === null || value === undefined || value === '' || value === 0) {
                 return '';
             }
 
             let numValue: number;
 
-            // Converte string para número se necessário
             if (typeof value === 'string') {
                 numValue = parseFloat(value.replace(',', '.')) || 0;
             } else {
                 numValue = value;
             }
 
-            // Se não for um número válido, retorna vazio
             if (isNaN(numValue) || !isFinite(numValue) || numValue < 0) {
                 return '';
             }
 
-            // Formata com até 2 casas decimais, removendo zeros desnecessários
             const formatted = numValue.toFixed(2).replace(/\.?0+$/, '');
             return formatted.replace('.', ',');
         },
@@ -491,18 +432,16 @@ export default {
             try {
                 const isEditing = !!this.wallet;
 
-                // Generate slug from name (será regenerado no backend para garantir consistência)
                 const slug = this.formData.name
                     .toLowerCase()
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/(^-|-$)/g, '');
 
-                // Garantir que balance seja sempre um número
                 let balanceValue = this.formData.balance;
                 if (typeof balanceValue === 'string') {
                     balanceValue = parseFloat(balanceValue.replace(',', '.')) || 0;
                 }
-                balanceValue = Math.round((balanceValue as number) * 100) / 100; // Limita a 2 casas decimais
+                balanceValue = Math.round((balanceValue as number) * 100) / 100;
 
                 const data = {
                     ...this.formData,
@@ -512,7 +451,6 @@ export default {
                     balance: balanceValue,
                 };
 
-                // Fazer a requisição de criação ou atualização
                 const response = isEditing
                     ? await apiPut(`/api/wallets/${this.wallet.id}`, data)
                     : await apiPost('/api/wallets', data);
@@ -522,28 +460,23 @@ export default {
                     throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'create'} wallet`);
                 }
 
-                // Toast de sucesso
                 this.toast({
                     title: isEditing ? 'carteira atualizada com sucesso!' : 'carteira criada com sucesso!',
                     description: `a carteira "${this.formData.name}" foi ${isEditing ? 'atualizada' : 'criada'} com sucesso.`,
                     variant: 'default',
                 });
 
-                // Se a wallet foi criada/editada como padrão, emitir evento para o WalletSwitch
                 if (this.formData.is_default) {
                     window.dispatchEvent(new CustomEvent('wallet-default-created-or-updated'));
                 }
 
-                // Emitir evento de sucesso para o componente pai
                 this.$emit('success');
 
-                // Resetar o formulário apenas se não estiver editando
                 if (!isEditing) {
                     this.resetFormData();
                 }
             } catch (error: any) {
                 const isEditing = !!this.wallet;
-                // Toast de erro
                 const errorMessage = error?.response?.data?.message ||
                                    error?.message ||
                                    `Erro ao ${isEditing ? 'atualizar' : 'criar'} carteira. Tente novamente.`;
@@ -561,59 +494,46 @@ export default {
             const target = event.target as HTMLInputElement;
             let value = target.value;
 
-            // Remove qualquer caractere que não seja número ou ponto/vírgula
             value = value.replace(/[^0-9.,]/g, '');
-
-            // Converte vírgula para ponto para processamento
             value = value.replace(/,/g, '.');
 
-            // Remove múltiplos pontos, mantendo apenas o primeiro
             const parts = value.split('.');
             if (parts.length > 2) {
                 value = parts[0] + '.' + parts.slice(1).join('');
             }
 
-            // Limita a 2 casas decimais
             if (parts.length === 2 && parts[1].length > 2) {
                 value = parts[0] + '.' + parts[1].substring(0, 2);
             }
 
-            // Garante que não seja negativo
             if (value.startsWith('-')) {
                 value = value.replace('-', '');
             }
 
-            // Se estiver vazio, define como 0 mas mantém o input vazio para melhor UX
             if (value === '' || value === '.') {
                 this.formData.balance = 0;
                 target.value = '';
                 return;
             }
 
-            // Valida se é um formato numérico válido
             const isValidNumber = /^\d+(\.\d{0,2})?$/.test(value);
 
             if (!isValidNumber) {
-                // Se não for válido, mantém o último valor válido
                 const lastValid = this.formData.balance || 0;
                 target.value = this.formatBalanceInput(lastValid);
                 return;
             }
 
-            // Converte para número (limite de precisão para números muito grandes)
             const numValue = parseFloat(value);
 
             if (!isNaN(numValue) && numValue >= 0 && isFinite(numValue)) {
-                // Limita a 2 casas decimais no valor numérico
                 this.formData.balance = Math.round(numValue * 100) / 100;
             } else {
-                // Se não for válido, mantém o último valor válido
                 const lastValid = this.formData.balance || 0;
                 target.value = this.formatBalanceInput(lastValid);
                 return;
             }
 
-            // Atualiza o valor do input mantendo o formato com vírgula e 2 casas decimais
             const displayValue = this.formatBalanceInput(this.formData.balance);
             target.value = displayValue;
         },
@@ -622,42 +542,34 @@ export default {
             const input = event.target as HTMLInputElement;
             const value = input.value;
 
-            // Permite: números, ponto, vírgula, backspace, delete, tab, escape, enter, setas
             const allowedKeys = [
                 'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
                 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
                 'Home', 'End'
             ];
 
-            // Permite Ctrl/Cmd + A, C, V, X
             if (event.ctrlKey || event.metaKey) {
                 if (['a', 'c', 'v', 'x'].includes(key.toLowerCase())) {
                     return;
                 }
             }
 
-            // Se for uma tecla permitida, deixa passar
             if (allowedKeys.includes(key)) {
                 return;
             }
 
-            // Se for um número, deixa passar
             if (/[0-9]/.test(key)) {
                 return;
             }
 
-            // Se for ponto ou vírgula
             if (key === '.' || key === ',') {
-                // Verifica se já existe ponto ou vírgula no valor
                 if (value.includes('.') || value.includes(',')) {
                     event.preventDefault();
                     return;
                 }
-                // Permite inserir ponto/vírgula
                 return;
             }
 
-            // Bloqueia qualquer outra tecla
             event.preventDefault();
         },
         resetFormData() {
@@ -700,17 +612,15 @@ export default {
     }
 }
 
-/* Container para números grandes */
 .balance-container {
     max-width: 100%;
     position: relative;
 }
 
 .balance-container--scrollable {
-    max-width: 10rem; /* Largura máxima visível */
+    max-width: 10rem;
 }
 
-/* Animação de scroll horizontal para números grandes */
 .balance-scroll-animation {
     display: inline-block;
     animation: scrollBalanceHorizontal 8s ease-in-out infinite;
@@ -719,23 +629,18 @@ export default {
 
 @keyframes scrollBalanceHorizontal {
     0% {
-        /* Mostra o início do número */
         transform: translateX(0);
     }
     25% {
-        /* Pausa no início */
         transform: translateX(0);
     }
     50% {
-        /* Move para mostrar o final do número */
         transform: translateX(calc(-100% + 10rem));
     }
     75% {
-        /* Pausa no final */
         transform: translateX(calc(-100% + 10rem));
     }
     100% {
-        /* Volta ao início suavemente */
         transform: translateX(0);
     }
 }

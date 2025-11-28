@@ -1,15 +1,1077 @@
+<template>
+    <Head title="bills - Controle Financeiro Total" />
+
+    <div class="welcome-page">
+        <div class="tech-grid-bg"></div>
+        <div id="cursor-light" class="cursor-light"></div>
+
+        <!-- Navbar -->
+        <header class="fixed left-0 top-0 z-50 w-full border-b border-white/5 bg-[#050505]/80 backdrop-blur-md">
+            <nav class="container mx-auto flex h-20 items-center justify-between px-6">
+                <Link href="#" class="hover-target flex items-center space-x-3">
+                    <BillsLogo :width="40" :height="40" gradient-id="logo-header" class="welcome-logo-icon" />
+                    <span class="font-display text-xl font-bold tracking-tight text-white">bills</span>
+                </Link>
+                <div class="flex items-center gap-6">
+                    <a href="#features" class="hover-target text-sm text-gray-400 transition hover:text-white">Funcionalidades</a>
+                    <Link
+                        href="/login"
+                        class="hover-target rounded-full border border-white/10 bg-white/10 px-5 py-2 text-sm font-medium transition hover:bg-white/20"
+                        >Entrar</Link
+                    >
+                </div>
+            </nav>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="relative z-10 flex min-h-screen items-center overflow-hidden pb-20 pt-20">
+            <div class="container relative z-10 mx-auto px-6">
+                <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+                    <div class="reveal-on-scroll text-left">
+                        <h1 class="font-display mb-6 text-6xl font-bold leading-tight tracking-tight text-white md:text-7xl">
+                            Controle o presente,<br />
+                            <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                                <span class="group relative inline-grid cursor-pointer overflow-hidden align-bottom pb-1">
+                                    <span class="col-start-1 row-start-1 flex pb-1" aria-hidden="true">
+                                        <span
+                                            v-for="(char, index) in word1.split('')"
+                                            :key="'w1-'+index"
+                                            class="inline-block transition-transform"
+                                            :class="[transitionTiming, 'group-hover:translate-y-full']"
+                                            :style="{ transitionDelay: (index * 30) + 'ms' }"
+                                        >
+                                            {{ char === ' ' ? '\u00A0' : char }}
+                                        </span>
+                                    </span>
+
+                                    <span class="col-start-1 row-start-1 flex pb-1">
+                                        <span
+                                            v-for="(char, index) in word2.split('')"
+                                            :key="'w2-'+index"
+                                            class="inline-block -translate-y-full transition-transform"
+                                            :class="[transitionTiming, 'group-hover:translate-y-0']"
+                                            :style="{ transitionDelay: (index * 30) + 'ms' }"
+                                        >
+                                            {{ char === ' ' ? '\u00A0' : char }}
+                                        </span>
+                                    </span>
+                                </span>
+                            </span>
+                        </h1>
+                        <p class="mb-10 max-w-lg text-xl font-light leading-relaxed text-gray-400">
+                            Tenha clareza sobre como você gasta seu dinheiro e ferramentas poderosas para planejar onde você quer chegar.
+                        </p>
+                        <div class="flex flex-col justify-start gap-4 sm:flex-row">
+                            <Link href="/register" class="cta-button hover-target rounded-full px-8 py-4 text-center text-lg font-bold"
+                                >Criar conta grátis</Link
+                            >
+                            <button
+                                @click="openVideoModal"
+                                class="hover-target flex items-center justify-center gap-2 rounded-full border border-white/10 px-8 py-4 font-medium text-gray-300 transition hover:bg-white/5"
+                            >
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg> Ver na prática
+                            </button>
+                        </div>
+                    </div>
+                    <div class="reveal-on-scroll flex justify-center lg:justify-end">
+                        <HeroOrb />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: OVERVIEW DASHBOARD -->
+        <section id="features" class="relative z-10 border-t border-white/5 py-32">
+            <div class="container mx-auto px-6">
+                <div class="reveal-on-scroll mb-16 text-center">
+                    <h2 class="font-display mb-4 text-4xl font-bold text-white">Visão completa e simples</h2>
+                    <p class="text-gray-400">Saiba exatamente como você gastou seu dinheiro e como está seu saldo hoje.</p>
+                </div>
+
+                <div class="reveal-on-scroll mx-auto max-w-6xl">
+                    <div class="sys-mockup-container relative bg-[#09090b] p-6">
+                        <!-- Header -->
+                        <div class="mb-8 flex items-center justify-between border-b border-[#27272a] pb-4">
+                            <div class="flex items-center gap-6">
+                                <div class="hidden gap-4 text-sm md:flex">
+                                    <span class="-mb-4 border-b-2 border-[#3800d8] pb-4 font-medium text-white">overview</span>
+                                    <span class="text-gray-500">relatórios</span>
+                                    <span class="text-gray-500">lançamentos</span>
+                                    <span class="text-gray-500">cartões</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-semibold uppercase text-[#7d5ff4]">Julho, 2024</span>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+                            <div class="mockup-card">
+                                <div class="mb-2 flex items-start justify-between">
+                                    <span class="text-xs text-gray-400">patrimônio</span>
+                                    <DollarSign class="h-4 w-4" />
+                                </div>
+                                <div class="mb-1 text-xl font-bold text-white">R$ 23.045,32</div>
+                                <div class="text-[10px] font-medium text-sys-green">+20% este mês</div>
+                            </div>
+                            <div class="mockup-card">
+                                <div class="mb-2 flex items-start justify-between">
+                                    <span class="text-xs text-gray-400">receita</span>
+                                    <ArrowUpRight class="h-4 w-4" />
+                                </div>
+                                <div class="mb-1 text-xl font-bold text-white">R$ 23.045,32</div>
+                                <div class="text-[10px] font-medium text-sys-green">+20% este mês</div>
+                            </div>
+                            <div class="mockup-card">
+                                <div class="mb-2 flex items-start justify-between">
+                                    <span class="text-xs text-gray-400">despesa</span>
+                                    <ArrowDownRight class="h-4 w-4" />
+                                </div>
+                                <div class="mb-1 text-xl font-bold text-white">R$ 23.045,32</div>
+                                <div class="text-[10px] font-medium text-sys-green">+20% este mês</div>
+                            </div>
+                            <div class="mockup-card">
+                                <div class="mb-2 flex items-start justify-between">
+                                    <span class="text-xs text-gray-400">pagamentos</span>
+                                    <CircleCheck class="h-4 w-4 !text-blue-500" />
+                                </div>
+                                <div class="mb-1 text-xl font-bold text-white">12/15</div>
+                                <div class="text-[10px] font-medium text-yellow-500">3 pendentes</div>
+                            </div>
+                        </div>
+
+                        <!-- Main Content -->
+                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                            <div class="flex flex-col gap-6 lg:col-span-2">
+                                <div class="mockup-card">
+                                    <div class="mb-1 flex items-center justify-between">
+                                        <span class="text-xs font-bold text-white">seus cartões</span>
+                                        <ArrowUpRight class="h-4 w-4" />
+                                    </div>
+                                    <span class="mb-4 block text-[10px] text-gray-500">cartões com faturas ativas</span>
+
+                                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <div
+                                            class="group relative rounded border border-[#27272a] bg-[#18181b] p-4 transition hover:border-sys-purple/50"
+                                        >
+                                            <div class="mb-3 flex items-center gap-3">
+                                                <div
+                                                    class="flex h-8 w-8 items-center justify-center rounded-full bg-sys-purple text-xs font-bold text-white"
+                                                >
+                                                    Nu
+                                                </div>
+                                                <div>
+                                                    <div class="text-[10px] text-gray-400">@nubank card</div>
+                                                    <div class="text-sm font-bold text-white">R$ 2.045,32</div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 flex items-center justify-between">
+                                                <span class="text-[10px] text-gray-500">venc: 09/08</span>
+                                                <span class="rounded bg-sys-green/10 px-1.5 py-0.5 text-[9px] text-sys-green">aberta</span>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="group relative rounded border border-[#27272a] bg-[#18181b] p-4 transition hover:border-sys-purple/50"
+                                        >
+                                            <div class="mb-3 flex items-center gap-3">
+                                                <div
+                                                    class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-xs font-bold text-black"
+                                                >
+                                                    C6
+                                                </div>
+                                                <div>
+                                                    <div class="text-[10px] text-gray-400">@c6 black</div>
+                                                    <div class="text-sm font-bold text-white">R$ 5.300,00</div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 flex items-center justify-between">
+                                                <span class="text-[10px] text-gray-500">venc: 15/08</span>
+                                                <span class="rounded bg-sys-red/10 px-1.5 py-0.5 text-[9px] text-sys-red">fechada</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mockup-card flex-1">
+                                    <div class="mb-1 flex items-center justify-between">
+                                        <span class="text-xs font-bold text-white">seus rastreios</span>
+                                        <ArrowUpRight class="h-4 w-4" />
+                                    </div>
+                                    <span class="mb-4 block text-[10px] text-gray-500">limites de gastos e objetivos</span>
+
+                                    <div class="grid grid-cols-1 gap-x-6 gap-y-6 md:grid-cols-2">
+                                        <div>
+                                            <div class="mb-2 flex items-start gap-3">
+                                                <div class="flex h-8 w-8 items-center justify-center rounded-md bg-red-400/20 text-xs text-red-400">
+                                                    <Car class="h-4 w-4" />
+                                                </div>
+                                                <div class="flex-1">
+                                                    <div class="text-[11px] font-medium text-white">manutenção do carro</div>
+                                                    <div class="mt-1 flex justify-between text-[10px]">
+                                                        <span class="text-gray-400">R$ 1.250</span>
+                                                        <span class="font-bold text-white">meta: R$ 5k</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#27272a]">
+                                                <div class="h-full w-[25%] bg-red-500"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="mb-2 flex items-start gap-3">
+                                                <div class="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-400/20 text-xs text-cyan-400">
+                                                    <Utensils class="h-4 w-4" />
+                                                </div>
+                                                <div class="flex-1">
+                                                    <div class="text-[11px] font-medium text-white">limite delivery</div>
+                                                    <div class="mt-1 flex justify-between text-[10px]">
+                                                        <span class="text-gray-400">R$ 450,00</span>
+                                                        <span class="font-bold text-white">max: R$ 600</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#27272a]">
+                                                <div class="h-full w-[75%] bg-cyan-500"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mockup-card flex h-full flex-col">
+                                <div class="mb-4">
+                                    <span class="block text-xs font-bold text-white">últimas movimentações</span>
+                                    <span class="text-[10px] text-gray-500">15 transações este mês</span>
+                                </div>
+
+                                <div class="mockup-scroll flex-1 space-y-6 overflow-y-auto pr-2">
+                                    <div class="flex items-start gap-3">
+                                        <div
+                                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-pink-500/20 text-xs text-pink-500"
+                                        >
+                                            <Coffee class="h-4 w-4" />
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="truncate text-[11px] font-medium text-white">café da tarde</div>
+                                            <div class="text-[10px] text-gray-500">alimentação</div>
+                                            <div class="mt-0.5 text-[9px] text-gray-600">Hoje, 15:30</div>
+                                        </div>
+                                        <div class="whitespace-nowrap text-xs font-bold text-sys-red">-R$ 15,00</div>
+                                    </div>
+                                    <div class="flex items-start gap-3">
+                                        <div
+                                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-blue-400/20 text-xs text-blue-400"
+                                        >
+                                            <ShoppingCart class="h-4 w-4" />
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="truncate text-[11px] font-medium text-white">supermercado semanal</div>
+                                            <div class="flex flex-row gap-1 text-[10px]">
+                                                <span class="text-gray-500">casa</span>
+                                                <span class="text-gray-500"> > </span>
+                                                <span class="text-blue-400">supermercado</span>
+                                            </div>
+                                            <div class="mt-0.5 text-[9px] text-gray-600">Ontem</div>
+                                        </div>
+                                        <div class="whitespace-nowrap text-xs font-bold text-sys-red">-R$ 450,00</div>
+                                    </div>
+                                    <div class="flex items-start gap-3">
+                                        <div
+                                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-green-500/20 text-xs text-green-500"
+                                        >
+                                            <PiggyBank class="h-4 w-4" />
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="truncate text-[11px] font-medium text-white">freelance design</div>
+                                            <div class="text-[10px] text-gray-500">extra</div>
+                                            <div class="mt-0.5 text-[9px] text-gray-600">05/07</div>
+                                        </div>
+                                        <div class="whitespace-nowrap text-xs font-bold text-sys-green">+R$ 2.500</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ORGANIZE & PLAN FLOW -->
+        <section class="relative z-10 border-t border-white/5 bg-white/[0.02] py-32">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 gap-16 lg:grid-cols-2">
+                    <!-- Left: Text Sticky -->
+                    <div class="reveal-on-scroll h-fit lg:sticky lg:top-32 lg:col-span-1">
+                        <h2 class="font-display mb-8 text-5xl font-bold leading-tight text-white">
+                            Do caos ao <br />
+                            <span class="text-gray-500">controle</span> total
+                        </h2>
+
+                        <div class="timeline-steps relative space-y-10 pl-10">
+                            <div class="timeline-line"></div>
+
+                            <div class="timeline-step reveal-on-scroll">
+                                <div class="timeline-dot"></div>
+                                <h3 class="mb-2 text-xl font-bold text-white">1. Organize</h3>
+                                <p class="text-sm text-gray-400">
+                                    Crie <strong>Wallets</strong> customizáveis para facilitar a gestão de suas finanças.
+                                </p>
+                            </div>
+                            <div class="timeline-step reveal-on-scroll">
+                                <div class="timeline-dot"></div>
+                                <h3 class="mb-2 text-xl font-bold text-white">2. Classifique</h3>
+                                <p class="text-sm text-gray-400">
+                                    Use <strong>categorias</strong> e <strong>subcategorias</strong> personalizadas para saber exatamente para onde
+                                    vai cada centavo.
+                                </p>
+                            </div>
+                            <div class="timeline-step reveal-on-scroll">
+                                <div class="timeline-dot"></div>
+                                <h3 class="mb-2 text-xl font-bold text-white">3. Planeje e Projete</h3>
+                                <p class="text-sm text-gray-400">
+                                    Visualize relatórios de <strong>tendências</strong> e <strong>projeções futuras</strong> baseadas no seu
+                                    comportamento.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Feature Visuals -->
+                    <div class="reveal-on-scroll relative space-y-12 pt-10">
+                        <!-- Step 1: Real Wallet Card (Green) -->
+                        <div class="tech-card border-indigo-500/30 p-6">
+                            <div class="mb-4 text-xs font-bold uppercase tracking-wider text-gray-500">Carteiras customizáveis</div>
+
+                            <div
+                                class="relative mx-auto max-w-sm overflow-hidden rounded-2xl bg-real-greenCard p-5 text-white shadow-xl transition duration-300 hover:scale-[1.02]"
+                            >
+                                <div class="relative z-10 mb-4 flex items-start justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#facc15] text-lg font-bold text-black">
+                                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-lg font-bold leading-tight">uma nova carteira</div>
+                                            <div class="text-[10px] uppercase opacity-70">SEM DESCRIÇÃO</div>
+                                        </div>
+                                    </div>
+                                    <MoreHorizontal class="h-4 w-4 text-white" />
+                                </div>
+
+                                <div class="relative z-10 mb-6">
+                                    <div class="mb-1 text-[10px] uppercase opacity-70">SALDO ATUAL</div>
+                                    <div class="text-3xl font-bold">R$ 5.000,00</div>
+                                </div>
+
+                                <div class="absolute bottom-16 left-0 right-0 h-12 opacity-30">
+                                    <svg class="h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 20">
+                                        <path d="M0 20 L10 15 L30 18 L50 10 L70 14 L90 5 L100 8 V20 H0 Z" fill="white" />
+                                    </svg>
+                                </div>
+                                <div class="relative z-10 mb-4 h-px w-full bg-white/20"></div>
+
+                                <div class="relative z-10 flex items-center justify-between text-xs">
+                                    <div class="flex items-center gap-2">
+                                        <CreditCard class="h-4 w-4" />
+                                        <span>carteira ativa</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <Target class="h-4 w-4" />
+                                        <span>Detalhes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mx-auto h-8 w-px bg-white/10"></div>
+
+                        <!-- Step 2: Categorization -->
+                        <div class="tech-card p-6">
+                            <div class="mb-4 text-xs font-bold uppercase tracking-wider text-gray-500">Transações classificadas</div>
+                            <div class="mx-auto max-w-sm space-y-3">
+                                <div class="real-tx-card">
+                                    <div class="flex items-center gap-4">
+                                        <div class="real-icon-box bg-real-iconPinkBg text-real-iconPink">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-base font-bold text-white">amazon.com</div>
+                                            <div class="text-xs text-gray-500">comida</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-base font-bold text-real-redText">- R$ 129,90</div>
+                                </div>
+
+                                <div class="real-tx-card">
+                                    <div class="flex items-center gap-4">
+                                        <div class="real-icon-box bg-real-iconGreenBg text-real-iconGreen">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-base font-bold text-white">salario</div>
+                                            <div class="text-xs text-gray-500">receita</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-base font-bold text-real-greenText">+ R$ 5.000,00</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mx-auto h-8 w-px bg-white/10"></div>
+
+                        <!-- Step 3: Report/Projection -->
+                        <div class="tech-card border-indigo-500/50 p-6 shadow-[0_0_30px_rgba(99,102,241,0.1)]">
+                            <div class="mb-4 flex items-center justify-between">
+                                <div class="text-xs font-bold uppercase tracking-wider text-indigo-400">Projeção de Futuro</div>
+                                <div class="text-[10px] text-gray-500">Próximos 6 meses</div>
+                            </div>
+                            <div class="relative flex h-24 w-full items-end gap-1 border-b border-white/10 px-2">
+                                <div class="h-[40%] w-1/6 rounded-t-sm bg-gray-800"></div>
+                                <div class="h-[45%] w-1/6 rounded-t-sm bg-gray-800"></div>
+                                <div class="h-[30%] w-1/6 rounded-t-sm bg-gray-800"></div>
+                                <div class="group relative h-[55%] w-1/6 rounded-t-sm border-t border-indigo-500 bg-indigo-900/50">
+                                    <div
+                                        class="absolute -top-6 left-1/2 -translate-x-1/2 rounded bg-indigo-600 px-1 text-[9px] text-white opacity-0 transition group-hover:opacity-100"
+                                    >
+                                        Previsto
+                                    </div>
+                                </div>
+                                <div class="h-[60%] w-1/6 rounded-t-sm border-t border-indigo-500 bg-indigo-900/50"></div>
+                                <div class="h-[75%] w-1/6 rounded-t-sm border-t border-indigo-500 bg-indigo-900/50"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: TRACKINGS -->
+        <section class="relative z-10 border-t border-white/5 py-32">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 items-center gap-20 lg:grid-cols-2">
+                    <div class="reveal-on-scroll">
+                        <div class="mb-2 text-xs font-bold uppercase tracking-wider text-real-iconPink">Planeje com Antecedência</div>
+                        <h2 class="font-display mb-6 text-5xl font-bold leading-tight text-white">Defina, Acompanhe e <br />Bata Suas Metas.</h2>
+                        <p class="mb-8 text-lg leading-relaxed text-gray-400">
+                            Seja um carro novo, férias ou a entrada de um imóvel, o bills ajuda você a visualizar seu progresso.
+                        </p>
+                        <ul class="space-y-4 text-gray-300">
+                            <li class="flex items-center gap-3">
+                                <svg class="h-5 w-5 text-real-iconPink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Crie metas de economia com prazos.
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <svg class="h-5 w-5 text-real-iconPink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Contribuições automáticas.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="reveal-on-scroll">
+                        <div class="space-y-10">
+                            <div class="track-container">
+                                <div class="mb-2 flex items-center gap-3 font-medium text-white">
+                                    <Plane class="h-6 w-6 text-real-greenText" />
+                                    <span>Meta de Férias</span>
+                                </div>
+                                <div class="track-bar-bg">
+                                    <div class="track-bar-fill" style="width: 75%">
+                                        <div class="track-handle"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex justify-between font-mono text-sm text-gray-400">
+                                    <span>R$0</span>
+                                    <span class="text-white">R$1.500</span>
+                                </div>
+                            </div>
+                            <div class="track-container">
+                                <div class="mb-2 flex items-center gap-3 font-medium text-white">
+                                    <Car class="h-6 w-6 text-real-iconPink" />
+                                    <span>Fundo Carro Novo</span>
+                                </div>
+                                <div class="track-bar-bg">
+                                    <div class="track-bar-fill" style="width: 35%">
+                                        <div class="track-handle"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex justify-between font-mono text-sm text-gray-400">
+                                    <span>R$0</span>
+                                    <span class="text-white">R$5,000</span>
+                                </div>
+                            </div>
+                            <div class="track-container">
+                                <div class="mb-2 flex items-center gap-3 font-medium text-white">
+                                    <Home class="h-6 w-6 text-blue-500" />
+                                    <span>Entrada Imóvel</span>
+                                </div>
+                                <div class="track-bar-bg">
+                                    <div class="track-bar-fill" style="width: 22%">
+                                        <div class="track-handle"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex justify-between font-mono text-sm text-gray-400">
+                                    <span>R$0</span>
+                                    <span class="text-white">R$50,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: CARDS DETAILED -->
+        <section class="relative z-10 border-t border-white/5 bg-white/[0.02] py-32">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 items-center gap-20 lg:grid-cols-2">
+                    <div class="reveal-on-scroll flex justify-center">
+                        <div class="group relative w-full max-w-md">
+                            <div
+                                class="relative overflow-hidden rounded-2xl bg-real-nuPurple p-8 text-white shadow-2xl transition-transform duration-500 hover:rotate-1 hover:scale-[1.03]"
+                            >
+                                <div class="mb-12 flex items-start justify-between">
+                                    <span class="text-xl font-bold tracking-tight">bills</span>
+                                    <div class="relative h-9 w-12 overflow-hidden rounded-md bg-white/20">
+                                        <div class="absolute left-0 top-1/2 h-px w-full bg-black/20"></div>
+                                        <div class="absolute left-1/2 top-0 h-full w-px bg-black/20"></div>
+                                        <div
+                                            class="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black/20"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="mb-6 font-mono text-2xl tracking-widest opacity-90">**** **** **** 5678</div>
+                                <div class="flex items-end justify-between">
+                                    <div class="text-sm font-medium opacity-80">@nubank card</div>
+                                    <div class="flex h-8 w-8 items-center justify-center rounded bg-white font-bold text-real-nuPurple">N</div>
+                                </div>
+                                <div class="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+                            </div>
+                            <div class="mt-8 w-full rounded-xl border border-white/10 bg-[#111113] p-4">
+                                <div class="mb-2 flex justify-between text-xs text-gray-400">
+                                    <span>Limite Usado</span>
+                                    <span class="text-white">R$ 2.340 / 10.000</span>
+                                </div>
+                                <div class="h-2 w-full overflow-hidden rounded-full bg-gray-800">
+                                    <div class="h-full w-[23%] bg-real-nuPurple"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reveal-on-scroll lg:pl-10">
+                        <div class="mb-2 text-xs font-bold uppercase tracking-wider text-real-nuPurple">Gestão de Crédito</div>
+                        <h2 class="font-display mb-6 text-4xl font-bold leading-tight text-white md:text-5xl">
+                            Cartões Virtuais e <br />
+                            Controle de Limites.
+                        </h2>
+                        <p class="mb-6 text-lg leading-relaxed text-gray-400">
+                            Crie cartões virtuais para espelhar seus cartões reais dentro do sistema.
+                        </p>
+                        <div class="space-y-6">
+                            <div class="flex gap-4">
+                                <div
+                                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-real-nuPurple/20 text-lg text-real-nuPurple"
+                                >
+                                    <CreditCard class="h-6 w-6 text-real-nuPurple" />
+                                </div>
+                                <div>
+                                    <h4 class="mb-1 font-bold text-white">Múltiplos Cartões</h4>
+                                    <p class="text-sm text-gray-500">
+                                        Associe diferentes cartões a diferentes carteiras para organizar gastos pessoais e de trabalho.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div
+                                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-real-nuPurple/20 text-lg text-real-nuPurple"
+                                >
+                                    <ChartBar class="h-6 w-6 text-real-nuPurple" />
+                                </div>
+                                <div>
+                                    <h4 class="mb-1 font-bold text-white">Acompanhamento Detalhado</h4>
+                                    <p class="text-sm text-gray-500">
+                                        Acompanhe o consumo do limite de gastos, parcelas de compras, transações e muito mais.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: CAIXINHAS (RESERVAS & INVESTIMENTOS) -->
+        <section class="relative z-10 border-t border-white/5 py-32">
+            <div class="container mx-auto px-6">
+                <div class="reveal-on-scroll mb-16 text-center">
+                    <h2 class="font-display mb-4 text-4xl font-bold text-white">Caixinhas Inteligentes</h2>
+                    <p class="mx-auto max-w-xl text-gray-400">
+                        Separe seu dinheiro em "Caixinhas" dedicadas para reservas ou investimentos de longo prazo. Visualize o rendimento projetado.
+                    </p>
+                </div>
+                <div class="reveal-on-scroll mx-auto grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-3">
+                    <!-- Caixinha 1: Reserva -->
+                    <div
+                        class="real-tx-card h-full !flex-col !items-start !gap-4 border border-real-greenText/20 bg-[#09090b] !p-6 transition-all hover:border-real-greenText/50"
+                    >
+                        <div class="flex w-full justify-between">
+                            <div class="real-icon-box bg-real-greenText/10 text-real-greenText">
+                                <Lock class="h-6 w-6" />
+                            </div>
+                            <span class="rounded bg-real-greenText/10 px-2 py-1 text-[10px] font-bold uppercase text-real-greenText">Reserva</span>
+                        </div>
+                        <div class="mt-2">
+                            <h4 class="text-lg font-bold text-white">Emergência</h4>
+                            <p class="mt-1 text-xs text-gray-500">Fundo de segurança</p>
+                        </div>
+                        <div class="mt-auto w-full">
+                            <div class="mb-2 flex justify-between text-xs text-gray-300">
+                                <span>R$ 15.000</span>
+                                <span class="text-gray-500">Meta: R$ 30k</span>
+                            </div>
+                            <div class="h-2 w-full overflow-hidden rounded-full bg-gray-800">
+                                <div class="h-full w-[50%] bg-real-greenText"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Caixinha 2: Investimento -->
+                    <div
+                        class="real-tx-card h-full !flex-col !items-start !gap-4 border border-real-blueVault/20 bg-[#09090b] !p-6 transition-all hover:border-real-blueVault/50"
+                    >
+                        <div class="flex w-full justify-between">
+                            <div class="real-icon-box bg-real-blueVault/10 text-real-blueVault">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                            </div>
+                            <span class="rounded bg-real-blueVault/10 px-2 py-1 text-[10px] font-bold uppercase text-real-blueVault">Renda Fixa</span>
+                        </div>
+                        <div class="mt-2">
+                            <h4 class="text-lg font-bold text-white">Tesouro Direto</h4>
+                            <p class="mt-1 text-xs text-gray-500">IPCA+ 2035</p>
+                        </div>
+                        <div class="mt-auto w-full">
+                            <div class="mb-2 flex justify-between text-xs text-gray-300">
+                                <span>R$ 5.430</span>
+                                <span class="font-bold text-real-blueVault">+1.2% este mês</span>
+                            </div>
+                            <!-- Fake Graph Line -->
+                            <svg class="h-8 w-full text-real-blueVault opacity-50" preserveAspectRatio="none" viewBox="0 0 100 20">
+                                <path d="M0 15 Q 20 18, 40 10 T 100 5" fill="none" stroke="currentColor" stroke-width="2" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Caixinha 3: Objetivo -->
+                    <div
+                        class="real-tx-card h-full !flex-col !items-start !gap-4 border border-sys-purple/20 bg-[#09090b] !p-6 transition-all hover:border-sys-purple/50"
+                    >
+                        <div class="flex w-full justify-between">
+                            <div class="real-icon-box bg-sys-purple/10 text-sys-purple">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"
+                                    ></path>
+                                </svg>
+                            </div>
+                            <span class="rounded bg-sys-purple/10 px-2 py-1 text-[10px] font-bold uppercase text-sys-purple">Viagem</span>
+                        </div>
+                        <div class="mt-2">
+                            <h4 class="text-lg font-bold text-white">Eurotrip 2026</h4>
+                            <p class="mt-1 text-xs text-gray-500">Reserva em Moeda Forte</p>
+                        </div>
+                        <div class="mt-auto w-full">
+                            <div class="mb-2 flex justify-between text-xs text-gray-300">
+                                <span>R$ 2.000</span>
+                                <span class="text-gray-500">Meta: R$ 25k</span>
+                            </div>
+                            <div class="h-2 w-full overflow-hidden rounded-full bg-gray-800">
+                                <div class="h-full w-[8%] bg-sys-purple"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: PROJEÇÃO AUTOMÁTICA (AI / FUTURE) -->
+        <section class="relative z-10 border-t border-white/5 bg-white/[0.02] py-32">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
+                    <!-- Text -->
+                    <div class="reveal-on-scroll">
+                        <div class="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-400">Futuro Financeiro</div>
+                        <h2 class="font-display mb-6 text-4xl font-bold leading-tight text-white md:text-5xl">
+                            Automação que <br />
+                            prevê o amanhã.
+                        </h2>
+                        <p class="mb-6 text-lg leading-relaxed text-gray-400">
+                            O sistema analisa seu histórico de gastos recorrentes, entradas fixas e investimentos para projetar sua saúde financeira.
+                        </p>
+                        <p class="mb-8 text-lg leading-relaxed text-gray-400">
+                            Saiba exatamente onde você estará daqui a 1 ano e receba sugestões inteligentes de economia para atingir seus objetivos
+                            mais rápido.
+                        </p>
+                    </div>
+                    <!-- Visual: Projection Graph & Insights -->
+                    <div class="reveal-on-scroll relative">
+                        <div class="tech-card projection-card mx-auto w-[500px] max-w-full border-indigo-500/40 bg-[#0B0F19] p-6">
+                            <div class="mb-6 flex items-center justify-between">
+                                <h4 class="text-sm font-bold text-white">Projeção Patrimonial (12 Meses)</h4>
+                                <span
+                                    class="flex items-center gap-1 rounded border border-indigo-500/30 bg-indigo-500/20 px-2 py-1 text-[10px] text-indigo-300"
+                                >
+                                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-400 uppercase"></span> Observando
+                                </span>
+                            </div>
+                            <!-- Chart Area -->
+                            <div class="relative h-48 w-[452px] max-w-full border-b border-l border-gray-700">
+                                <!-- Historical (Solid) -->
+                                <svg class="absolute inset-0 h-full w-full" viewBox="0 0 400 100" preserveAspectRatio="none">
+                                    <path d="M0 80 L50 75 L100 60 L150 65" fill="none" stroke="#3b82f6" stroke-width="2" />
+                                    <!-- Projected (Dotted) -->
+                                    <path
+                                        d="M150 65 L200 50 L250 40 L300 25 L350 15 L400 5"
+                                        fill="none"
+                                        stroke="#8B5CF6"
+                                        stroke-width="2"
+                                        stroke-dasharray="5,5"
+                                    />
+                                    <!-- Fill -->
+                                    <path d="M150 65 L200 50 L250 40 L300 25 L350 15 L400 5 V 100 H 150 Z" fill="url(#gradProj)" opacity="0.2" />
+                                    <defs>
+                                        <linearGradient id="gradProj" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" style="stop-color: #8b5cf6; stop-opacity: 1" />
+                                            <stop offset="100%" style="stop-color: #8b5cf6; stop-opacity: 0" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <!-- Current Point -->
+                                <div
+                                    class="absolute left-[170px] top-[123px] z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-indigo-500 bg-white shadow-lg"
+                                ></div>
+                                <div class="absolute left-[170px] top-[90px] -translate-x-1/2 text-[10px] text-gray-400">Hoje</div>
+                            </div>
+                            <!-- Insight Cards Floating -->
+                            <div
+                                class="absolute -bottom-8 -right-4 max-w-[200px] rotate-2 rounded-lg border border-indigo-500/30 bg-[#161b22] p-4 shadow-xl transition duration-300 hover:rotate-0"
+                            >
+                                <div class="flex items-start gap-3">
+                                    <div class="text-xl">💡</div>
+                                    <div>
+                                        <p class="mb-1 text-[10px] font-bold text-white">Sugestão de Economia</p>
+                                        <p class="text-[9px] leading-snug text-gray-400">
+                                            Se você reduzir 10% em "iFood", atingirá a meta do Carro 2 meses antes.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: REPORTS -->
+        <section class="relative z-10 border-t border-white/5 py-32">
+            <div class="container mx-auto px-6">
+                <div class="reveal-on-scroll mb-16 text-center">
+                    <h2 class="font-display mb-4 text-4xl font-bold text-white">Insights que geram riqueza</h2>
+                    <p class="text-gray-400">Relatórios detalhados para entender seus hábitos e evoluir.</p>
+                </div>
+                <div class="reveal-on-scroll mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-2">
+                    <!-- Report 1: Categorias (Pie) -->
+                    <div class="sys-mockup-container bg-[#09090b] p-6">
+                        <h3 class="mb-6 text-sm font-bold text-white">Gastos por Categoria</h3>
+                        <div class="flex items-center justify-around">
+                            <!-- CSS Pie Chart -->
+                            <div
+                                class="relative h-40 w-40 rounded-full"
+                                style="background: conic-gradient(#3b82f6 0% 40%, #10b981 40% 65%, #f59e0b 65% 85%, #ec4899 85% 100%)"
+                            >
+                                <div class="absolute inset-4 flex items-center justify-center rounded-full bg-[#09090b]">
+                                    <span class="text-xs text-gray-500">Total<br /><strong class="text-lg text-white">100%</strong></span>
+                                </div>
+                            </div>
+                            <!-- Legend -->
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <div class="h-3 w-3 rounded-full bg-blue-500"></div>
+                                    <span class="text-gray-400">Mercado (40%)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="h-3 w-3 rounded-full bg-emerald-500"></div>
+                                    <span class="text-gray-400">Casa (25%)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="h-3 w-3 rounded-full bg-orange-500"></div>
+                                    <span class="text-gray-400">Lazer (20%)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="h-3 w-3 rounded-full bg-pink-500"></div>
+                                    <span class="text-gray-400">Transp. (15%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Report 2: Evolution (Line) -->
+                    <div class="sys-mockup-container bg-[#09090b] p-6">
+                        <h3 class="mb-6 text-sm font-bold text-white">Evolução Patrimonial</h3>
+                        <div class="relative flex h-40 w-full items-end gap-2 px-2">
+                            <!-- Grid Lines -->
+                            <div class="pointer-events-none absolute inset-0 flex flex-col justify-between opacity-10">
+                                <div class="h-px w-full bg-white"></div>
+                                <div class="h-px w-full bg-white"></div>
+                                <div class="h-px w-full bg-white"></div>
+                                <div class="h-px w-full bg-white"></div>
+                            </div>
+                            <!-- Line Graph (SVG) -->
+                            <svg class="absolute inset-0 h-full w-full" preserveAspectRatio="none">
+                                <path
+                                    d="M0 150 L50 130 L100 140 L150 100 L200 90 L250 110 L300 60 L350 50 L400 20"
+                                    fill="none"
+                                    stroke="#8B5CF6"
+                                    stroke-width="3"
+                                />
+                                <path
+                                    d="M0 150 L50 130 L100 140 L150 100 L200 90 L250 110 L300 60 L350 50 L400 20 V 160 H 0 Z"
+                                    fill="url(#gradPurple)"
+                                    opacity="0.2"
+                                />
+                                <defs>
+                                    <linearGradient id="gradPurple" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color: #8b5cf6; stop-opacity: 1" />
+                                        <stop offset="100%" style="stop-color: #8b5cf6; stop-opacity: 0" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <!-- Points -->
+                            <div class="absolute bottom-8 left-[20%] h-2 w-2 rounded-full border-2 border-indigo-500 bg-white"></div>
+                            <div class="absolute bottom-20 left-[50%] h-2 w-2 rounded-full border-2 border-indigo-500 bg-white"></div>
+                            <div class="absolute right-0 top-4 h-2 w-2 rounded-full border-2 border-indigo-500 bg-white"></div>
+                        </div>
+                        <div class="mt-4 flex justify-between text-xs text-gray-500">
+                            <span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span><span>Jun</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 8: TRUST & ACCESS -->
+        <section class="relative z-10 border-t border-white/5 bg-white/[0.02] py-32">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
+                    <!-- Visuals -->
+                    <div class="reveal-on-scroll order-2 grid grid-cols-2 gap-4 lg:order-1">
+                        <div class="sys-mockup-container flex flex-col items-center p-6 text-center">
+                            <div class="security-icon-box">
+                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                    ></path>
+                                </svg>
+                            </div>
+                            <h4 class="mb-2 text-sm font-bold text-white">Dados Locais</h4>
+                            <p class="text-xs text-gray-400">Você é o dono dos seus dados. Sem compartilhamento oculto.</p>
+                        </div>
+                        <div class="sys-mockup-container mt-8 flex flex-col items-center p-6 text-center">
+                            <div class="security-icon-box">
+                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                    ></path>
+                                </svg>
+                            </div>
+                            <h4 class="mb-2 text-sm font-bold text-white">Controle Manual</h4>
+                            <p class="text-xs text-gray-400">Input manual para precisão total, sem erros de sincronização bancária.</p>
+                        </div>
+                        <div class="sys-mockup-container flex flex-col items-center p-6 text-center">
+                            <div class="security-icon-box">
+                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H4a3 3 0 00-3 3v8a3 3 0 003 3z"
+                                    ></path>
+                                </svg>
+                            </div>
+                            <h4 class="mb-2 text-sm font-bold text-white">Cartões Fictícios</h4>
+                            <p class="text-xs text-gray-400">Simule suas contas reais com segurança usando entidades virtuais.</p>
+                        </div>
+                    </div>
+                    <!-- Text -->
+                    <div class="reveal-on-scroll order-1 lg:order-2">
+                        <div class="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-400">Segurança e Privacidade</div>
+                        <h2 class="font-display mb-6 text-4xl font-bold leading-tight text-white md:text-5xl">Confiança e Acesso.</h2>
+                        <p class="mb-6 text-lg leading-relaxed text-gray-400">
+                            O bills foi desenhado com a privacidade em mente. Sem dados confidenciais e sensíveis, apenas o que é preciso para sua
+                            gestão financeira.
+                        </p>
+                        <p class="mb-6 text-lg leading-relaxed text-gray-400">
+                            A princípio, todos os dados financeiros são inseridos e gerenciados por você. Utilizamos
+                            <strong>Wallets fictícias</strong> para representar suas contas e cartões, garantindo que nenhuma informação bancária real
+                            trafegue pelo sistema.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 9: CTA GREETINGS -->
+        <section class="relative z-10 overflow-hidden border-t border-white/5 py-32 text-center">
+            <div
+                class="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/10 blur-[120px]"
+            ></div>
+
+            <div class="reveal-on-scroll container relative z-10 mx-auto px-6">
+                <h2 class="font-display mb-8 text-5xl font-bold tracking-tight text-white md:text-6xl">Pronto para começar?</h2>
+                <p class="mx-auto mb-10 max-w-2xl text-xl text-gray-400">
+                    Junte-se a milhares de usuários que estão retomando o controle de suas vidas financeiras. Simples, seguro e grátis.
+                </p>
+                <div class="flex flex-col justify-center gap-4 sm:flex-row">
+                    <Link
+                        href="/register"
+                        class="cta-button hover-target rounded-full bg-white px-12 py-5 text-lg font-bold text-black shadow-[0_0_30px_rgba(255,255,255,0.1)] transition hover:bg-gray-200"
+                    >
+                        Criar Conta Grátis
+                    </Link>
+                </div>
+            </div>
+        </section>
+
+        <footer class="relative z-10 border-t border-white/5 bg-[#050505] py-12 text-center">
+            <div class="container mx-auto px-6">
+                <div class="text-xs text-gray-600">
+                    &copy; 2025 bills. Made by
+                    <a href="https://x.com/leondicielo" target="_blank" class="text-white hover:text-[#8b5cf6]">@leondicielo</a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Video Modal -->
+        <Teleport to="body">
+            <Transition name="modal">
+                <div v-if="isVideoModalOpen" class="video-modal-overlay" @click.self="closeVideoModal">
+                    <div class="video-modal-container">
+                        <button @click="closeVideoModal" class="video-modal-close hover-target" aria-label="Fechar">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <div class="video-modal-content">
+                            <video ref="videoPlayer" class="video-player" controls autoplay src="/video/bills-23.mp4" @ended="closeVideoModal">
+                                Seu navegador não suporta a reprodução de vídeo.
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
+    </div>
+</template>
+
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
-import { Head } from '@inertiajs/vue3';
 import BillsLogo from '@/components/assets/BillsLogo.vue';
+import HeroOrb from '@/components/assets/HeroOrb.vue';
+import { Head, Link } from '@inertiajs/vue3';
+import {
+    ArrowDownRight,
+    ArrowUpRight,
+    Car,
+    ChartBar,
+    CircleCheck,
+    Coffee,
+    CreditCard,
+    DollarSign,
+    Home,
+    Lock,
+    MoreHorizontal,
+    PiggyBank,
+    Plane,
+    ShoppingCart,
+    Target,
+    Utensils,
+} from 'lucide-vue-next';
+import { onMounted, onUnmounted, ref } from 'vue';
+
+const word1 = 'organize suas finanças';
+const word2 = 'e controle seu futuro.';
+const transitionTiming = 'ease-[cubic-bezier(0.25,1,0.5,1)] duration-700';
 
 let cursorLight: HTMLElement | null = null;
 let observer: IntersectionObserver | null = null;
+let timelineSteps: HTMLElement[] = [];
+let timelineContainer: HTMLElement | null = null;
+
+const isVideoModalOpen = ref(false);
+const videoPlayer = ref<HTMLVideoElement | null>(null);
+
+const handleEscapeKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && isVideoModalOpen.value) {
+        closeVideoModal();
+    }
+};
+
+const openVideoModal = () => {
+    isVideoModalOpen.value = true;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleEscapeKey);
+};
+
+const closeVideoModal = () => {
+    isVideoModalOpen.value = false;
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', handleEscapeKey);
+    if (videoPlayer.value) {
+        videoPlayer.value.pause();
+        videoPlayer.value.currentTime = 0;
+    }
+};
 
 const handleMouseMove = (e: MouseEvent) => {
     if (cursorLight) {
-        cursorLight.style.left = e.clientX + 'px';
-        cursorLight.style.top = e.clientY + 'px';
+        requestAnimationFrame(() => {
+            if (cursorLight) {
+                cursorLight.style.left = e.clientX + 'px';
+                cursorLight.style.top = e.clientY + 'px';
+            }
+        });
     }
 };
 
@@ -25,42 +1087,96 @@ const handleMouseLeave = () => {
     }
 };
 
+const handleMouseDown = () => {
+    if (cursorLight) {
+        cursorLight.classList.add('cursor-light-active');
+    }
+};
+
+const handleMouseUp = () => {
+    if (cursorLight) {
+        cursorLight.classList.remove('cursor-light-active');
+    }
+};
+
+const handleTimelineScroll = () => {
+    if (!timelineContainer || !timelineSteps.length) {
+        return;
+    }
+
+    const sectionRect = timelineContainer.getBoundingClientRect();
+    const sectionHeight = sectionRect.height || 1;
+    const viewportCenter = window.innerHeight / 2;
+    const rawProgress = (viewportCenter - sectionRect.top) / sectionHeight;
+    const progress = Math.min(1, Math.max(0, rawProgress));
+
+    timelineSteps.forEach((step, index) => {
+        const threshold = index / timelineSteps.length;
+        step.classList.toggle('timeline-active', progress >= threshold);
+    });
+};
+
+const initTimeline = () => {
+    timelineContainer = document.querySelector<HTMLElement>('.timeline-steps');
+    timelineSteps = Array.from(document.querySelectorAll<HTMLElement>('.timeline-step'));
+
+    if (timelineContainer && timelineSteps.length) {
+        window.addEventListener('scroll', handleTimelineScroll, { passive: true });
+        window.addEventListener('resize', handleTimelineScroll);
+        handleTimelineScroll();
+    }
+};
+
+const destroyTimeline = () => {
+    window.removeEventListener('scroll', handleTimelineScroll);
+    window.removeEventListener('resize', handleTimelineScroll);
+    timelineContainer = null;
+    timelineSteps = [];
+};
+
 onMounted(() => {
-    // Cursor Light
     cursorLight = document.getElementById('cursor-light');
     if (cursorLight) {
         document.addEventListener('mousemove', handleMouseMove);
 
-        const hoverTargets = document.querySelectorAll('.hover-target, a, button');
-        hoverTargets.forEach(el => {
+        const hoverTargets = document.querySelectorAll('.hover-target, a, button, .tech-card, .sys-mockup-container, .real-tx-card');
+        hoverTargets.forEach((el) => {
             el.addEventListener('mouseenter', handleMouseEnter);
             el.addEventListener('mouseleave', handleMouseLeave);
         });
     }
 
-    // Scroll Reveal
     const revealElements = document.querySelectorAll('.reveal-on-scroll');
 
-    observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-            }
-        });
-    }, {
-        threshold: 0.1
-    });
+    observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        },
+        {
+            threshold: 0.1,
+        },
+    );
 
-    revealElements.forEach(el => {
+    revealElements.forEach((el) => {
         observer?.observe(el);
     });
+
+    initTimeline();
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
 });
 
 onUnmounted(() => {
     document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('keydown', handleEscapeKey);
 
-    const hoverTargets = document.querySelectorAll('.hover-target, a, button');
-    hoverTargets.forEach(el => {
+    const hoverTargets = document.querySelectorAll('.hover-target, a, button, .tech-card, .sys-mockup-container, .real-tx-card');
+    hoverTargets.forEach((el) => {
         el.removeEventListener('mouseenter', handleMouseEnter);
         el.removeEventListener('mouseleave', handleMouseLeave);
     });
@@ -68,686 +1184,84 @@ onUnmounted(() => {
     if (observer) {
         observer.disconnect();
     }
+
+    destroyTimeline();
+
+    window.removeEventListener('mousedown', handleMouseDown);
+    window.removeEventListener('mouseup', handleMouseUp);
 });
 </script>
 
-<template>
-    <Head title="bills - Controle Financeiro Total" />
-
-    <div class="welcome-page">
-    <!-- Cursor Follower Light -->
-    <div class="cursor-light" id="cursor-light"></div>
-
-    <!-- Header -->
-    <header class="absolute top-0 left-0 w-full z-50 py-6">
-        <nav class="container mx-auto px-6 flex justify-between items-center">
-                <!-- LOGO SECTION -->
-            <div>
-                <a href="#" class="flex items-center space-x-2 hover-target welcome-logo-link">
-                    <BillsLogo :width="30" :height="30" gradient-id="logo-header" class="welcome-logo-icon" />
-                    <span class="text-3xl font-bold text-white">bills</span>
-                </a>
-            </div>
-            <!-- END LOGO SECTION -->
-
-            <!-- <div class="hidden md:flex items-center space-x-8">
-                <a href="#features" class="text-gray-300 hover:text-white transition duration-300 hover-target">Recursos</a>
-                <a href="#security" class="text-gray-300 hover:text-white transition duration-300 hover-target">Segurança</a>
-                <a href="#pricing" class="text-gray-300 hover:text-white transition duration-300 hover-target">Preços</a>
-            </div> -->
-            <div>
-                <a href="login" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition duration-300 hover-target">
-                    Comece Agora
-                </a>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="relative h-screen flex items-center justify-center overflow-hidden pt-16">
-        <div class="container mx-auto px-6 z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <!-- Text Content -->
-                <div class="text-center lg:text-left">
-                    <span class="text-indigo-400 font-semibold uppercase tracking-wider">Conheça o bills</span>
-                    <h1 class="text-5xl md:text-7xl font-extrabold text-white mt-4 mb-6">
-                        Controle Total da Sua Vida Financeira.
-                    </h1>
-                    <p class="text-xl text-gray-300 mb-10">
-                        Pare de adivinhar, comece a saber. O bills é a plataforma tudo-em-um para rastrear despesas, gerenciar receitas e alcançar seus objetivos financeiros.
-                    </p>
-                    <a href="#pricing" class="cta-button inline-block px-10 py-4 bg-indigo-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105 hover-target">
-                        Comece de Graça
-                    </a>
-                </div>
-                <!-- Animated Visual: Orb -->
-                <div class="hidden lg:flex items-center justify-center h-[500px]">
-                    <div class="hero-orb">
-                        <div class="hero-orb-layer"></div>
-                        <div class="hero-orb-layer"></div>
-                        <div class="hero-orb-layer"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Background Gradient -->
-        <div class="absolute inset-0 z-0 opacity-30">
-            <div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-[#0a041c] via-transparent to-transparent"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-900 rounded-full blur-[150px] opacity-50"></div>
-            <div class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-purple-900 rounded-full blur-[120px] opacity-40"></div>
-        </div>
-    </section>
-
-    <!-- Main Content Area -->
-    <main id="features">
-
-        <!-- Feature Section 1: All-in-one Dashboard -->
-        <section class="py-24 sm:py-32 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                    <!-- Animated Visual: Dashboard -->
-                    <div class="reveal-on-scroll flex justify-center">
-                        <div class="w-full max-w-md p-6 rounded-lg animated-dashboard">
-                            <h4 class="text-white font-semibold mb-4">Resumo Mensal</h4>
-                            <div class="flex items-end justify-center h-48 space-x-1">
-                                <!-- Animating Bars -->
-                                <div class="dashboard-bar w-8 rounded-t" style="animation-delay: 0.1s; height: 60%;"></div>
-                                <div class="dashboard-bar w-8 rounded-t" style="animation-delay: 0.3s; height: 80%;"></div>
-                                <div class="dashboard-bar w-8 rounded-t" style="animation-delay: 0.5s; height: 50%;"></div>
-                                <div class="dashboard-bar w-8 rounded-t" style="animation-delay: 0.2s; height: 90%;"></div>
-                                <div class="dashboard-bar w-8 rounded-t" style="animation-delay: 0.4s; height: 70%;"></div>
-                                <div class="dashboard-bar w-8 rounded-t" style="animation-delay: 0.1s; height: 60%;"></div>
-                                <div class="dashboard-bar w-8 rounded-t" style="animation-delay: 0.6s; height: 85%;"></div>
-                            </div>
-                            <div class="mt-4 p-4 bg-white/10 rounded-lg">
-                                <span class="text-gray-300 text-sm">Receita Líquida</span>
-                                <p class="text-white text-2xl font-bold">$2,450.78</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Text Content -->
-                    <div class="reveal-on-scroll">
-                        <span class="text-blue-400 font-semibold uppercase">Um só Lugar</span>
-                        <h3 class="text-4xl md:text-5xl font-bold text-white mt-4">
-                            Suas Finanças, Tudo em Um Só Lugar.
-                        </h3>
-                        <p class="text-lg text-gray-300 mt-6">
-                            Veja receitas, despesas e metas em um piscar de olhos. Nosso painel intuitivo reúne todos os seus dados financeiros, facilitando o entendimento de sua situação.
-                        </p>
-                        <ul class="mt-8 space-y-4">
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-blue-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Conecte todas as suas contas com segurança.
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-blue-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Sincronização de transações em tempo real.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Feature Section 2: Categorization -->
-        <section class="py-24 sm:py-32 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                    <!-- Text Content -->
-                    <div class="reveal-on-scroll lg:order-last">
-                        <span class="text-emerald-400 font-semibold uppercase">Rastreamento Inteligente</span>
-                        <h3 class="text-4xl md:text-5xl font-bold text-white mt-4">
-                            Veja Para Onde Vai Cada Centavo.
-                        </h3>
-                        <p class="text-lg text-gray-300 mt-6">
-                            O bills categoriza seus gastos automaticamente. De compras de supermercado a assinaturas, você finalmente terá uma visão clara de seus hábitos financeiros.
-                        </p>
-                        <ul class="mt-8 space-y-4">
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-emerald-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Categorização automática com IA.
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-emerald-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Crie categorias e tags personalizadas.
-                            </li>
-                        </ul>
-                    </div>
-
-                        <!-- Animated Visual: Flowing Categories -->
-                    <div class="reveal-on-scroll flex justify-center items-center min-h-[300px]">
-                        <svg class="w-full max-w-lg" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Paths -->
-                            <path d="M 40 125 C 100 125, 150 50, 200 50 L 350 50" stroke="#10b981" stroke-width="2" fill="none" class="flowing-line-svg" style="animation-delay: 0.5s;"></path>
-                            <path d="M 40 125 C 100 125, 150 100, 200 100 L 350 100" stroke="#f59e0b" stroke-width="2" fill="none" class="flowing-line-svg" style="animation-delay: 1s;"></path>
-                            <path d="M 40 125 C 100 125, 150 150, 200 150 L 350 150" stroke="#3b82f6" stroke-width="2" fill="none" class="flowing-line-svg" style="animation-delay: 0s;"></path>
-                            <path d="M 40 125 C 100 125, 150 200, 200 200 L 350 200" stroke="#ec4899" stroke-width="2" fill="none" class="flowing-line-svg" style="animation-delay: 1.5s;"></path>
-
-                            <!-- Start Node (Income) -->
-                            <circle cx="40" cy="125" r="25" fill="#a78bfa"/>
-                            <text x="40" y="127" font-size="24" fill="white" text-anchor="middle" dominant-baseline="central">💰</text>
-
-                            <!-- End Nodes (Categories) -->
-                            <circle cx="370" cy="50" r="20" fill="#10b981"/>
-                            <text x="370" y="52" font-size="24" fill="white" text-anchor="middle" dominant-baseline="central">🍔</text>
-
-                            <circle cx="370" cy="100" r="20" fill="#f59e0b"/>
-                            <text x="370" y="102" font-size="24" fill="white" text-anchor="middle" dominant-baseline="central">🏠</text>
-
-                            <circle cx="370" cy="150" r="20" fill="#3b82f6"/>
-                            <text x="370" y="152" font-size="24" fill="white" text-anchor="middle" dominant-baseline="central">🚗</text>
-
-                            <circle cx="370" cy="200" r="20" fill="#ec4899"/>
-                            <text x="370" y="202" font-size="24" fill="white" text-anchor="middle" dominant-baseline="central">🎬</text>
-                        </svg>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- Feature Section 3: Goals -->
-        <section class="py-24 sm:py-32 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                    <!-- Text Content -->
-                    <div class="reveal-on-scroll">
-                        <span class="text-amber-400 font-semibold uppercase">Planeje com Antecedência</span>
-                        <h3 class="text-4xl md:text-5xl font-bold text-white mt-4">
-                            Defina, Acompanhe e Bata Suas Metas.
-                        </h3>
-                        <p class="text-lg text-gray-300 mt-6">
-                            Seja um carro novo, férias ou a entrada de um imóvel, o bills ajuda você a visualizar seu progresso. Defina uma meta e nós o ajudaremos a visualizar o caminho para alcançá-la.
-                        </p>
-                        <ul class="mt-8 space-y-4">
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-amber-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Crie metas de economia com prazos.
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-amber-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Contribuições automáticas e acompanhamento de progresso.
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Animated Visual: Goal Stack -->
-                    <div class="reveal-on-scroll flex flex-col justify-center items-center min-h-[300px] w-full">
-
-                            <!-- HORIZONTAL GOAL TRACKER 1 -->
-                        <div class="goal-tracker-horizontal goal-tracker-1">
-                            <svg viewBox="0 0 300 100">
-                                <text class="goal-emoji" x="13" y="25" dominant-baseline="central" text-anchor="middle">✈️</text>
-                                <text class="goal-text" x="35" y="25" dominant-baseline="central">Meta de Férias</text>
-                                <!-- Track Background -->
-                                <rect class="goal-track-bg" x="30" y="50" width="220" height="12" rx="6" />
-                                <!-- Track Fill -->
-                                <rect class="goal-track-fill-rect" x="30" y="50" height="12" rx="6" />
-                                <!-- Marker -->
-                                <circle class="goal-marker-circle" cy="56" r="8" />
-                                <!-- Text -->
-                                <text class="goal-text" x="30" y="80">$0</text>
-                                <text class="goal-text" x="250" y="80" text-anchor="end">$1,500</text>
-                            </svg>
-                        </div>
-
-                            <!-- HORIZONTAL GOAL TRACKER 2 -->
-                        <div class="goal-tracker-horizontal goal-tracker-2">
-                            <svg viewBox="0 0 300 100">
-                                <text class="goal-emoji" x="13" y="25" dominant-baseline="central" text-anchor="middle">🚗</text>
-                                <text class="goal-text" x="35" y="25" dominant-baseline="central">Fundo Carro Novo</text>
-                                <rect class="goal-track-bg" x="30" y="50" width="220" height="12" rx="6" />
-                                <rect class="goal-track-fill-rect" x="30" y="50" height="12" rx="6" />
-                                <circle class="goal-marker-circle" cy="56" r="8" />
-                                <text class="goal-text" x="30" y="80">$0</text>
-                                <text class="goal-text" x="250" y="80" text-anchor="end">$5,000</text>
-                            </svg>
-                        </div>
-
-                            <!-- HORIZONTAL GOAL TRACKER 3 -->
-                        <div class="goal-tracker-horizontal goal-tracker-3">
-                            <svg viewBox="0 0 300 100">
-                                <text class="goal-emoji" x="13" y="25" dominant-baseline="central" text-anchor="middle">🏠</text>
-                                <text class="goal-text" x="35" y="25" dominant-baseline="central">Entrada Imóvel</text>
-                                <rect class="goal-track-bg" x="30" y="50" width="220" height="12" rx="6" />
-                                <rect class="goal-track-fill-rect" x="30" y="50" height="12" rx="6" />
-                                <circle class="goal-marker-circle" cy="56" r="8" />
-                                <text class="goal-text" x="30" y="80">$0</text>
-                                <text class="goal-text" x="250" y="80" text-anchor="end">$50,000</text>
-                            </svg>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-            <!-- Feature Section 4: Wallets -->
-        <section class="py-24 sm:py-32 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                        <!-- Animated Visual: Card Stack -->
-                    <div class="reveal-on-scroll lg:order-first order-last flex justify-center items-center min-h-[300px]">
-                        <div class="card-stack">
-                            <!-- Card 1 -->
-                            <div class="wallet-card card-1">
-                                <span class="card-logo">bills</span>
-                                <div class="card-chip mt-4"></div>
-                                <div class="card-number">**** **** **** 1234</div>
-                                <div class="card-wallet-name">Carteira Pessoal</div>
-                            </div>
-                            <!-- Card 2 -->
-                            <div class="wallet-card card-2">
-                                <span class="card-logo">bills</span>
-                                <div class="card-chip mt-4"></div>
-                                <div class="card-number">**** **** **** 5678</div>
-                                <div class="card-wallet-name">Carteira Empresarial</div>
-                            </div>
-                            <!-- Card 3 -->
-                            <div class="wallet-card card-3">
-                                <span class="card-logo">bills</span>
-                                <div class="card-chip mt-4"></div>
-                                <div class="card-number">**** **** **** 9012</div>
-                                <div class="card-wallet-name">Fundo de Férias</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Text Content -->
-                    <div class="reveal-on-scroll">
-                        <span class="text-purple-400 font-semibold uppercase">Mantenha-se Organizado</span>
-                        <h3 class="text-4xl md:text-5xl font-bold text-white mt-4">
-                            Personalize Carteiras e Cartões
-                        </h3>
-                        <p class="text-lg text-gray-300 mt-6">
-                            A vida não é padronizada, e seu dinheiro também não. Crie carteiras separadas para "Pessoal", "Negócios" ou "Projetos". Você também pode criar cartões virtuais para ver os dados de gastos segmentados exatamente como você deseja.
-                        </p>
-                        <ul class="mt-8 space-y-4">
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-purple-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Crie "carteiras" ilimitadas
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-purple-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Cartões virtuais estilosos para rastreamento
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-purple-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Filtre relatórios por carteira e cartão
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-purple-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Organize os seus gastos por carteira ou cartão
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-            <!-- Feature Section 5: Reports -->
-        <section class="py-24 sm:py-32 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                    <!-- Text Content -->
-                    <div class="reveal-on-scroll">
-                        <span class="text-pink-400 font-semibold uppercase">Insights Profundos</span>
-                        <h3 class="text-4xl md:text-5xl font-bold text-white mt-4">
-                            Relatórios Poderosos e Simples
-                        </h3>
-                        <p class="text-lg text-gray-300 mt-6">
-                            Vá além do rastreamento básico. O painel de relatórios do bills visualiza seu fluxo de caixa, patrimônio líquido e tendências de gastos ao longo do tempo. Gere relatórios bonitos e fáceis de ler para impostos ou planejamento financeiro.
-                        </p>
-                         <ul class="mt-8 space-y-4">
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-pink-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Resumos mensais e anuais
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-pink-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Calculadora de patrimônio líquido
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-pink-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Dados exportáveis (PDF, CSV)
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Animated Visual: Report -->
-                    <div class="reveal-on-scroll flex justify-center items-center min-h-[300px]">
-                        <div class="report-visual">
-                            <h4 class="text-white font-semibold text-lg mb-4">Gastos Trimestrais</h4>
-
-                                <!-- Pie Chart -->
-                            <svg class="report-pie-chart w-32 h-32 mx-auto" viewBox="0 0 40 40">
-                                <!-- Desenhado primeiro (fundo) -->
-                                <circle class="pie-slice pie-3" cx="20" cy="20" r="15"></circle>
-                                <!-- Desenhado em segundo -->
-                                <circle class="pie-slice pie-2" cx="20" cy="20" r="15"></circle>
-                                <!-- Desenhado por último (topo) -->
-                                <circle class="pie-slice pie-1" cx="20" cy="20" r="15"></circle>
-                            </svg>
-
-                            <!-- Legend -->
-                            <div class="mt-4 w-full max-w-xs mx-auto">
-                                <div class="flex items-center text-xs">
-                                    <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-                                    <span class="text-gray-300">Supermercado (60%)</span>
-                                </div>
-                                <div class="flex items-center text-xs mt-1">
-                                    <span class="w-3 h-3 rounded-full bg-teal-600 mr-2"></span>
-                                    <span class="text-gray-300">Assinaturas (25%)</span>
-                                </div>
-                                <div class="flex items-center text-xs mt-1">
-                                    <span class="w-3 h-3 rounded-full bg-amber-500 mr-2"></span>
-                                    <span class="text-gray-300">Restaurantes (15%)</span>
-                                </div>
-                            </div>
-                            <!-- Line Graph -->
-                            <svg class="w-full h-24 mt-4" viewBox="0 0 100 30" preserveAspectRatio="none">
-                                <path d="M 0 25 L 20 10 L 40 18 L 60 5 L 80 15 L 100 10" fill="none" stroke="#ec4899" stroke-width="2" class="report-line-graph" />
-                                <path d="M 0 30 L 100 30" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
-                            </svg>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-            <!-- Security Section -->
-        <section id="security" class="py-24 sm:py-32 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                    <!-- Animated Visual: Security Shield -->
-                    <div class="reveal-on-scroll flex justify-center items-center min-h-[350px]">
-                        <div class="security-visual">
-                            <!-- Orbiting Device Icons -->
-                            <div class="device-icon">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                            </div>
-                            <div class="device-icon">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                            </div>
-                            <div class="device-icon">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2-2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4l-3-3m0 0l-3 3m3-3v11"></path></svg>
-                            </div>
-                            <div class="device-icon">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H4a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                            </div>
-
-                            <!-- Central Shield -->
-                            <div class="security-shield">
-                                <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Text Content -->
-                    <div class="reveal-on-scroll">
-                        <span class="text-indigo-400 font-semibold uppercase">Confiança e Acesso</span>
-                        <h3 class="text-4xl md:text-5xl font-bold text-white mt-4">
-                            Sem dados confidenciais, apenas o que é preciso para sua gestão financeira.
-                        </h3>
-                        <p class="text-lg text-gray-300 mt-6">
-                            A princípio	todos os dados financeiros são inseridos e gerenciados por você, sem compartilhamento com terceiros, e sem uso de informação sensíveis reais.
-                        </p>
-                        <ul class="mt-8 space-y-4">
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-indigo-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Wallets fictícias para gerenciamento de contas bancárias.
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-indigo-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Cartões fictícios associados às contas para multiplos gerenciamentos de gastos.
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-indigo-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Metas financeiras fictícias para alcançar objetivos.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Open Finance Section -->
-        <section id="open-finance" class="py-24 sm:py-32 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                    <!-- Text Content -->
-                    <div class="reveal-on-scroll">
-                        <span class="text-emerald-400 font-semibold uppercase">Integração Real</span>
-                        <h3 class="text-4xl md:text-5xl font-bold text-white mt-4">
-                            Conecte-se com Seus Bancos Reais via Open Finance
-                        </h3>
-                        <p class="text-lg text-gray-300 mt-6">
-                            No plano Pro, você pode conectar suas contas bancárias reais através do Open Finance. Em vez de carteiras e cartões fictícios, gerencie suas wallets e cartões de bancos reais em um só lugar, e tudo isso de forma automática.
-                        </p>
-                        <ul class="mt-8 space-y-4">
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-emerald-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Conecte contas de múltiplos bancos com segurança
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-emerald-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Visualize seus cartões e saldos reais em tempo real
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-emerald-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Sincronização automática de transações bancárias
-                            </li>
-                            <li class="flex items-center text-lg">
-                                <svg class="w-6 h-6 text-emerald-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Padrão Open Finance com criptografia de ponta
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Animated Visual: Bank Connections -->
-                    <div class="reveal-on-scroll flex justify-center items-center min-h-[400px]">
-                        <div class="open-finance-visual">
-                            <!-- Central bills logo -->
-                            <div class="open-finance-center">
-                                <div class="open-finance-logo">
-                                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </div>
-                            </div>
-
-                            <!-- Bank Icons orbiting -->
-                            <div class="bank-icon bank-icon-1">
-                                <div class="bank-icon-inner">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H4a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                </div>
-                            </div>
-                            <div class="bank-icon bank-icon-2">
-                                <div class="bank-icon-inner">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H4a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                </div>
-                            </div>
-                            <div class="bank-icon bank-icon-3">
-                                <div class="bank-icon-inner">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H4a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                </div>
-                            </div>
-                            <div class="bank-icon bank-icon-4">
-                                <div class="bank-icon-inner">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H4a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- Pricing Section -->
-        <!-- <section id="pricing" class="py-24 sm:py-32">
-            <div class="container mx-auto px-6">
-                <div class="text-center max-w-3xl mx-auto">
-                    <span class="text-indigo-400 font-semibold uppercase">Preços Simples</span>
-                    <h2 class="text-4xl md:text-5xl font-bold text-white mt-4">
-                        Escolha o plano ideal para você.
-                    </h2>
-                    <p class="text-lg text-gray-300 mt-6">
-                        Comece gratuitamente e atualize quando estiver pronto. Sem taxas ocultas, sem necessidade de cartão de crédito.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 max-w-4xl mx-auto mt-16 gap-8">
-
-                    <div class="reveal-on-scroll p-8 bg-white/5 border border-white/10 rounded-xl shadow-2xl flex flex-col">
-                        <h3 class="text-2xl font-semibold text-white">Grátis</h3>
-                        <p class="text-gray-300 mt-2">Para quem está começando.</p>
-                        <div class="mt-6">
-                            <span class="text-5xl font-extrabold text-white">R$0</span>
-                            <span class="text-gray-400 text-lg ml-1">/ mês</span>
-                        </div>
-                        <ul class="mt-8 space-y-4 text-gray-300 flex-grow">
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-emerald-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                1 Conta Conectada
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-emerald-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Rastreamento Básico de Despesas
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-emerald-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                1 Meta de Economia
-                            </li>
-                        </ul>
-                        <a href="#" class="mt-10 block w-full text-center px-6 py-3 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition duration-300 hover-target">
-                            Comece de Graça
-                        </a>
-                    </div>
-
-                    <div class="reveal-on-scroll p-8 bg-indigo-600 rounded-xl shadow-2xl flex flex-col relative overflow-hidden">
-                        <span class="absolute top-0 right-0 m-4 px-3 py-1 text-xs text-indigo-700 bg-white rounded-full font-bold">Mais Popular</span>
-                        <h3 class="text-2xl font-semibold text-white">Pro</h3>
-                        <p class="text-indigo-200 mt-2">Para usuários avançados.</p>
-                        <div class="mt-6">
-                            <span class="text-5xl font-extrabold text-white">R$20</span>
-                            <span class="text-indigo-200 text-lg ml-1">/ mês</span>
-                        </div>
-                        <ul class="mt-8 space-y-4 text-indigo-100 flex-grow">
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Contas Conectadas Ilimitadas
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Categorização Automática com IA
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Metas de Economia Ilimitadas
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Carteiras e Relatórios Personalizados
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Saia do fictício e comece a gerenciar suas finanças reais.
-                            </li>
-                        </ul>
-                        <a href="#" class="mt-10 block w-full text-center px-6 py-3 bg-white text-indigo-700 font-semibold rounded-lg hover:bg-gray-100 transition duration-300 hover-target">
-                            Teste Grátis por 14 Dias
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section> -->
-
-        <!-- Final CTA Section -->
-        <section class="py-24 sm:py-32">
-            <div class="container mx-auto px-6 text-center">
-                <div class="max-w-3xl mx-auto">
-                    <h2 class="text-4xl md:text-5xl font-bold text-white">
-                        Pronto para ter clareza financeira?
-                    </h2>
-                    <p class="text-lg text-gray-300 mt-6 mb-10">
-                        Junte-se a milhares de usuários que estão assumindo o controle de seu futuro financeiro.
-                        Inscreva-se gratuitamente em menos de um minuto.
-                        </p>
-                    <a href="#" class="cta-button inline-block px-12 py-5 bg-indigo-600 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105 hover-target">
-                        Comece Seu Teste Grátis
-                    </a>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="py-16 bg-white/5 border-t border-white/10">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-3 md:grid-cols-3 gap-8">
-                <div class="md:col-span-1">
-                        <!-- Footer Logo -->
-                    <a href="#" class="flex items-center space-x-2">
-                        <BillsLogo :width="24" :height="24" gradient-id="logo-footer" class="welcome-logo-icon" />
-                        <span class="text-2xl font-bold text-white">bills</span>
-                    </a>
-                    <p class="text-gray-400 mt-4">Controle total da sua vida financeira.</p>
-                </div>
-                <div class="md:col-start-3">
-                    <h4 class="font-semibold text-white uppercase">Produto</h4>
-                    <ul class="mt-4 space-y-2">
-                        <li><a href="#features" class="text-gray-400 hover:text-white">Recursos</a></li>
-                        <li><a href="#pricing" class="text-gray-400 hover:text-white">Preços</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Entrar</a></li>
-                    </ul>
-                </div>
-            </div>
-                <div class="mt-16 pt-8 border-t border-white/10 text-center text-gray-500">
-                &copy; 2025 bills Inc. Todos os direitos reservados.
-            </div>
-        </div>
-    </footer>
-    </div>
-</template>
-
 <style scoped>
-/* Custom styles for animations, fonts, and cursor light */
+/* --- ESTILOS GERAIS --- */
 .welcome-page {
     font-family: 'Inter', sans-serif;
-    background-color: #0a041c;
+    background-color: #050505;
     color: #e0e0e0;
     overflow-x: hidden;
     min-height: 100vh;
     cursor: none;
+    position: relative;
+    z-index: 1;
 }
 
-/* Hide cursor on all interactive elements */
+/* Garantir que o sticky funcione na SECTION 2 */
+section:nth-of-type(2) {
+    overflow: visible;
+}
+
+.sticky-content {
+    transition: none;
+}
+
 .welcome-page * {
     cursor: none !important;
 }
 
-/* Cursor Follower Light */
+.tech-grid-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 50px 50px;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(circle at 50% 50%, black, transparent 85%);
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, black, transparent 85%);
+}
+
 .cursor-light {
     position: fixed;
-    width: 40px;
-    height: 40px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #7462f3;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0) 70%);
+    background: rgba(116, 98, 243, 0.08);
+    box-shadow: 0 0 15px rgba(116, 98, 243, 0.35);
     pointer-events: none;
     transform: translate(-50%, -50%);
-    transition: width 0.3s ease, height 0.3s ease, background 0.3s ease;
+    transition:
+        transform 0.2s ease,
+        border 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        width 0.2s ease,
+        height 0.2s ease;
     z-index: 9999;
-    display: none; /* Hidden by default, shown with JS */
+    display: none;
+}
+
+.cursor-light::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    opacity: 0.6;
 }
 
 @media (min-width: 1024px) {
@@ -756,16 +1270,15 @@ onUnmounted(() => {
     }
 }
 
-/* Hover effect for cursor light */
-.cursor-light-hover {
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, rgba(139, 92, 246, 0) 70%);
+.cursor-light-hover,
+.cursor-light-active {
+    border-color: #e647b3;
+    box-shadow: 0 0 18px rgba(230, 71, 179, 0.45);
+    background: rgba(230, 71, 179, 0.08);
 }
 
-/* Logo icon styles to prevent clipping */
-.welcome-logo-link {
-    overflow: visible;
+.cursor-light-active {
+    transform: translate(-50%, -50%) scale(0.92);
 }
 
 .welcome-logo-icon {
@@ -777,440 +1290,330 @@ onUnmounted(() => {
 .welcome-logo-icon :deep(svg) {
     display: block;
     overflow: visible;
-    /* Garante que o stroke não seja cortado nas bordas */
     shape-rendering: geometricPrecision;
 }
 
-/* Hero Orb Animation */
-.hero-orb {
-    width: 400px;
-    height: 400px;
-    position: relative;
-    transform-style: preserve-3d;
-    animation: rotate-orb 20s infinite linear;
-}
-.hero-orb-layer {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 2px solid;
-    background-position: center;
-    background-size: cover;
-    animation: morph-shape 8s infinite alternate;
-}
-.hero-orb-layer:nth-child(1) {
-    border-color: rgba(99, 102, 241, 0.5);
-    animation-delay: -4s;
-    transform: translateZ(-50px) scale(0.8);
-}
-.hero-orb-layer:nth-child(2) {
-    border-color: rgba(168, 85, 247, 0.5);
-    animation-delay: -2s;
-    transform: translateZ(0px) scale(0.9);
-}
-.hero-orb-layer:nth-child(3) {
-    border-color: rgba(236, 72, 153, 0.5);
-    transform: translateZ(50px) scale(1);
-}
-
-@keyframes rotate-orb {
-    from { transform: rotateY(0deg) rotateX(10deg); }
-    to { transform: rotateY(360deg) rotateX(10deg); }
-}
-
-@keyframes morph-shape {
-    0% { border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
-    50% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
-    100% { border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
-}
-
-/* Scroll Reveal Animation */
 .reveal-on-scroll {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.8s cubic-bezier(0.215, 0.610, 0.355, 1), transform 0.8s cubic-bezier(0.215, 0.610, 0.355, 1);
-    transition-delay: 0.1s;
+    transition: all 0.8s ease;
 }
+
 .reveal-on-scroll.is-visible {
     opacity: 1;
     transform: translateY(0);
 }
 
-/* Animated Dashboard Visual */
-.animated-dashboard {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-}
-.dashboard-bar {
-    background-color: #4f46e5;
-    animation: grow-bar 3s infinite ease-in-out;
-    transform-origin: bottom;
-    margin: 0 4px;
-}
-/* Different colors for bars */
-.dashboard-bar:nth-child(1) { background-color: #22c55e; animation-delay: 0s; }
-.dashboard-bar:nth-child(2) { background-color: #3b82f6; animation-delay: 0.4s; }
-.dashboard-bar:nth-child(3) { background-color: #8b5cf6; animation-delay: 0.8s; }
-.dashboard-bar:nth-child(4) { background-color: #ec4899; animation-delay: 0.2s; }
-.dashboard-bar:nth-child(5) { background-color: #f59e0b; animation-delay: 0.6s; }
-.dashboard-bar:nth-child(6) { background-color: #22c55e; animation-delay: 0.1s; }
-.dashboard-bar:nth-child(7) { background-color: #3b82f6; animation-delay: 0.5s; }
-
-@keyframes grow-bar {
-    0%, 100% { transform: scaleY(0.2); }
-    50% { transform: scaleY(1); }
-}
-
-/* Flowing Categories Visual */
-.flowing-line-svg {
-    animation: draw-line 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-}
-@keyframes draw-line {
-    0% { stroke-dashoffset: 1000; }
-    50% { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: -1000; }
-}
-
-/* HORIZONTAL Goal Tracker Visual */
-.goal-tracker-horizontal {
-    width: 100%;
-    margin-bottom: 2rem;
-}
-.goal-tracker-horizontal svg {
-    width: 100%;
-    max-width: 400px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-}
-.goal-track-bg {
-    fill: rgba(255, 255, 255, 0.1);
-}
-.goal-track-fill-rect {
-    fill: #f59e0b;
-    width: 0;
-    animation: fill-goal-bar 5s infinite ease-in-out;
-}
-.goal-marker-circle {
-    fill: #f59e0b;
-    stroke: #0a041c;
-    stroke-width: 2px;
-    animation: move-goal-marker-x 5s infinite ease-in-out;
-}
-.goal-text {
-    font-size: 14px;
-    fill: #e0e0e0;
-}
-.goal-emoji {
-    font-size: 24px;
-}
-
-/* Keyframes for Horizontal Goal Tracker */
-@keyframes fill-goal-bar {
-    0% { width: 0px; }
-    80%, 100% { width: 220px; }
-}
-@keyframes move-goal-marker-x {
-    0% { transform: translateX(30px); }
-    80%, 100% { transform: translateX(250px); }
-}
-
-/* Staggered animation delays */
-.goal-tracker-2 .goal-track-fill-rect, .goal-tracker-2 .goal-marker-circle {
-    animation-delay: 0.5s;
-}
-.goal-tracker-3 .goal-track-fill-rect, .goal-tracker-3 .goal-marker-circle {
-    animation-delay: 1s;
-}
-
-/* Wallet Card Stack Visual */
-.card-stack {
-    perspective: 1000px;
-    width: 300px;
-    height: 250px;
-    margin: 0 auto;
-}
-.wallet-card {
-    position: absolute;
-    width: 240px;
-    height: 150px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    transform-origin: center;
-    transition: transform 0.6s cubic-bezier(0.215, 0.610, 0.355, 1);
-    font-size: 14px;
-    color: white;
-    padding: 20px;
-    box-sizing: border-box;
-}
-.card-1 {
-    --card-color-1: #3b82f6; --card-color-2: #60a5fa;
-    z-index: 3;
-    transform: translateY(0) rotate(-5deg);
-    animation: shuffle-1 8s infinite cubic-bezier(0.4, 0, 0.2, 1);
-}
-.card-2 {
-    --card-color-1: #10b981; --card-color-2: #34d399;
-    z-index: 2;
-    transform: translateY(20px) rotate(0deg);
-    animation: shuffle-2 8s infinite cubic-bezier(0.4, 0, 0.2, 1);
-}
-.card-3 {
-    --card-color-1: #8b5cf6; --card-color-2: #a78bfa;
-    z-index: 1;
-    transform: translateY(40px) rotate(5deg);
-    animation: shuffle-3 8s infinite cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes shuffle-1 {
-    0%, 100% { transform: translateY(0) rotate(-5deg); z-index: 3; }
-    33% { transform: translateY(40px) rotate(5deg); z-index: 1; }
-    66% { transform: translateY(20px) rotate(0deg); z-index: 2; }
-}
-@keyframes shuffle-2 {
-    0%, 100% { transform: translateY(20px) rotate(0deg); z-index: 2; }
-    33% { transform: translateY(0) rotate(-5deg); z-index: 3; }
-    66% { transform: translateY(40px) rotate(5deg); z-index: 1; }
-}
-@keyframes shuffle-3 {
-    0%, 100% { transform: translateY(40px) rotate(5deg); z-index: 1; }
-    33% { transform: translateY(20px) rotate(0deg); z-index: 2; }
-    66% { transform: translateY(0) rotate(-5deg); z-index: 3; }
-}
-.card-logo {
-    font-weight: 700;
-    font-size: 16px;
-}
-.card-chip {
-    width: 30px;
-    height: 24px;
-    background: #f59e0b;
-    border-radius: 4px;
-}
-.card-number {
-    font-family: monospace;
-    font-size: 16px;
-    letter-spacing: 2px;
-    position: absolute;
-    bottom: 45px;
-}
-.card-wallet-name {
-    font-size: 12px;
-    position: absolute;
-    bottom: 20px;
-}
-
-/* Report Visual */
-.report-visual {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 24px;
-    border-radius: 12px;
-    backdrop-filter: blur(5px);
-    width: 100%;
-    max-width: 450px;
-    margin: 0 auto;
-}
-.report-pie-chart {
-    transform: rotate(-90deg);
-}
-.pie-slice {
-    fill: none;
-    stroke-width: 10;
-    stroke-dasharray: 94.2;
-    stroke-dashoffset: 94.2;
-    animation: draw-pie 4s infinite ease-in-out;
-}
-
-/* Animation: Draw pie from 0-50%, Erase from 50-100% */
-@keyframes draw-pie {
-    0% { stroke-dashoffset: 94.2; }
-    50% { stroke-dashoffset: var(--dash-offset, 0); }
-    60%, 100% { stroke-dashoffset: 94.2; }
-}
-
-.pie-1 { stroke: #3b82f6; --dash-offset: 37.7; animation-delay: 0s; }
-.pie-2 { stroke: #10b981; --dash-offset: 14.2; animation-delay: 0.1s; }
-.pie-3 { stroke: #f59e0b; --dash-offset: 0; animation-delay: 0.2s; }
-
-.report-line-graph {
-    stroke-dasharray: 200;
-    stroke-dashoffset: 200;
-    animation: draw-line-graph 4s infinite ease-in-out;
-}
-@keyframes draw-line-graph {
-    0% { stroke-dashoffset: 200; }
-    50% { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: 200; }
-}
-
-/* Security Section Visual */
-.security-visual {
-    position: relative;
-    width: 300px;
-    height: 300px;
-    margin: 0 auto;
-}
-.security-shield {
-    width: 200px;
-    height: 200px;
-    background: #3b82f6;
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.security-shield svg {
-    animation: pulse-lock 2s infinite ease-in-out;
-}
-@keyframes pulse-lock {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-.device-icon {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: orbit 10s infinite linear;
-}
-.device-icon:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
-.device-icon:nth-child(2) { top: 50%; left: 0; transform: translateY(-50%); animation-delay: -5s; }
-.device-icon:nth-child(3) { bottom: 0; left: 50%; transform: translateX(-50%); animation-delay: -2.5s; }
-.device-icon:nth-child(4) { top: 50%; right: 0; transform: translateY(-50%); animation-delay: -7.5s; }
-
-@keyframes orbit {
-    from { transform: rotate(0deg) translateX(150px) rotate(0deg); }
-    to { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
-}
-
-/* Open Finance Section Visual */
-.open-finance-visual {
-    position: relative;
-    width: 400px;
-    height: 400px;
-    margin: 0 auto;
-}
-.open-finance-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-}
-.open-finance-logo {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #10b981, #059669);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-    animation: pulse-finance 2s infinite ease-in-out;
-}
-@keyframes pulse-finance {
-    0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); }
-    50% { transform: scale(1.1); box-shadow: 0 15px 40px rgba(16, 185, 129, 0.5); }
-}
-.bank-icon {
-    position: absolute;
-    width: 70px;
-    height: 70px;
-    background: rgba(16, 185, 129, 0.1);
-    border: 2px solid rgba(16, 185, 129, 0.3);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: orbit-bank 12s infinite linear;
-}
-.bank-icon-inner {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(16, 185, 129, 0.2);
+.tech-card {
+    background: rgba(11, 15, 25, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-}
-.bank-icon-1 {
-    top: 50%;
-    left: 50%;
-    animation-delay: 0s;
-}
-.bank-icon-2 {
-    top: 50%;
-    left: 50%;
-    animation-delay: -3s;
-}
-.bank-icon-3 {
-    top: 50%;
-    left: 50%;
-    animation-delay: -6s;
-}
-.bank-icon-4 {
-    top: 50%;
-    left: 50%;
-    animation-delay: -9s;
-}
-@keyframes orbit-bank {
-    from { transform: translate(-50%, -50%) rotate(0deg) translateX(160px) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg) translateX(160px) rotate(-360deg); }
-}
-.open-finance-connections {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
-.connection-line {
-    stroke-dasharray: 200;
-    stroke-dashoffset: 200;
-    animation: draw-connection 3s infinite ease-in-out;
-}
-@keyframes draw-connection {
-    0% { stroke-dashoffset: 200; opacity: 0; }
-    20% { opacity: 1; }
-    50% { stroke-dashoffset: 0; opacity: 1; }
-    80% { opacity: 1; }
-    100% { stroke-dashoffset: -200; opacity: 0; }
-}
-
-/* Button Glow Effect */
-.cta-button {
     position: relative;
     overflow: hidden;
-    z-index: 1;
+    transition: border-color 0.3s;
 }
-.cta-button::before {
+
+.tech-card:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+.tech-card::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.real-tx-card {
+    background-color: #0d0d0e;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s;
+}
+
+.real-tx-card:hover {
+    transform: scale(1.02);
+    border-color: #3f3f46;
+}
+
+.real-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.sys-mockup-container {
+    background: #09090b;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+}
+
+.mockup-card {
+    background-color: #111113;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.mockup-scroll::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.mockup-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mockup-scroll::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 3px;
+}
+
+.cta-button {
+    background: white;
+    color: black;
+    transition: all 0.3s;
+}
+
+.cta-button:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.track-container {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.track-bar-bg {
+    width: 100%;
+    height: 12px;
+    background-color: #27272a;
+    border-radius: 999px;
+    position: relative;
+    margin-top: 12px;
+}
+
+.track-bar-fill {
+    height: 100%;
+    background-color: #ffb800;
+    border-radius: 999px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.track-handle {
+    width: 20px;
+    height: 20px;
+    background-color: #ffb800;
+    border: 3px solid #0b0f19;
+    border-radius: 50%;
+    position: absolute;
+    right: -6px;
+    box-shadow: 0 0 10px rgba(255, 184, 0, 0.5);
+}
+
+.security-icon-box {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: #8b5cf6;
+}
+
+/* Video Modal Styles */
+.video-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.video-modal-container {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+@media (max-width: 768px) {
+    .video-modal-container {
+        max-width: 95vw;
+        max-height: 85vh;
+    }
+}
+
+.video-modal-content {
+    position: relative;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
-    z-index: -1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.cta-button:hover::before {
-    left: 100%;
+
+.video-player {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.video-modal-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    z-index: 10001;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: all 0.3s;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.video-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .video-modal-close {
+        top: -40px;
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Modal Transitions */
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+}
+
+.modal-enter-active .video-modal-container,
+.modal-leave-active .video-modal-container {
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
+}
+
+.timeline-steps {
+    position: relative;
+}
+
+.timeline-line {
+    position: absolute;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    left: 1.25rem;
+    width: 2px;
+    background: linear-gradient(180deg, #6366f1 0%, rgba(99, 102, 241, 0) 100%);
+}
+
+.timeline-step {
+    position: relative;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -27px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #6366f1;
+    background: #111827;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+.timeline-dot::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 999px;
+    background: #6366f1;
+    transform: scale(0);
+    opacity: 0;
+    transition:
+        transform 0.35s ease,
+        opacity 0.35s ease;
+}
+
+.timeline-step.timeline-active .timeline-dot::after {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.modal-enter-from .video-modal-container,
+.modal-leave-to .video-modal-container {
+    transform: scale(0.9);
+    opacity: 0;
+}
+
+/* Projection Card Fixed Size */
+.projection-card {
+    min-width: 500px;
+    width: 500px;
+}
+
+.projection-card .relative.h-48 {
+    width: 452px;
+}
+
+@media (max-width: 640px) {
+    .projection-card {
+        min-width: 100%;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .projection-card .relative.h-48 {
+        width: 100% !important;
+        max-width: 452px;
+    }
 }
 </style>

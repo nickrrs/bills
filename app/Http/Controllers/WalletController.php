@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWalletRequest;
 use App\Http\Requests\UpdateWalletRequest;
+use App\Http\Requests\BulkDeleteWalletRequest;
 use App\Models\Wallet;
 use App\Services\WalletService;
 use Illuminate\Http\JsonResponse;
@@ -32,7 +33,7 @@ class WalletController extends Controller
     public function store(StoreWalletRequest $request)
     {
         $this->walletService->createWallet($request->validated());
-        return redirect()->route('wallets')->with('success', 'Wallet created successfully');
+        return redirect()->route('wallets')->with('success', 'carteira criada com sucesso');
     }
 
     // API Methods
@@ -83,6 +84,19 @@ class WalletController extends Controller
         }
 
         $this->walletService->deleteWallet($wallet);
-        return response()->json(['message' => 'Wallet deleted successfully']);
+        return response()->json(['message' => 'carteira deletada com sucesso']);
+    }
+
+    public function apiBulkDestroy(BulkDeleteWalletRequest $request): JsonResponse
+    {
+        $deletedCount = $this->walletService->bulkDeleteWallets(
+            $request->input('ids'),
+            $request->user()->id
+        );
+
+        return response()->json([
+            'message' => 'carteiras deletadas com sucesso',
+            'deleted_count' => $deletedCount,
+        ]);
     }
 }

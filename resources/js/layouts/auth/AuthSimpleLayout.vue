@@ -46,8 +46,8 @@ onMounted(() => {
                         </div>
                     </Link>
                     <div class="inline-flex text-center gap-1">
-                        <h1 class="text-xl font-medium">the efficient way to track your</h1>
-                        <h1 class="text-xl font-medium text-[#4338CA]">money</h1>
+                        <h1 class="text-xl font-medium text-white">the efficient way to track your</h1>
+                        <h1 class="text-xl font-medium text-[#865df5] shimmer-text">money</h1>
                     </div>
                 </div>
                 <slot />
@@ -141,5 +141,25 @@ onMounted(() => {
 
 .logo-letter-visible {
   opacity: 1;
+}
+
+/* Efeito Shimmer */
+.shimmer-text {
+  position: relative;
+  background: linear-gradient(90deg, #865df5 25%, #a78bfa 50%, #865df5 75%);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 </style>

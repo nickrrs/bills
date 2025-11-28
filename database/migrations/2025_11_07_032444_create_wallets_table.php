@@ -19,7 +19,7 @@ return new class extends Migration
             $table->boolean('active')->default(true);
             $table->string('slug')->unique();
             $table->string('description')->nullable();
-            $table->string('is_default')->default(false);
+            $table->boolean('is_default')->default(false);
             $table->decimal('balance', 10, 2)->default(0);
             $table->timestamps();
         });

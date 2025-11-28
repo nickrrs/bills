@@ -41,7 +41,7 @@ class UpdateWalletRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:24',
-            'icon' => 'nullable|string|max:2',
+            'icon' => 'nullable|string',
             'description' => 'nullable|string|max:255',
             'balance' => 'nullable|numeric|min:0',
             'active' => 'boolean',
